@@ -150,6 +150,8 @@ export default {
     const last = turns[turns.length - 1].parts[0].text;
     const hit = screen(last);
     if (hit) return canned(hit.reply, hit.flag, headers);
+    // 한글이 없는 질문은 그 언어로 답하도록 명시 (모델이 한국어로 되돌아가는 것을 막는다)
+    if (!/[가-힣]/.test(last)) turns[turns.length - 1].parts[0].text = last + "\n\n(Reply in the same language as this message, keeping the same formal register.)";
     // 같은 말을 연달아 세 번 이상 보내면 반복으로 본다
     const userTexts = turns.filter(t => t.role === "user").map(t => t.parts[0].text);
     if (userTexts.length >= 3 && userTexts.slice(-3).every(x => x === last)) return canned("같은 질문이 반복되고 있습니다. 다른 궁금한 점이 있으시면 말씀해 주십시오.", "repeat", headers);
