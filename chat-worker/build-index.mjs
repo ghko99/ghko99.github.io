@@ -43,7 +43,7 @@ for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
   for (const p of list) {
     const id = `${kind}-${p.id}`;
     registry.push({
-      id, kind, name: p.t, ko: p.ko || "", when: p.y || "", url: `https://ghko99.github.io/#${id}`,
+      id, kind, name: p.t, ko: p.ko || "", when: p.y || "", url: `https://ghko99.github.io/projects/${id}/`,
       summary: firstSentence(p.intro.html),
       repos: Object.entries(REPO_PROJECT).filter(([, ids]) => ids.includes(id)).map(([r]) => r),
     });
@@ -65,7 +65,7 @@ function add(text, meta) {
 }
 for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
   for (const p of list) {
-    const pid = `${kind}-${p.id}`, title = p.t + (p.ko ? " / " + p.ko : ""), url = `https://ghko99.github.io/#${pid}`;
+    const pid = `${kind}-${p.id}`, title = p.t + (p.ko ? " / " + p.ko : ""), url = `https://ghko99.github.io/projects/${pid}/`;
     const head = kind === "pub"
       ? `${p.venue}, ${p.y}, ${p.role || "학위논문"}, 저자 ${p.authors}, 상태 ${p.st}. ${p.meta || ""}`
       : `${p.y}, ${p.who}${p.res ? ", 성과: " + p.res : ""}. 기술: ${(p.tags || []).join(", ")}. ${p.meta || ""}`;

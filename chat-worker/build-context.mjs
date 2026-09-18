@@ -17,7 +17,7 @@ const lines = [
   "활동: AIF 연구실 학부연구생(2022.12–2024.02) 후 석사. 실험실 창업팀 Upflow AI 기술 총괄(2025.04–, 공동창업자는 아님, 창업 과제 참여). 인하대 SW 인재양성·벤처스타트업 아카데미 1기(2023.04–2024.02). 다학년 연구 프로젝트(2022).",
   "기술: Python, PyTorch, Hugging Face Transformers, PEFT, FastAPI / LLM 파인튜닝, LoRA·QLoRA, RAG, LangChain, FAISS, vLLM, Ollama, AES, 한국어 NLP / Pandas, NumPy, Dask, scikit-learn, Docker, Git, Linux, Anaconda / OpenAI API, Claude API, W&B, TensorBoard, Triton Inference Server.",
   "활동 상세(검색 가능): " + JSON.parse(readFileSync(new URL("./activities.json", import.meta.url), "utf8")).map(a => `${a.name} (${a.when}, ${a.role})`).join(" / ") + ".",
-  "포트폴리오 사이트: https://ghko99.github.io (타임라인의 카드를 누르면 각 논문·프로젝트의 문제 해결 과정이 열림). 각 논문·프로젝트의 단계별 고민과 해결, 표, 수치는 검색된 자료로 따로 제공된다.",
+  "포트폴리오 사이트: https://ghko99.github.io (프로젝트 페이지 /projects/ 에서 각 논문·프로젝트의 문제 해결 과정을 볼 수 있음, 이력은 /cv/, 타임라인은 /timeline/). 각 논문·프로젝트의 단계별 고민과 해결, 표, 수치는 검색된 자료로 따로 제공된다.",
   "",
   "## 시간순 요약",
   ...EVENTS.map(e => e.ms ? `${e.d} ${e.ms}` : `${e.d} ${(e.k === "pub" ? PUBS : PROJECTS).find(x => x.id === e.id).t} — ${e.sum}`),

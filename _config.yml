@@ -236,9 +236,6 @@ exclude:
   - 실적들/
   - 화장품 OEM/
   - AI 반도체 기술인재 선발대회/
-  - "*.pdf"
-  - "KakaoTalk_*.jpg"
-  - image.png
   - purgecss.config.js
   - README.md
   - readme_preview/
