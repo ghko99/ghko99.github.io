@@ -660,7 +660,7 @@ const CHAT_ENDPOINT = "https://goganghee-chat.goganghee.workers.dev";
   const SESSION_MAX=30;
   const now=()=>{ const d=new Date(); return `${d.getHours()<12?'오전':'오후'} ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')}`; };
   // 모델이 마크다운을 섞어도 깨끗하게: **굵게**, 목록 기호, 헤더 제거, 빈 줄 하나로
-  const clean=t=>t.replace(/\*\*([^*]+)\*\*/g,'$1').replace(/^[\s]*[-*•]\s+/gm,'').replace(/^#+\s*/gm,'').replace(/^(고강희|Ganghee)\s*[:：]\s*/,'').replace(/\n{3,}/g,'\n\n').trim();
+  const clean=t=>t.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'$1($2)').replace(/`([^`]+)`/g,'$1').replace(/\*\*([^*]+)\*\*/g,'$1').replace(/^[\s]*[-*•]\s+/gm,'').replace(/^#+\s*/gm,'').replace(/^(고강희|Ganghee)\s*[:：]\s*/,'').replace(/\n{3,}/g,'\n\n').trim();
   // URL과 이메일을 누를 수 있는 링크로
   const linkify=(el,text)=>{ el.textContent=''; const re=/(https?:\/\/[^\s<>()\]]+[^\s<>()\].,!?;:'"]|(?:github\.com|velog\.io|geulgyeol\.tech|ukta\.inha\.ac\.kr)\/[^\s<>()\]]+[^\s<>()\].,!?;:'"]|[\w.+-]+@[\w-]+\.[\w.]+)/g; let i=0, m;
     while((m=re.exec(text))){ el.appendChild(document.createTextNode(text.slice(i,m.index))); const a=document.createElement('a'); const raw=m[0]; a.href=raw.includes('@')?'mailto:'+raw:(raw.startsWith('http')?raw:'https://'+raw); a.textContent=raw; a.target='_blank'; a.rel='noopener'; el.appendChild(a); i=m.index+raw.length; }
