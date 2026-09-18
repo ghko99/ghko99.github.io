@@ -705,15 +705,19 @@ const CHAT_ENDPOINT = "https://goganghee-chat.goganghee.workers.dev";
       if(res.status===502||res.status===503){ await new Promise(r=>setTimeout(r,1500)); res=await request(); }   // 서버 깨우기 재시도
       if(!res.ok){ b.className='bub him'; b.textContent= res.status===429 ? '지금 질문이 많이 몰려 있습니다. 잠시 후에 다시 물어봐 주십시오.' : '지금은 답변이 어렵습니다. 잠시 후 다시 물어봐 주십시오.'; turns.pop(); return; }
       const flag=res.headers.get('X-Flag');
-      // 본문 앞에 제어 줄(\x1e{json}\n)이 올 수 있다: 자료 검색 중 / 참고 자료 목록. 그 뒤부터가 답변 본문.
+      // 스트림 어디든 제어 줄(\x1e{json}\n)이 섞여 올 수 있다: 도구 단계(검색·파일 읽기), 참고 자료 목록. 나머지가 답변 본문.
       const status=(msg)=>{ b.className='bub him status'; b.textContent=''; const s=document.createElement('span'); s.className='spin'; b.append(s, msg); };
-      const reader=res.body.getReader(), dec=new TextDecoder(); let raw='', text='', first=true, head=true, sources=[];
+      const reader=res.body.getReader(), dec=new TextDecoder(); let raw='', text='', first=true, sources=[], steps=[];
+      const handle=(ev)=>{ if(ev.s==='tool'){ steps.push(ev.label); status(ev.label); } else if(ev.s==='sources'){ sources=ev.items||[]; } };
       while(true){ const {value,done}=await reader.read(); if(done) break; raw+=dec.decode(value,{stream:true});
-        if(head){ while(raw.startsWith('\x1e')){ const nl=raw.indexOf('\n'); if(nl<0) break; let ev={}; try{ ev=JSON.parse(raw.slice(1,nl)); }catch{} raw=raw.slice(nl+1);
-            if(ev.s==='search') status('논문·프로젝트 자료와 코드 저장소를 찾는 중');
-            else if(ev.s==='sources'){ sources=ev.items||[]; status(sources.length?`자료 ${sources.length}개 확인, 답변을 쓰는 중`:'답변을 쓰는 중'); } }
-          if(raw.startsWith('\x1e')||!raw) continue; head=false; }
-        text=raw; if(first){ b.className='bub him'; first=false; } b.textContent=clean(text); log.scrollTop=log.scrollHeight; }
+        // 제어 줄을 걷어내고 본문만 남긴다. 줄이 아직 덜 온 제어 줄은 다음 조각을 기다린다.
+        let out='', i=0;
+        while(i<raw.length){ const k=raw.indexOf('\x1e',i); if(k<0){ out+=raw.slice(i); i=raw.length; break; }
+          out+=raw.slice(i,k); const nl=raw.indexOf('\n',k); if(nl<0){ raw=raw.slice(k); i=-1; break; }
+          try{ handle(JSON.parse(raw.slice(k+1,nl))); }catch{} i=nl+1; }
+        if(i!==-1) raw='';
+        text+=out;
+        if(text.trim()){ if(first){ b.className='bub him'; first=false; } b.textContent=clean(text); log.scrollTop=log.scrollHeight; } }
       text=clean(text); b.className='bub him'; linkify(b,text); turns.push({role:'assistant',content:text});
       if(sources.length){ const s=document.createElement('div'); s.className='srcs'; s.append('참고'); for(const it of sources){ const a=document.createElement('a'); a.href=it.u; a.textContent=it.t; a.target='_blank'; a.rel='noopener'; s.appendChild(a); } log.appendChild(s); log.scrollTop=log.scrollHeight; }
       if(flag==='abuse'){ strikes++; if(strikes>=3){ b.textContent='이 대화는 여기까지 하겠습니다.'; lock('대화가 종료되었습니다.'); return; } }
