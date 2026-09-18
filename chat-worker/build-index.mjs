@@ -49,6 +49,9 @@ for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
     });
   }
 }
+// 활동(참여 과제·교육 프로그램·교과 프로젝트): activities.json — 노션 활동 정리와 공개 자료에서 옮긴 사실만 기록
+const ACTIVITIES = JSON.parse(readFileSync(new URL("./activities.json", import.meta.url), "utf8"));
+for (const a of ACTIVITIES) registry.push({ id: a.id, kind: "act", name: a.name, ko: "", when: a.when, url: a.url, summary: a.summary, repos: [] });
 const known = new Set(registry.map(r => r.id));
 for (const ids of Object.values(REPO_PROJECT)) for (const id of ids) if (!known.has(id)) throw new Error("REPO_PROJECT에 모르는 프로젝트 id: " + id);
 const nameOf = Object.fromEntries(registry.map(r => [r.id, r.name]));
@@ -77,6 +80,10 @@ for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
       add(t, { src: "site", project: pid, url, step: n.t });
     }
   }
+}
+for (const a of ACTIVITIES) {
+  add(`[활동: ${a.name}] 기간 ${a.when}. 기관 ${a.org}. 역할 ${a.role}. 개요: ${a.summary} (출처: ${a.source})`, { src: "site", project: a.id, url: a.url });
+  for (const [title, body] of a.sections) add(`[활동: ${a.name}] ${title}. ${body}`, { src: "site", project: a.id, url: a.url, step: title });
 }
 const siteCount = chunks.length;
 

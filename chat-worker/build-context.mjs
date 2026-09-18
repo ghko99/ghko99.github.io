@@ -16,6 +16,7 @@ const lines = [
   "참여 과제: YM-나을텍 딥러닝 기반 모호성 분석 및 비식별화 모듈 개발(2026.03–09, 참여 연구원, 법률·판결문 LLM 파인튜닝과 데이터 전처리, 민감 속성 정의, 비식별화 모듈) / 과학기술사업화진흥원 실험실 특화형 창업선도대학 단독형 2기(2025.07–12, 참여 연구원, 창업팀 Upflow AI 기술 총괄) / 정보통신기획평가원 산업융합형 멀티모달 생성 인공지능 인재양성(2025.07–10, 참여 연구원) / 한국연구재단 U-KTA(2025.03–2026.02, 참여 연구원) / 한국지능정보사회진흥원 한국어 초거대 언어모델 데이터 구축(2023.07–12, 참여 연구원).",
   "활동: AIF 연구실 학부연구생(2022.12–2024.02) 후 석사. 실험실 창업팀 Upflow AI 기술 총괄(2025.04–, 공동창업자는 아님, 창업 과제 참여). 인하대 SW 인재양성·벤처스타트업 아카데미 1기(2023.04–2024.02). 다학년 연구 프로젝트(2022).",
   "기술: Python, PyTorch, Hugging Face Transformers, PEFT, FastAPI / LLM 파인튜닝, LoRA·QLoRA, RAG, LangChain, FAISS, vLLM, Ollama, AES, 한국어 NLP / Pandas, NumPy, Dask, scikit-learn, Docker, Git, Linux, Anaconda / OpenAI API, Claude API, W&B, TensorBoard, Triton Inference Server.",
+  "활동 상세(검색 가능): " + JSON.parse(readFileSync(new URL("./activities.json", import.meta.url), "utf8")).map(a => `${a.name} (${a.when}, ${a.role})`).join(" / ") + ".",
   "포트폴리오 사이트: https://ghko99.github.io (타임라인의 카드를 누르면 각 논문·프로젝트의 문제 해결 과정이 열림). 각 논문·프로젝트의 단계별 고민과 해결, 표, 수치는 검색된 자료로 따로 제공된다.",
   "",
   "## 시간순 요약",
