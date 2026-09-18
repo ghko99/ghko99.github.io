@@ -234,6 +234,13 @@
   .dm-form input:disabled{background:var(--bg2);color:var(--fg3)}
   .bub.him + .bub.him{border-top-left-radius:6px;margin-top:-2px}
   .bub.typing{color:var(--fg3);letter-spacing:2px}
+  .bub.status{color:var(--fg3);font-size:13.5px;letter-spacing:0;display:flex;align-items:center;gap:8px}
+  .spin{width:13px;height:13px;border:2px solid var(--line2);border-top-color:var(--fg2);border-radius:50%;animation:spin .8s linear infinite;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+  .srcs{align-self:flex-start;max-width:82%;display:flex;flex-wrap:wrap;gap:4px 6px;margin:-4px 0 2px 4px;font-size:11.5px;color:var(--fg3)}
+  .srcs a{color:var(--fg3);text-decoration:none;border:1px solid var(--line2);border-radius:999px;padding:1px 8px;background:var(--bg)}
+  .srcs a:hover{color:var(--fg);border-color:var(--fg3)}
   .dm-time{align-self:center;font-size:11.5px;color:var(--fg3);margin:6px 0}
   .dm-sugg{display:flex;gap:6px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none;background:var(--bg2)}
   .dm-sugg button{flex:none;font-size:12.5px;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg2)}
@@ -698,9 +705,17 @@ const CHAT_ENDPOINT = "https://goganghee-chat.goganghee.workers.dev";
       if(res.status===502||res.status===503){ await new Promise(r=>setTimeout(r,1500)); res=await request(); }   // 서버 깨우기 재시도
       if(!res.ok){ b.className='bub him'; b.textContent= res.status===429 ? '지금 질문이 많이 몰려 있습니다. 잠시 후에 다시 물어봐 주십시오.' : '지금은 답변이 어렵습니다. 잠시 후 다시 물어봐 주십시오.'; turns.pop(); return; }
       const flag=res.headers.get('X-Flag');
-      const reader=res.body.getReader(), dec=new TextDecoder(); let text='', first=true;
-      while(true){ const {value,done}=await reader.read(); if(done) break; text+=dec.decode(value,{stream:true}); if(first){ b.className='bub him'; first=false; } b.textContent=clean(text); log.scrollTop=log.scrollHeight; }
-      text=clean(text); linkify(b,text); turns.push({role:'assistant',content:text});
+      // 본문 앞에 제어 줄(\x1e{json}\n)이 올 수 있다: 자료 검색 중 / 참고 자료 목록. 그 뒤부터가 답변 본문.
+      const status=(msg)=>{ b.className='bub him status'; b.textContent=''; const s=document.createElement('span'); s.className='spin'; b.append(s, msg); };
+      const reader=res.body.getReader(), dec=new TextDecoder(); let raw='', text='', first=true, head=true, sources=[];
+      while(true){ const {value,done}=await reader.read(); if(done) break; raw+=dec.decode(value,{stream:true});
+        if(head){ while(raw.startsWith('\x1e')){ const nl=raw.indexOf('\n'); if(nl<0) break; let ev={}; try{ ev=JSON.parse(raw.slice(1,nl)); }catch{} raw=raw.slice(nl+1);
+            if(ev.s==='search') status('논문·프로젝트 자료와 코드 저장소를 찾는 중');
+            else if(ev.s==='sources'){ sources=ev.items||[]; status(sources.length?`자료 ${sources.length}개 확인, 답변을 쓰는 중`:'답변을 쓰는 중'); } }
+          if(raw.startsWith('\x1e')||!raw) continue; head=false; }
+        text=raw; if(first){ b.className='bub him'; first=false; } b.textContent=clean(text); log.scrollTop=log.scrollHeight; }
+      text=clean(text); b.className='bub him'; linkify(b,text); turns.push({role:'assistant',content:text});
+      if(sources.length){ const s=document.createElement('div'); s.className='srcs'; s.append('참고'); for(const it of sources){ const a=document.createElement('a'); a.href=it.u; a.textContent=it.t; a.target='_blank'; a.rel='noopener'; s.appendChild(a); } log.appendChild(s); log.scrollTop=log.scrollHeight; }
       if(flag==='abuse'){ strikes++; if(strikes>=3){ b.textContent='이 대화는 여기까지 하겠습니다.'; lock('대화가 종료되었습니다.'); return; } }
       if(sent>=SESSION_MAX){ him('여기까지 답하겠습니다. 더 궁금하신 점은 khko99@inha.edu 로 보내 주시면 직접 답하겠습니다.'); lock('이메일로 문의해 주십시오.'); }
     }catch(e){ b.className='bub him'; b.textContent='연결이 잠시 끊겼습니다. 다시 한번 보내 주십시오.'; turns.pop(); }

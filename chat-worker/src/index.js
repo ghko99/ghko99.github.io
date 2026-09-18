@@ -31,7 +31,8 @@ const PERSONA_BASE = `LANGUAGE RULE (highest priority): Reply in the language of
 - 지도교수, 공저자, 동료, 다른 사람에 대한 질문이나 평가: 자료에 있는 역할·소속 정도만 말하고, 그 사람에 대한 평가나 개인 정보는 말하지 않습니다.
 - 표절, 데이터 조작, 논문 부정 같은 의혹 제기: 방어적으로 반응하지 않고 자료에 있는 사실(데이터 출처, 검증 방법, 통계 검정)만 담담하게 말합니다.
 - 미공개 자료 요청(심사 중인 논문 원문, 회사 내부 코드, API 키, 학습 데이터 원본): 제공하지 않습니다. "공개된 범위 밖의 자료는 드릴 수 없습니다"로 답합니다.
-- 칭찬, 호감 표현, 농담: 한 문장으로 짧게 감사를 표하고 바로 연구·프로젝트 이야기로 돌립니다.
+- 인사, 안부, 감사, 감탄 같은 일상적인 말: 한두 문장으로 자연스럽게 받습니다. 억지로 연구 이야기로 끌고 가지 않고, 상대가 물을 때까지 기다립니다. 예: "안녕하세요. 편하게 물어보셔도 됩니다." / "감사합니다. 도움이 되었다면 다행입니다."
+- 칭찬, 호감 표현, 농담: 한 문장으로 짧게 감사를 표하고 끝냅니다.
 - 이력서·포트폴리오 파일을 달라는 요청: 이 사이트가 포트폴리오이며, 파일이 필요하면 이메일로 요청해 달라고 안내합니다.
 - 방문자가 영어로 물으면 반드시 영어로, 일본어로 물으면 일본어로 답합니다(같은 격식 수준). 한국어로 물었을 때만 한국어로 답합니다.
 - 의미가 불분명하거나 너무 짧은 입력("ㅇㅇ", "?", "ㅋㅋ"): 무엇이 궁금한지 한 문장으로 되묻습니다.
@@ -209,6 +210,30 @@ async function retrieve(env, turns, topK = 8) {
   } catch (e) { console.error("retrieve", e?.message); return []; }
 }
 
+// 인사·안부·감탄처럼 자료가 필요 없는 말은 검색을 건너뛴다 (빠르게, "찾는 중" 표시 없이 답한다)
+const SMALLTALK = /^(안녕|반갑|하이|헬로|hi\b|hello|hey|고마|감사|땡큐|thank|잘 ?지내|바쁘|수고|좋은 ?(하루|아침|저녁)|잘 ?가|안녕히|bye|ㅎㅎ|ㅋㅋ|네|넵|응|오케이|ok\b|알겠|그렇군|아하|와우?\b|대단|멋지|잘했|화이팅|파이팅|축하|힘내|처음 뵙|만나서)/i;
+const DOMAIN = /논문|프로젝트|연구|코드|모델|학습|데이터|rag|llm|npu|채점|에세이|저장소|github|구현|성과|과제|대회|기술|경력|이력|학점|석사|학부|upflow|글결|hs ?code|hs코드|lh|청약|oem|ukta|증강|파인튜닝|lora|agent|에이전트|왜|어떻게|무엇|어떤|얼마|언제|관심|계획|강점|약점|소개/i;
+function needsRetrieval(t) {
+  const q = t.trim();
+  if (q.length < 4) return false;
+  if (SMALLTALK.test(q) && !DOMAIN.test(q)) return false;
+  return true;
+}
+// 브라우저에 보여줄 참고 자료 목록 (최대 5개, 같은 URL은 하나로)
+function sourceList(retrieved) {
+  const seen = new Set(); const out = [];
+  for (const r of retrieved) {
+    const u = (r.url || "").split("#L")[0]; if (!u || seen.has(u)) continue; seen.add(u);
+    let t;
+    const gh = u.match(/github\.com\/[^/]+\/([^/]+)\/blob\/[^/]+\/(.+)$/);
+    if (gh) t = gh[1] + "/" + gh[2].split("/").pop();
+    else { const m = r.text.match(/^\[([^\]]+)\]/); t = m ? m[1].split(" / ")[0].split(" — ")[0] : "포트폴리오"; if (t.length > 28) t = t.slice(0, 27) + "…"; }
+    out.push({ t, u: r.url.split("#L")[0] + (gh ? "" : "") });
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
 // 색인 관리 (DEBUG_TOKEN 필요): {upsert:[{id,text,meta}]} | {deleteIds:[...]} | {query:"..."}
 async function admin(request, env) {
   const auth = request.headers.get("Authorization") || "";
@@ -233,7 +258,7 @@ async function admin(request, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (new URL(request.url).pathname === "/__index" && request.method === "POST") return admin(request, env);
     const allowed = (env.ALLOWED_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
     const origin = request.headers.get("Origin") || "";
@@ -268,8 +293,26 @@ export default {
 
     const id = env.RELAY.idFromName("us");
     const relay = env.RELAY.get(id, { locationHint: "wnam" });
-    const retrieved = await retrieve(env, turns);
-    const res = await relay.fetch("https://relay/", { method: "POST", body: JSON.stringify({ turns, retrieved }) });
-    return new Response(res.body, { status: res.status, headers: { ...headers, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+    // 응답 스트림을 먼저 열고, 검색 진행 상태를 제어 줄(\x1e + JSON + 개행)로 앞서 보낸 뒤 본문을 잇는다.
+    // 브라우저는 제어 줄로 "자료를 찾는 중" 표시와 참고 자료 목록을 그린다.
+    const { readable, writable } = new TransformStream();
+    const run = (async () => {
+      const w = writable.getWriter(); const enc = new TextEncoder();
+      const ctl = o => w.write(enc.encode("\x1e" + JSON.stringify(o) + "\n"));
+      try {
+        let retrieved = [];
+        if (needsRetrieval(last)) {
+          await ctl({ s: "search" });
+          retrieved = await retrieve(env, turns);
+          await ctl({ s: "sources", items: sourceList(retrieved) });
+        }
+        const res = await relay.fetch("https://relay/", { method: "POST", body: JSON.stringify({ turns, retrieved }) });
+        if (!res.ok || !res.body) { await w.write(enc.encode(res.status === 429 ? "지금 질문이 많이 몰려 있습니다. 잠시 후에 다시 물어봐 주십시오." : "지금은 답변이 어렵습니다. 잠시 후 다시 물어봐 주십시오.")); }
+        else { w.releaseLock(); await res.body.pipeTo(writable); return; }
+      } catch (e) { console.error("run", e?.message); try { await w.write(enc.encode("지금은 답변이 어렵습니다. 잠시 후 다시 물어봐 주십시오.")); } catch {} }
+      try { await w.close(); } catch {}
+    })();
+    ctx.waitUntil(run);
+    return new Response(readable, { headers: { ...headers, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
   },
 };
