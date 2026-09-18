@@ -1,0 +1,15 @@
+github_users:
+  - ghko99
+
+repo_description_lines_max: 2
+
+github_repos:
+  - ghko99/essay-agent
+  - ghko99/aichipcon_AIF_sLLM
+  - ghko99/aes-llm-training
+  - ghko99/essay_scoring_llm
+  - ghko99/lora-self-consistency-aes
+  - ghko99/aes-ukta-exp
+  - ghko99/Korean-Text-Data-Augmentation
+  - ghko99/Hscode
+  - ghko99/cosmetics-oem-erp-prototype

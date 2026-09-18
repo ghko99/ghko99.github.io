@@ -1,0 +1,15 @@
+"ACM SAC":
+  url: https://www.sigapp.org/sac/
+  color: "#1d4ed8"
+"TKIPS":
+  url: https://kips.or.kr/
+  color: "#0f766e"
+"NLP (CUP)":
+  url: https://www.cambridge.org/core/journals/natural-language-processing
+  color: "#7c3aed"
+"HCLT":
+  color: "#b45309"
+"KCC":
+  color: "#b45309"
+"M.S. Thesis":
+  color: "#475569"

@@ -31,8 +31,8 @@ const REPO_PROJECT = {
 };
 
 // ---------- 1. 사이트 데이터 → 레지스트리 ----------
-const page = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-const js = page.match(/<script>([\s\S]*)<\/script>/)[1].replace(/^const IMG = .*$/m, "const IMG={};").split("/* ---------- detail")[0];
+const page = readFileSync(new URL("./legacy/index.html", import.meta.url), "utf8");
+const js = page.match(/<script>([\s\S]*)<\/script>/)[1].replace(/^const IMG = .*$/m, "const IMG={};").split("/* ---------- timeline (chronological")[0] + (page.match(/const EVENTS = \[[\s\S]*?\n\];/) || [""])[0];
 const stub = "const document={getElementById:()=>({innerHTML:\"\",querySelectorAll:()=>[]}),querySelectorAll:()=>[],addEventListener(){}};const IntersectionObserver=class{observe(){}unobserve(){}};const setTimeout=()=>{};const window={addEventListener(){}};const location={hash:\"\"};const history={};";
 const { PUBS, PROJECTS } = new Function(stub + js + ";return {PUBS,PROJECTS};")();
 const strip = s => String(s || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();

@@ -1,9 +1,9 @@
 // data6.js(포트폴리오 데이터)와 페이지의 EVENTS를 읽어 챗봇 자료 문자열을 만든다.
 import { readFileSync, writeFileSync } from "node:fs";
-const page = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const page = readFileSync(new URL("./legacy/index.html", import.meta.url), "utf8");
 const js = page.match(/<script>([\s\S]*)<\/script>/)[1]
   .replace(/^const IMG = .*$/m, "const IMG={};")
-  .split("/* ---------- detail")[0];
+  .split("/* ---------- timeline (chronological")[0] + (page.match(/const EVENTS = \[[\s\S]*?\n\];/) || [""])[0];
 const stub = "const document={getElementById:()=>({innerHTML:\"\",querySelectorAll:()=>[]}),querySelectorAll:()=>[],addEventListener(){}};const IntersectionObserver=class{observe(){}unobserve(){}};const setTimeout=()=>{};const window={addEventListener(){}};const location={hash:\"\"};const history={};";
 const { PUBS, PROJECTS, EVENTS } = new Function(stub + js + ";return {PUBS,PROJECTS,EVENTS};")();
 const strip = s => String(s || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();

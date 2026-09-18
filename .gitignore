@@ -1,16 +1,37 @@
-# 사이트 파일과 채팅 워커 소스만 올립니다
-*
-!index.html
-!og.png
-!.gitignore
-!README.md
-!papers/
+_site
+.bundle
+.DS_store
+.idea
+.jekyll-cache
+.jekyll-metadata
+.ruby-version
+.sass-cache
+.tweet-cache
+.venv
+assets/libs/
+assets/rendercv/rendercv_output/*.typ
+al-folio-upgrade-report.md
+node_modules/
+output/playwright/
+test-results/
+vendor
+
+# Python bytecode from bin/ helper scripts
+__pycache__/
+*.pyc
+
+# 개인 자료 (사이트에 올리지 않음)
+실적들/
+화장품 OEM/
+AI 반도체 기술인재 선발대회/
+*.pdf
+!assets/pdf/*.pdf
 !papers/*.pdf
-!papers/*.json
-!chat-worker/
-!chat-worker/**
+KakaoTalk_*.jpg
+image.png
 chat-worker/node_modules/
 chat-worker/.wrangler/
 chat-worker/dist/
 chat-worker/.dev.vars
+chat-worker/.index-token
 chat-worker/package-lock.json
