@@ -274,7 +274,7 @@
       <dt>강점</dt><dd>연구에서 검증한 아이디어를 동작하는 시스템으로 옮기는 것</dd>
     </dl>
     <div class="links">
-      <a class="ul" href="mailto:khko99@inha.edu">khko99@inha.edu</a>
+      <a class="ul" href="mailto:khko99@naver.com">khko99@naver.com</a>
       <a class="ul" href="https://github.com/ghko99" target="_blank" rel="noopener">GitHub</a>
       <a class="ul" href="https://velog.io/@khko99/posts" target="_blank" rel="noopener">Blog</a>
       <a class="ul" href="https://orcid.org/0009-0006-1027-105X" target="_blank" rel="noopener">ORCID</a>
@@ -337,7 +337,7 @@
 
 </main>
 
-<footer><div class="wrap"><span>고강희 · Ganghee Go</span><span>khko99@inha.edu · github.com/ghko99 · 2026.09</span></div></footer>
+<footer><div class="wrap"><span>고강희 · Ganghee Go</span><span>khko99@naver.com · github.com/ghko99 · 2026.09</span></div></footer>
 
 <div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="상세">
   <div class="bar"><div class="wrap"><div class="k" id="ov-k"></div><button type="button" id="ov-close">닫기</button></div></div>
@@ -721,7 +721,7 @@ const CHAT_ENDPOINT = "https://goganghee-chat.goganghee.workers.dev";
       text=clean(text); b.className='bub him'; linkify(b,text); turns.push({role:'assistant',content:text});
       if(sources.length){ const s=document.createElement('div'); s.className='srcs'; s.append('참고'); for(const it of sources){ const a=document.createElement('a'); a.href=it.u; a.textContent=it.t; a.target='_blank'; a.rel='noopener'; s.appendChild(a); } log.appendChild(s); log.scrollTop=log.scrollHeight; }
       if(flag==='abuse'){ strikes++; if(strikes>=3){ b.textContent='이 대화는 여기까지 하겠습니다.'; lock('대화가 종료되었습니다.'); return; } }
-      if(sent>=SESSION_MAX){ him('여기까지 답하겠습니다. 더 궁금하신 점은 khko99@inha.edu 로 보내 주시면 직접 답하겠습니다.'); lock('이메일로 문의해 주십시오.'); }
+      if(sent>=SESSION_MAX){ him('여기까지 답하겠습니다. 더 궁금하신 점은 khko99@naver.com 로 보내 주시면 직접 답하겠습니다.'); lock('이메일로 문의해 주십시오.'); }
     }catch(e){ b.className='bub him'; b.textContent='연결이 잠시 끊겼습니다. 다시 한번 보내 주십시오.'; turns.pop(); }
     finally{ busy=false; if(!locked){ send.disabled=false; input.focus(); } }
   }
