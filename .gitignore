@@ -1,5 +1,12 @@
-# 사이트 파일만 올립니다
+# 사이트 파일과 채팅 워커 소스만 올립니다
 *
 !index.html
 !.gitignore
 !README.md
+!chat-worker/
+!chat-worker/**
+chat-worker/node_modules/
+chat-worker/.wrangler/
+chat-worker/dist/
+chat-worker/.dev.vars
+chat-worker/package-lock.json

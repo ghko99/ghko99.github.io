@@ -1,0 +1,14 @@
+{
+  "name": "goganghee-chat",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:context": "node build-context.mjs",
+    "dev": "wrangler dev",
+    "deploy": "npm run build:context && wrangler deploy"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
