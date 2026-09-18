@@ -1,8 +1,7 @@
 # 논문 PDF → papers/<id>.pdf (사이트 배포용) + papers/<id>.json (페이지 텍스트, 색인·챗봇 read_paper용)
 # 사용: python3 chat-worker/extract-pdfs.py   (저장소 루트에서)
 import fitz, json, re, os
-PAPERS = {  # 프로젝트 id: (원본, 사용할 페이지 범위 1-based inclusive 또는 None=전체)
-    "pub-kaes":  ("실적들/enhancing kaes/NLP-2025-0110.R1_Proof_hi.pdf", (2, 34)),   # 35쪽부터는 같은 본문 반복
+PAPERS = {  # 심사 중인 논문(pub-kaes)은 게시하지 않는다. 프로젝트 id: (원본, 사용할 페이지 범위 1-based inclusive 또는 None=전체)
     "pub-ukta":  ("실적들/ukta/3672608.3707957.pdf", None),
     "pub-feak":  ("실적들/feak/3748522.3780021.pdf", None),
     "pub-hclt":  ("실적들/hclt/에세이 자동 평가 모델 성능 향상을 위한 데이터 증강과 전처리.pdf", None),

@@ -45,8 +45,7 @@ export const REGISTRY = [
      "t5_augmentation.py"
     ]
    }
-  ],
-  "pdf": "https://ghko99.github.io/papers/pub-kaes.pdf"
+  ]
  },
  {
   "id": "pub-tkips",
@@ -178,7 +177,7 @@ export const REGISTRY = [
   "ko": "",
   "when": "2023.06",
   "url": "https://ghko99.github.io/#pub-kcc",
-  "summary": "사람은 글 전체의 주제와 내부 요소의 관계를 보고 점수를 주지만, 당시의 국내 AES 모델은 어휘와 문법만 보았습니다.",
+  "summary": "글의 Topic과 Type 정보를 데이터에 삽입하는 증강으로 KoBERT 채점기의 일치도를 한 단계 끌어올린 첫 연구입니다.",
   "repos": [
    {
     "name": "aes_data_augment",
