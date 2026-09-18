@@ -704,7 +704,7 @@ function openCase(kind,id){
     ${it.links?.length?`<div class="c-links">${it.links.map(([n,u])=>`<a class="ul" href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a>`).join('')}</div>`:''}
     ${it.tags?.length?`<div class="c-stack">${it.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:''}
     <div class="intro">${figs(it.intro.imgs)}<div class="ov-text"><h3>개요</h3>${it.intro.html}</div></div>`;
-  const pipe=`<div class="pipe-wrap"><div class="lab"><b>문제 해결 과정</b> — 단계를 누르면 아래에 그 단계의 고민과 해결이 열립니다. ← → 키로도 이동합니다.</div><div class="pipe">${it.nodes.map((n,i)=>`${i?'<div class="arr"><i></i></div>':''}<button type="button" class="n" data-node="${i}"><small>${i+1}</small><b>${esc(n.t)}</b>${n.s?`<i>${esc(n.s)}</i>`:''}</button>`).join('')}</div></div>`;
+  const pipe=`<div class="pipe-wrap"><div class="lab"><b>문제 해결 과정</b></div><div class="pipe">${it.nodes.map((n,i)=>`${i?'<div class="arr"><i></i></div>':''}<button type="button" class="n" data-node="${i}"><small>${i+1}</small><b>${esc(n.t)}</b>${n.s?`<i>${esc(n.s)}</i>`:''}</button>`).join('')}</div></div>`;
   const idx=ORDER.findIndex(([k,p])=>k===kind&&p.id===id); const prev=ORDER[idx-1], next=ORDER[idx+1];
   const nav=`<div class="c-next">${prev?`<button type="button" data-open="${prev[0]}:${prev[1].id}"><small>이전 · 시간순</small>${esc(prev[1].t)}</button>`:'<span></span>'}${next?`<button type="button" data-open="${next[0]}:${next[1].id}" style="text-align:right"><small>다음 · 시간순</small>${esc(next[1].t)}</button>`:''}</div>`;
   ovBody.innerHTML=head+pipe+`<div class="np" id="np"></div>`+nav;
