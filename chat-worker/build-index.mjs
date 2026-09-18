@@ -117,6 +117,20 @@ for (const [repo, pids] of Object.entries(REPO_PROJECT)) {
 }
 const branchOf = Object.fromEntries(files.map(f => [f.repo, f.branch]));
 
+// ---------- 3b. 논문 PDF 페이지 (extract-pdfs.py가 만든 ../papers/<pid>.json) ----------
+const papers = [];
+for (const r of registry) {
+  const jp = new URL(`../papers/${r.id}.json`, import.meta.url);
+  if (!existsSync(jp)) continue;
+  const { pages } = JSON.parse(readFileSync(jp, "utf8"));
+  for (const pg of pages) {
+    const key = createHash("sha1").update("paper\0" + r.id + "\0" + pg.n + "\0" + pg.text).digest("hex").slice(0, 20);
+    const f = { repo: "paper", branch: "", path: `${r.id}.pdf p.${pg.n}`, text: pg.text, projects: [r.id], key, paper: r, page: pg.n };
+    files.push(f); papers.push(f);
+  }
+}
+console.log(`논문 페이지 ${papers.length}개`);
+
 // ---------- 4. 파일 요약 (LLM, 캐시) ----------
 mkdirSync("dist", { recursive: true });
 const cachePath = "dist/summaries.json";
@@ -132,7 +146,7 @@ async function call(body) {
 let batch = [], size = 0, done = 0;
 async function flush() {
   if (!batch.length) return;
-  const items = batch.map(f => ({ key: f.key, repo: f.repo, path: f.path, project: f.projects.map(p => nameOf[p]).join(" / "), content: f.text.slice(0, 7000) }));
+  const items = batch.map(f => ({ key: f.key, repo: f.repo, path: f.path, project: f.projects.map(p => nameOf[p]).join(" / ") + (f.paper ? " (논문 본문 페이지)" : ""), content: f.text.slice(0, 7000) }));
   for (let attempt = 1; ; attempt++) {
     try {
       const res = await call({ summarize: items });
@@ -161,6 +175,15 @@ function byLines(text, win, step) {
   }
   return out;
 }
+function byChars(text, size, overlap) { // 문단 경계를 우선해 자른다
+  const out = []; let i = 0;
+  while (i < text.length) {
+    let e = Math.min(text.length, i + size);
+    if (e < text.length) { const cut = text.lastIndexOf("\n", e); if (cut > i + size * 0.5) e = cut; }
+    out.push(text.slice(i, e).trim()); if (e >= text.length) break; i = Math.max(e - overlap, i + 1);
+  }
+  return out.filter(Boolean);
+}
 function byHeadings(text) {
   const parts = text.split(/\n(?=#{1,4} )/); const out = []; let l = 1;
   for (const part of parts) {
@@ -171,9 +194,18 @@ function byHeadings(text) {
   }
   return out;
 }
-let repoCount = 0;
+let repoCount = 0, paperCount = 0;
 for (const f of files) {
   const sum = cache[f.key]?.summary || "";
+  if (f.paper) { // 논문 페이지: 약 1,800자 창으로 나누고 페이지 요약을 앞에 붙인다
+    const url = `https://ghko99.github.io/papers/${f.paper.id}.pdf#page=${f.page}`;
+    for (const c of byChars(f.text, 1800, 200)) {
+      const text = `[논문: ${f.paper.name}] ${f.page}쪽\n페이지 요약: ${sum}\n---\n${c}`;
+      add(text, { src: "paper", project: f.paper.id, page: f.page, url, summary: sum.slice(0, 300) });
+      paperCount++;
+    }
+    continue;
+  }
   const pname = f.projects.map(p => nameOf[p]).join(" / ");
   const isMd = extname(f.path).toLowerCase() === ".md" || /^readme/i.test(basename(f.path));
   const pieces = isMd ? byHeadings(f.text) : byLines(f.text, CODE_WIN, CODE_STEP);
@@ -188,6 +220,6 @@ for (const f of files) {
 // ---------- 6. 출력 ----------
 const seen = new Set(); const uniq = chunks.filter(c => !seen.has(c.id) && seen.add(c.id));
 writeFileSync(OUT, uniq.map(c => JSON.stringify(c)).join("\n") + "\n");
-const reg = registry.map(r => ({ ...r, repos: r.repos.map(name => ({ name, branch: branchOf[name] || "main" })) }));
+const reg = registry.map(r => ({ ...r, repos: r.repos.map(name => ({ name, branch: branchOf[name] || "main" })), pdf: papers.some(f => f.paper.id === r.id) ? `https://ghko99.github.io/papers/${r.id}.pdf` : undefined }));
 writeFileSync(new URL("./src/registry.js", import.meta.url), "// build-index.mjs가 생성. 프로젝트 목록과 연결 저장소.\nexport const REGISTRY = " + JSON.stringify(reg, null, 1) + ";\n");
-console.log(`site ${siteCount} + repo ${repoCount} = ${uniq.length} chunks → ${OUT}; registry ${reg.length} projects`);
+console.log(`site ${siteCount} + repo ${repoCount} + paper ${paperCount} = ${uniq.length} chunks → ${OUT}; registry ${reg.length} projects`);

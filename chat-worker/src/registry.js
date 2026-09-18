@@ -13,7 +13,8 @@ export const REGISTRY = [
     "name": "Korean-Text-Data-Augmentation",
     "branch": "master"
    }
-  ]
+  ],
+  "pdf": "https://ghko99.github.io/papers/pub-kaes.pdf"
  },
  {
   "id": "pub-tkips",
@@ -28,7 +29,8 @@ export const REGISTRY = [
     "name": "lora-self-consistency-aes",
     "branch": "main"
    }
-  ]
+  ],
+  "pdf": "https://ghko99.github.io/papers/pub-tkips.pdf"
  },
  {
   "id": "pub-feak",
@@ -38,7 +40,8 @@ export const REGISTRY = [
   "when": "2026.03",
   "url": "https://ghko99.github.io/#pub-feak",
   "summary": "기존 자동 평가는 점수는 정확하지만 무엇을 고쳐야 하는지 말해주지 못하고, 범용 LLM은 설명은 유창하지만 환각과 정보 과부하가 따릅니다.",
-  "repos": []
+  "repos": [],
+  "pdf": "https://ghko99.github.io/papers/pub-feak.pdf"
  },
  {
   "id": "pub-ukta",
@@ -53,7 +56,8 @@ export const REGISTRY = [
     "name": "aes-ukta-exp",
     "branch": "main"
    }
-  ]
+  ],
+  "pdf": "https://ghko99.github.io/papers/pub-ukta.pdf"
  },
  {
   "id": "pub-hclt",
@@ -68,7 +72,8 @@ export const REGISTRY = [
     "name": "Korean-Text-Data-Augmentation",
     "branch": "master"
    }
-  ]
+  ],
+  "pdf": "https://ghko99.github.io/papers/pub-hclt.pdf"
  },
  {
   "id": "pub-kcc",
@@ -83,7 +88,8 @@ export const REGISTRY = [
     "name": "aes_data_augment",
     "branch": "master"
    }
-  ]
+  ],
+  "pdf": "https://ghko99.github.io/papers/pub-kcc.pdf"
  },
  {
   "id": "pub-thesis",
