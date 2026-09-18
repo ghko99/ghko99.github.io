@@ -31,8 +31,8 @@ const REPO_PROJECT = {
 };
 
 // ---------- 1. 사이트 데이터 → 레지스트리 ----------
-const page = readFileSync(new URL("./legacy/index.html", import.meta.url), "utf8");
-const js = page.match(/<script>([\s\S]*)<\/script>/)[1].replace(/^const IMG = .*$/m, "const IMG={};").split("/* ---------- timeline (chronological")[0] + (page.match(/const EVENTS = \[[\s\S]*?\n\];/) || [""])[0];
+const page = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const js = page.match(/<script>([\s\S]*)<\/script>/)[1].replace(/^const IMG = .*$/m, "const IMG={};").split("/* ---------- detail")[0];
 const stub = "const document={getElementById:()=>({innerHTML:\"\",querySelectorAll:()=>[]}),querySelectorAll:()=>[],addEventListener(){}};const IntersectionObserver=class{observe(){}unobserve(){}};const setTimeout=()=>{};const window={addEventListener(){}};const location={hash:\"\"};const history={};";
 const { PUBS, PROJECTS } = new Function(stub + js + ";return {PUBS,PROJECTS};")();
 const strip = s => String(s || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -43,7 +43,7 @@ for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
   for (const p of list) {
     const id = `${kind}-${p.id}`;
     registry.push({
-      id, kind, name: p.t, ko: p.ko || "", when: p.y || "", url: `https://ghko99.github.io/projects/${id}/`,
+      id, kind, name: p.t, ko: p.ko || "", when: p.y || "", url: `https://ghko99.github.io/#${id}`,
       summary: firstSentence(p.intro.html),
       repos: Object.entries(REPO_PROJECT).filter(([, ids]) => ids.includes(id)).map(([r]) => r),
     });
@@ -65,7 +65,7 @@ function add(text, meta) {
 }
 for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
   for (const p of list) {
-    const pid = `${kind}-${p.id}`, title = p.t + (p.ko ? " / " + p.ko : ""), url = `https://ghko99.github.io/projects/${pid}/`;
+    const pid = `${kind}-${p.id}`, title = p.t + (p.ko ? " / " + p.ko : ""), url = `https://ghko99.github.io/#${pid}`;
     const head = kind === "pub"
       ? `${p.venue}, ${p.y}, ${p.role || "학위논문"}, 저자 ${p.authors}, 상태 ${p.st}. ${p.meta || ""}`
       : `${p.y}, ${p.who}${p.res ? ", 성과: " + p.res : ""}. 기술: ${(p.tags || []).join(", ")}. ${p.meta || ""}`;
