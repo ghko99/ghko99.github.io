@@ -371,7 +371,7 @@ const PUBS = [
  {id:'kaes', y:'2025 – 2026', st:'심사 중 · R1', venue:'Natural Language Processing (Cambridge University Press)', role:'1저자', cover:'cov_kaes',
   t:'Enhancing Korean Automated Essay Scoring via Linguistically Informed Augmentation and Topic-Aware Preprocessing',
   authors:'Ganghee Go, Do-Guk Kim', tags:['KoBERT','mBART-50 CHEF','KoELECTRA RMI','10-fold CV','Holm 보정'],
-  links:[['저널','https://www.cambridge.org/core/journals/natural-language-processing'],['GitHub','https://github.com/ghko99/Korean-Text-Data-Augmentation']],
+  links:[['논문 PDF','papers/pub-kaes.pdf'],['저널','https://www.cambridge.org/core/journals/natural-language-processing'],['GitHub','https://github.com/ghko99/Korean-Text-Data-Augmentation']],
   meta:'Manuscript NLP-2025-0110.R1 · AI-HUB 에세이 44,658편 · 50개 주제 · 11개 평가 항목',
   intro:{html:`<p>한국어 자동 에세이 채점은 라벨 데이터가 적고 형태론이 복잡하다는 두 가지 벽에 부딪힙니다. 이 연구는 한국어의 특성을 반영한 두 가지 증강 기법(CHEF, RMI)과 주제 인식 전처리를 KoBERT-GRU 채점기에 적용하고, 그 향상이 우연이 아님을 통계적으로 검증한 뒤, 사람 채점자끼리의 일치도와 같은 기준으로 모델의 위치를 가늠했습니다.</p>`, imgs:[{k:'k0_framework',c:'제안 프레임워크 — CHEF·RMI 증강, topic-aware 전처리, frozen KoBERT + GRU 채점기'}]},
   nodes:[
@@ -386,7 +386,7 @@ const PUBS = [
  {id:'tkips', y:'2026.05', st:'게재', venue:'정보처리학회논문지 (TKIPS) 15(5), 437–441', role:'1저자', cover:'cov_tkips',
   t:'다중 목적 학습과 Self-Consistency를 활용한 생성형 LLM의 자동 에세이 채점 성능 최적화', ko:'Optimizing Automated Essay Scoring Performance of Generative LLMs Using Multi-objective Learning and Self-Consistency',
   authors:'고강희, 김도국', tags:['Llama 3.1-8B','LoRA','Number Token Loss','Semantic Alignment Loss','Self-Consistency'],
-  links:[['DOI','https://doi.org/10.3745/TKIPS.2026.15.5.437'],['KCI','https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART003339100'],['GitHub','https://github.com/ghko99/lora-self-consistency-aes']],
+  links:[['논문 PDF','papers/pub-tkips.pdf'],['DOI','https://doi.org/10.3745/TKIPS.2026.15.5.437'],['KCI','https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART003339100'],['GitHub','https://github.com/ghko99/lora-self-consistency-aes']],
   meta:'AI Hub 서술형 글쓰기 평가 데이터셋 40,006편 · 8개 루브릭 · 회귀 헤드 없이 단일 LLM',
   intro:{html:`<p>기존 채점 모델은 점수는 잘 맞히지만 피드백을 만들지 못하고, 생성형 LLM은 점수를 <b>텍스트 토큰</b>으로 다루기 때문에 점수 사이의 순서와 거리를 배우지 못하며 실행할 때마다 결과가 달라집니다. 이 연구는 하나의 LLM이 루브릭별 점수와 피드백을 함께 생성하도록 하되, 학습에는 세 가지 손실을, 추론에는 Self-Consistency를 결합해 두 문제를 동시에 다뤘습니다.</p>`, imgs:[{k:'t0_framework',c:'왼쪽은 CE·NTL·SAL 다중 목적 학습, 오른쪽은 여러 번 생성한 점수를 평균하는 Self-Consistency 추론'}]},
   nodes:[
@@ -399,7 +399,7 @@ const PUBS = [
  {id:'feak', y:'2026.03', st:'게재', venue:"ACM SAC '26 · Thessaloniki, Greece", role:'2저자', cover:'cov_feak',
   t:'From Evaluation to Feedback: A Feature-Based and LLM-Constrained Tool for Korean Writing Assessment',
   authors:'Chanwoo Jang, Ganghee Go, Jinyong Yun, Seokho Ahn, Myungsun Shin, Ho-Hyun Kil, Sungmin Chang, Do-Guk Kim, Young-Duk Seo', tags:['KoBERT','BiGRU','Contextual Attention','Elite Gap z-score','GPT-4o-mini','Constrained Prompting'],
-  links:[['DOI','https://dl.acm.org/doi/10.1145/3748522.3780021'],['SAC 2026','https://www.sigapp.org/sac/sac2026/'],['GitHub','https://github.com/yunjinyong730/Advanced_UKTA']],
+  links:[['논문 PDF','papers/pub-feak.pdf'],['DOI','https://dl.acm.org/doi/10.1145/3748522.3780021'],['SAC 2026','https://www.sigapp.org/sac/sac2026/'],['GitHub','https://github.com/yunjinyong730/Advanced_UKTA']],
   meta:'The 41st ACM/SIGAPP Symposium on Applied Computing · 진단은 모델이, 설명은 LLM이',
   intro:{html:`<p>기존 자동 평가는 점수는 정확하지만 무엇을 고쳐야 하는지 말해주지 못하고, 범용 LLM은 설명은 유창하지만 환각과 정보 과부하가 따릅니다. FEAK는 정량 진단을 전용 모델에 맡기고, LLM은 그 진단을 학생이 이해할 수 있는 말로 <b>옮기는 역할만</b> 하도록 제약합니다.</p>`, imgs:[{k:'f0_example',c:'(A) 입력 에세이 (B) 8개 루브릭 점수 (C) 근거와 수정 예시가 있는 피드백'}]},
   nodes:[
@@ -411,7 +411,7 @@ const PUBS = [
  {id:'ukta', y:'2025.03', st:'게재', venue:"ACM SAC '25 · Catania, Italy", role:'공동 1저자', cover:'cov_ukta',
   t:'UKTA: Unified Korean Text Analyzer',
   authors:'Seokho Ahn*, Junhyung Park*, Ganghee Go*, Chulhui Kim, Jiho Jung, Myung Sun Shin, Do-Guk Kim, Young-Duk Seo', tags:['Bareun','294 lexical features','KoBERT','BiGRU','Attention','XAI'],
-  links:[['DOI','https://dl.acm.org/doi/10.1145/3672608.3707957'],['arXiv','https://arxiv.org/abs/2502.09648'],['ukta.inha.ac.kr','https://ukta.inha.ac.kr/'],['GitHub','https://github.com/ghko99/aes-ukta-exp']],
+  links:[['논문 PDF','papers/pub-ukta.pdf'],['DOI','https://dl.acm.org/doi/10.1145/3672608.3707957'],['arXiv','https://arxiv.org/abs/2502.09648'],['ukta.inha.ac.kr','https://ukta.inha.ac.kr/'],['GitHub','https://github.com/ghko99/aes-ukta-exp']],
   meta:'The 40th ACM/SIGAPP Symposium on Applied Computing · * 공동 1저자 · 작문 평가 모델 담당',
   intro:{html:`<p>기존 한국어 작문 평가 도구는 한 가지 관점만 보고, 앞 단계의 오류가 뒤로 전파되며, 왜 그 점수인지 설명하지 못했습니다. UKTA는 저수준 형태소 분석부터 고수준 작문 평가까지 <b>세 층</b>을 한 곳에서 제공하는 한국어 최초의 통합 분석기입니다.</p>`, imgs:[{k:'u1_hero',c:'(A) 입력 (B) 형태소와 어휘 자질 결과 (C) 설명 가능한 평가 — 루브릭 점수와 기여 자질'}]},
   nodes:[
@@ -422,7 +422,7 @@ const PUBS = [
   ]},
  {id:'hclt', y:'2023.10', st:'게재', venue:'제35회 한글 및 한국어 정보처리 학술대회 (HCLT 2023)', role:'1저자', cover:'cov_hclt',
   t:'에세이 자동 평가 모델 성능 향상을 위한 데이터 증강과 전처리', authors:'고강희, 김도국', tags:['KoBERT + GRU','KcELECTRA MLM','KoT5 paraphrase','Random Masking','Topic Labeling'],
-  links:[['Korea Science','https://koreascience.kr/article/CFKO202306643316614.page'],['HCLT 2023','https://sites.google.com/view/hclt2023'],['GitHub','https://github.com/ghko99/Korean-Text-Data-Augmentation']],
+  links:[['논문 PDF','papers/pub-hclt.pdf'],['Korea Science','https://koreascience.kr/article/CFKO202306643316614.page'],['HCLT 2023','https://sites.google.com/view/hclt2023'],['GitHub','https://github.com/ghko99/Korean-Text-Data-Augmentation']],
   meta:'AI-HUB 에세이 50,400편 · 11개 항목 · 각 실험 5회 반복 평균',
   intro:{html:`<p>KCC 2023에서 주제 정보가 채점에 도움이 된다는 것을 확인한 뒤, 데이터의 품질과 다양성 자체를 높이는 방법을 찾았습니다. Topic Labeling 전처리와 세 가지 증강(MLM, T5, Random Masking)을 KoBERT 채점기에 적용해 비교했습니다.</p>`, imgs:[{k:'hc0_overview',c:'데이터 증강과 전처리를 활용한 AES 모델 개요'}]},
   nodes:[
@@ -434,7 +434,7 @@ const PUBS = [
   ]},
  {id:'kcc', y:'2023.06', st:'게재', venue:'2023 한국컴퓨터종합학술대회 (KCC 2023)', role:'1저자', cover:'cov_kcc',
   t:'데이터 증강을 이용한 KoBERT 기반 에세이 자동 평가 성능 향상', authors:'고강희, 김도국', tags:['KoBERT + GRU','LSTM + Word2Vec','Topic/Type 삽입'],
-  links:[['DBpia','https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11488531'],['GitHub','https://github.com/ghko99/aes_data_augment']],
+  links:[['논문 PDF','papers/pub-kcc.pdf'],['DBpia','https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11488531'],['GitHub','https://github.com/ghko99/aes_data_augment']],
   meta:'학부연구생 시절의 첫 논문 · AI-HUB 에세이 50,400편 · 11개 루브릭',
   intro:{html:`<p>사람은 글 전체의 주제와 내부 요소의 관계를 보고 점수를 주지만, 당시의 국내 AES 모델은 어휘와 문법만 보았습니다. 글의 Topic과 Type 정보를 데이터에 삽입하는 증강으로 KoBERT 채점기의 일치도를 한 단계 끌어올린 첫 연구입니다.</p>`, imgs:[{k:'kc0_overview',c:'데이터 증강을 활용한 AES 모델 개요'}]},
   nodes:[

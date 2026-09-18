@@ -3,6 +3,9 @@
 !index.html
 !.gitignore
 !README.md
+!papers/
+!papers/*.pdf
+!papers/*.json
 !chat-worker/
 !chat-worker/**
 chat-worker/node_modules/
