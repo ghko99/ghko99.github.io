@@ -16,19 +16,21 @@ const lines = [
   "참여 과제: YM-나을텍 딥러닝 기반 모호성 분석 및 비식별화 모듈 개발(2026.03–09, 참여 연구원, 법률·판결문 LLM 파인튜닝과 데이터 전처리, 민감 속성 정의, 비식별화 모듈) / 과학기술사업화진흥원 실험실 특화형 창업선도대학 단독형 2기(2025.07–12, 참여 연구원, 창업팀 Upflow AI 기술 총괄) / 정보통신기획평가원 산업융합형 멀티모달 생성 인공지능 인재양성(2025.07–10, 참여 연구원) / 한국연구재단 U-KTA(2025.03–2026.02, 참여 연구원) / 한국지능정보사회진흥원 한국어 초거대 언어모델 데이터 구축(2023.07–12, 참여 연구원).",
   "활동: AIF 연구실 학부연구생(2022.12–2024.02) 후 석사. 실험실 창업팀 Upflow AI 기술 총괄(2025.04–, 공동창업자는 아님, 창업 과제 참여). 인하대 SW 인재양성·벤처스타트업 아카데미 1기(2023.04–2024.02). 다학년 연구 프로젝트(2022).",
   "기술: Python, PyTorch, Hugging Face Transformers, PEFT, FastAPI / LLM 파인튜닝, LoRA·QLoRA, RAG, LangChain, FAISS, vLLM, Ollama, AES, 한국어 NLP / Pandas, NumPy, Dask, scikit-learn, Docker, Git, Linux, Anaconda / OpenAI API, Claude API, W&B, TensorBoard, Triton Inference Server.",
-  "포트폴리오 사이트: https://ghko99.github.io (타임라인의 카드를 누르면 각 논문·프로젝트의 문제 해결 과정이 열림).",
+  "포트폴리오 사이트: https://ghko99.github.io (타임라인의 카드를 누르면 각 논문·프로젝트의 문제 해결 과정이 열림). 각 논문·프로젝트의 단계별 고민과 해결, 표, 수치는 검색된 자료로 따로 제공된다.",
   "",
   "## 시간순 요약",
   ...EVENTS.map(e => e.ms ? `${e.d} ${e.ms}` : `${e.d} ${(e.k === "pub" ? PUBS : PROJECTS).find(x => x.id === e.id).t} — ${e.sum}`),
   "",
   "## 논문",
-  ...PUBS.map(p => `[${p.t}${p.ko ? " / " + p.ko : ""}] ${p.venue}, ${p.y}, ${p.role || "학위논문"}, 저자 ${p.authors}, 상태 ${p.st}. ${p.meta || ""} 개요: ${strip(p.intro.html)} 문제 해결 과정: ${p.nodes.map(node).join(" | ")} 링크: ${(p.links || []).map(l => l[0] + " " + l[1]).join(", ")}`),
+  ...PUBS.map(p => `[${p.t}${p.ko ? " / " + p.ko : ""}] ${p.venue}, ${p.y}, ${p.role || "학위논문"}, 저자 ${p.authors}, 상태 ${p.st}. ${p.meta || ""} 개요: ${strip(p.intro.html)} 문제 해결 단계: ${p.nodes.map(n => n.t).join(" → ")} 링크: ${(p.links || []).map(l => l[0] + " " + l[1]).join(", ")}`),
   "",
   "## 프로젝트",
-  ...PROJECTS.map(p => `[${p.t}${p.ko ? " — " + p.ko : ""}] ${p.y}, ${p.who}${p.res ? ", 성과: " + p.res : ""}. 기술: ${(p.tags || []).join(", ")}. ${p.meta || ""} 개요: ${strip(p.intro.html)} 문제 해결 과정: ${p.nodes.map(node).join(" | ")} 링크: ${(p.links || []).map(l => l[0] + " " + l[1]).join(", ")}`),
+  ...PROJECTS.map(p => `[${p.t}${p.ko ? " — " + p.ko : ""}] ${p.y}, ${p.who}${p.res ? ", 성과: " + p.res : ""}. 기술: ${(p.tags || []).join(", ")}. ${p.meta || ""} 개요: ${strip(p.intro.html)} 문제 해결 단계: ${p.nodes.map(n => n.t).join(" → ")} 링크: ${(p.links || []).map(l => l[0] + " " + l[1]).join(", ")}`),
 ];
-const repos = readFileSync(new URL("./src/repos.txt", import.meta.url), "utf8");
-lines.push("", "## GitHub 저장소 (github.com/ghko99) — 질문과 관련된 저장소가 있으면 링크를 함께 알려준다",
+// 저장소는 한 줄 설명만. README·코드 내용은 RAG 색인(build-index.mjs)에서 검색해 온다.
+const repos = readFileSync(new URL("./src/repos.txt", import.meta.url), "utf8")
+  .split("\n").filter(l => l.startsWith("- ")).map(l => l.split(" · README 요약:")[0]).join("\n");
+lines.push("", "## GitHub 저장소 (github.com/ghko99) — 질문과 관련된 저장소가 있으면 링크를 함께 알려준다. 코드·README의 자세한 내용은 검색된 자료에 나온다.",
   "논문·프로젝트와 저장소 연결: KAES 저널 논문/HCLT 2023 → Korean-Text-Data-Augmentation, KCC 2023 → aes_data_augment, TKIPS 논문 → lora-self-consistency-aes, UKTA 논문/U-KTA 과제 → aes-ukta-exp (웹은 ttytu/UKTA-web), FEAK 논문 → yunjinyong730/Advanced_UKTA, 석사논문/글결 → essay-agent, aes-llm-training, essay_scoring_llm, kanana-wntl-14all-strategy-comparison, LH 청약 챗봇 → aichipcon_AIF_sLLM, HSCODE → Hscode, 화장품 OEM → cosmetics-oem-erp-prototype, AI-Hub 데이터 구축 → Korean-Text-Data-Augmentation. YM-나을텍 비식별화 과제와 멀티모달 인재양성 과제는 공개 저장소가 없음.",
   repos);
 const text = lines.join("\n");

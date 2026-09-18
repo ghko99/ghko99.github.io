@@ -20,3 +20,10 @@ class_name = "ChatRelay"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["ChatRelay"]
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VEC"
+index_name = "portfolio-chunks"
