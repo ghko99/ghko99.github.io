@@ -172,7 +172,28 @@ const REPO_ALIASES = [
   [/tkips|정보처리학회|다중 ?목적|multi.?task|lora/i, ["lora-self-consistency-aes"]],
   [/ukta|u-kta|텍스트 분석|feak|자질|feature|설명 가능/i, ["aes-ukta-exp"]],
   [/증강|augment|마스킹|mask|kaes|hclt|kcc|데이터 구축|ai.?hub|nia/i, ["Korean-Text-Data-Augmentation", "aes_data_augment"]],
+  // 기술 용어만 있고 프로젝트 이름이 없는 질문: 그 기술을 쓴 저장소로
+  [/hybrid|하이브리드|bm25|retriev|리트리브|검색기|rag|랙|벡터 ?검색|faiss|청킹|chunk/i, ["aichipcon_AIF_sLLM", "essay-agent", "Hscode"]],
+  [/부하|locust|동시 ?접속|스트리밍|grpc|triton|서빙|serving|배포|deploy/i, ["aichipcon_AIF_sLLM", "essay-agent"]],
+  [/손실|loss|qwk|kappa|채점|scoring|루브릭|rubric/i, ["aes-llm-training", "essay_scoring_llm", "lora-self-consistency-aes", "essay-agent"]],
 ];
+// 한↔영 동의어: 코드는 영어, 사이트는 한국어라 검색어에 양쪽을 덧붙인다
+const SYN = [
+  [/hybrid|하이브리드/i, "hybrid 하이브리드 검색 bm25 similarity weights"], [/retriev|검색/i, "retrieval search 검색"], [/bm25/i, "bm25 키워드 검색"],
+  [/loss|손실/i, "loss 손실 함수"], [/embedding|임베딩/i, "embedding 임베딩"], [/fine.?tun|파인 ?튜닝|미세 ?조정/i, "fine-tuning LoRA 파인튜닝"],
+  [/prompt|프롬프트/i, "prompt 프롬프트"], [/augment|증강/i, "augmentation 데이터 증강"], [/agent|에이전트/i, "agent tool 에이전트 도구"],
+  [/self.?consist|셀프 ?컨시스턴시|자기 ?일관성/i, "self-consistency 자기 일관성 샘플링"], [/scor|채점|점수/i, "scoring 채점 점수"],
+  [/essay|에세이/i, "essay 에세이"], [/token|토큰/i, "token 토큰"], [/chunk|청킹|청크/i, "chunking 청킹 분할"], [/rerank|리랭크|재정렬/i, "rerank 재정렬"],
+  [/stream|스트리밍/i, "streaming 스트리밍"], [/load.?test|부하/i, "load test locust 부하 테스트"], [/parse|파싱/i, "parse 파싱"],
+];
+const expandQuery = q => q + " " + SYN.filter(([re]) => re.test(q)).map(([, w]) => w).join(" ");
+// 키워드 일치로 재정렬: 질문의 단어(영문 3자 이상, 한글 2자 이상)가 청크에 있으면 가점
+function lexBoost(q, text) {
+  const terms = [...new Set((q.toLowerCase().match(/[a-z0-9_.-]{3,}|[가-힣]{2,}/g) || []))];
+  const t = text.toLowerCase(); let n = 0;
+  for (const w of terms) if (t.includes(w)) n++;
+  return Math.min(0.12, 0.03 * n);
+}
 function targetRepos(q) {
   const set = new Set();
   for (const [re, repos] of REPO_ALIASES) if (re.test(q)) repos.forEach(r => set.add(r));
@@ -185,18 +206,19 @@ async function retrieve(env, turns, topK = 8) {
     // 후속 질문("그건 어떻게 구현했나요?")을 위해 직전 질문을 짧게 덧붙인다
     const prev = users.length > 1 && last.length < 40 ? users[users.length - 2].slice(0, 120) + " " : "";
     const q = prev + last;
-    const [vec] = await embed(env, [q]);
+    const [vec] = await embed(env, [expandQuery(q)]);
     const repos = targetRepos(q);
     const wantsCode = /코드|구현|함수|파라미터|프롬프트|하이퍼|설정|스크립트|어떻게 (만들|짰|했)|repo|code|implement|github|파일/i.test(q);
     const nSite = wantsCode ? 3 : 5, nRepo = topK - nSite;
     const repoFilter = repos.length ? { src: "repo", repo: { $in: repos } } : { src: "repo" };
     const [site, repo] = await Promise.all([
-      env.VEC.query(vec, { topK: nSite + 4, returnMetadata: "all", filter: { src: "site" } }),
-      env.VEC.query(vec, { topK: nRepo + 4, returnMetadata: "all", filter: repoFilter }),
+      env.VEC.query(vec, { topK: nSite + 6, returnMetadata: "all", filter: { src: "site" } }),
+      env.VEC.query(vec, { topK: nRepo + 16, returnMetadata: "all", filter: repoFilter }),
     ]);
     const pick = (res, n, min) => {
       const seen = new Set(); const out = [];
-      for (const m of res.matches || []) {
+      const ranked = (res.matches || []).map(m => ({ ...m, score: m.score + lexBoost(q, m.metadata?.text || "") })).sort((a, b) => b.score - a.score);
+      for (const m of ranked) {
         if (m.score < min) continue;
         const md = m.metadata || {}; const key = (md.url || m.id) + (md.step || "");
         if (seen.has(key)) continue; seen.add(key);
@@ -252,7 +274,7 @@ async function admin(request, env) {
   if (Array.isArray(body.deleteIds)) { await env.VEC.deleteByIds(body.deleteIds); return Response.json({ deleted: body.deleteIds.length }); }
   if (typeof body.query === "string") {
     const hits = await retrieve(env, [{ role: "user", parts: [{ text: body.query }] }], body.topK || 8);
-    return Response.json(hits.map(h => ({ score: +h.score.toFixed(3), url: h.url, text: h.text.slice(0, 200) })));
+    return Response.json({ repos: targetRepos(body.query), q: expandQuery(body.query), hits: hits.map(h => ({ score: +h.score.toFixed(3), url: h.url, text: h.text.slice(0, 200) })) });
   }
   return new Response("bad request", { status: 400 });
 }
