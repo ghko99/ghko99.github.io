@@ -157,7 +157,7 @@ const CHAT_ENDPOINT = "https://goganghee-chat.goganghee.workers.dev";
       const hi='안녕하세요! 고강희입니다. 논문이나 프로젝트에서 궁금한 게 있으면 편하게 물어보세요.'; him(hi); turns.push({role:'assistant',content:hi}); }
     if(focus) setTimeout(()=>input.focus(),50);
   }
-  document.querySelectorAll('[data-open-chat],#profile-chat,#nav-chat,.profile img').forEach(el=>{ el.style.cursor='pointer'; el.addEventListener('click',e=>{ e.preventDefault(); open(); }); });
+  document.querySelectorAll('[data-open-chat]').forEach(el=>{ el.style.cursor='pointer'; el.addEventListener('click',e=>{ e.preventDefault(); open(); }); });
   const launch=document.getElementById('launch');
   const openChat=e=>{ if(e) e.preventDefault(); open(); launch.hidden=true; };
   launch.onclick=openChat; 

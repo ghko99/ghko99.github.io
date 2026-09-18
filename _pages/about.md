@@ -8,8 +8,6 @@ profile:
   align: right
   image: prof_pic.jpg
   image_circular: true
-  more_info: >
-    <p><a href="#chat" class="pf-chatlink" id="profile-chat">💬 채팅으로 물어보기</a></p>
 
 selected_papers: true
 social: true
@@ -41,4 +39,4 @@ latest_posts:
   <div><b>5건</b>AI · LLM 국책·산학 과제 참여</div>
 </div>
 
-궁금한 점은 오른쪽 아래 **채팅**으로 물어보시면 제가 직접 답하듯 답합니다. 논문·프로젝트의 자세한 **문제 해결 과정**은 [프로젝트](/projects/) 페이지에, 시간순 흐름은 [타임라인](/timeline/)에 있습니다.
+논문·프로젝트의 자세한 **문제 해결 과정**은 [프로젝트](/projects/) 페이지에, 시간순 흐름은 [타임라인](/timeline/)에 있습니다.
