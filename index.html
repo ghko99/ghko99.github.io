@@ -451,7 +451,7 @@ const PUBS = [
   t:'From Evaluation to Feedback: A Feature-Based and LLM-Constrained Tool for Korean Writing Assessment',
   authors:'Chanwoo Jang, Ganghee Go, Jinyong Yun, Seokho Ahn, Myungsun Shin, Ho-Hyun Kil, Sungmin Chang, Do-Guk Kim, Young-Duk Seo', tags:['KoBERT','BiGRU','Contextual Attention','Elite Gap z-score','GPT-4o-mini','Constrained Prompting'],
   links:[['논문 PDF','papers/pub-feak.pdf'],['DOI','https://dl.acm.org/doi/10.1145/3748522.3780021'],['SAC 2026','https://www.sigapp.org/sac/sac2026/'],['GitHub','https://github.com/yunjinyong730/Advanced_UKTA']],
-  meta:'The 41st ACM/SIGAPP Symposium on Applied Computing · 진단은 모델이, 설명은 LLM이',
+  meta:'The 41st ACM/SIGAPP Symposium on Applied Computing · 진단은 모델이, 설명은 LLM이 · 인하대 AIF 연구실 · KDD 연구실 · 국어교육과 연구실 공동 연구',
   intro:{html:`<p>기존 자동 평가는 점수는 정확하지만 무엇을 고쳐야 하는지 말해주지 못하고, 범용 LLM은 설명은 유창하지만 환각과 정보 과부하가 따릅니다. FEAK는 정량 진단을 전용 모델에 맡기고, LLM은 그 진단을 학생이 이해할 수 있는 말로 <b>옮기는 역할만</b> 하도록 제약합니다.</p>`, imgs:[{k:'f0_example',c:'(A) 입력 에세이 (B) 8개 루브릭 점수 (C) 근거와 수정 예시가 있는 피드백'}]},
   nodes:[
    {t:'Evaluation', s:'Enhanced AWE', q:`<ul><li>294개 언어 자질(글의 특징을 나타내는 수치)을 모두 쓰면 느리고 신뢰도도 떨어집니다. 어떤 자질을 남겨야 할까?</li></ul>`, a:`<ul><li>KoBERT와 BiGRU 위에 내용 기반 어텐션을 두어, 에세이 내용에 따라 어떤 자질이 중요한지 모델이 스스로 가중치를 정하게 했습니다.</li><li>294개 중 통계적으로 유의한 <b>29개</b> 핵심 자질만 사용했습니다.</li></ul>`, imgs:[{k:'f1_pipeline',c:'Evaluation, Feature Extraction, Feedback의 세 단계'}]},
@@ -463,7 +463,7 @@ const PUBS = [
   t:'UKTA: Unified Korean Text Analyzer',
   authors:'Seokho Ahn*, Junhyung Park*, Ganghee Go*, Chulhui Kim, Jiho Jung, Myung Sun Shin, Do-Guk Kim, Young-Duk Seo', tags:['Bareun','294 lexical features','KoBERT','BiGRU','Attention','XAI'],
   links:[['논문 PDF','papers/pub-ukta.pdf'],['DOI','https://dl.acm.org/doi/10.1145/3672608.3707957'],['arXiv','https://arxiv.org/abs/2502.09648'],['ukta.inha.ac.kr','https://ukta.inha.ac.kr/'],['GitHub','https://github.com/ghko99/aes-ukta-exp']],
-  meta:'The 40th ACM/SIGAPP Symposium on Applied Computing · * 공동 1저자 · 작문 평가 모델 담당',
+  meta:'The 40th ACM/SIGAPP Symposium on Applied Computing · * 공동 1저자 · 작문 평가 모델 담당 · 인하대 AIF 연구실 · KDD 연구실 · 국어교육과 연구실 공동 연구',
   intro:{html:`<p>기존 한국어 작문 평가 도구는 한 가지 관점만 보고, 앞 단계의 오류가 뒤로 전파되며, 왜 그 점수인지 설명하지 못했습니다. UKTA는 저수준 형태소 분석부터 고수준 작문 평가까지 <b>세 층</b>을 한 곳에서 제공하는 한국어 최초의 통합 분석기입니다.</p>`, imgs:[{k:'u1_hero',c:'(A) 입력 (B) 형태소와 어휘 자질 결과 (C) 설명 가능한 평가 — 루브릭 점수와 기여 자질'}]},
   nodes:[
    {t:'형태소 분석', s:'저수준', q:`<ul><li>형태소 분석이 틀리면 그 뒤의 모든 분석이 틀립니다. 오류가 퍼지는 것을 어디서 막아야 할까?</li></ul>`, a:`<ul><li>가장 정확한 형태소 분석기(Bareun)를 첫 단계에 두어 오류가 뒤로 퍼지는 것을 최소화했습니다. 결과는 표와 목록으로 보여주고 JSON, TXT로 내려받을 수 있습니다.</li></ul>`},
