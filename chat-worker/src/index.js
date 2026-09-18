@@ -109,27 +109,46 @@ const cors = (origin, allowed) => ({
 
 // ---------- Gemini 호출 (모델 폴백, 제한 시간) ----------
 function models(env) { return (env.MODELS || "gemini-3.5-flash-lite").split(",").map(s => s.trim()).filter(Boolean); }
-async function geminiFetch(env, body, { stream }) {
-  for (const model of models(env)) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:${stream ? "streamGenerateContent?alt=sse" : "generateContent"}`;
-    try {
-      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY }, body: JSON.stringify(body), signal: AbortSignal.timeout(stream ? 12000 : 40000) });
-      if (r.ok) return r;
-      console.error("gemini", model, r.status, (await r.text().catch(() => "")).slice(0, 200));
-    } catch (e) { console.error("gemini", model, "err", String(e).slice(0, 120)); }
-  }
-  return null;
+// 헤지 요청: 첫 모델이 HEDGE_MS 안에 응답을 시작하지 않으면 다음 모델을 동시에 띄우고, 먼저 성공하는 쪽을 쓴다.
+// 실패(429·5xx·타임아웃)한 모델은 즉시 다음으로 넘어간다. Gemini가 간헐적으로 멈추는 문제를 사용자 대기 없이 넘긴다.
+const HEDGE_MS = 3000;
+function geminiFetch(env, body, { stream }) {
+  const list = models(env);
+  const payload = JSON.stringify(body);
+  return new Promise(resolve => {
+    const ctrls = []; let idx = 0, pending = 0, settled = false;
+    const finish = r => { if (settled) return; settled = true; for (const c of ctrls) if (c !== r?.ctrl) c.abort(); resolve(r ? r.res : null); };
+    const launch = () => {
+      if (settled || idx >= list.length) return;
+      const model = list[idx++]; const ctrl = new AbortController(); ctrls.push(ctrl); pending++;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:${stream ? "streamGenerateContent?alt=sse" : "generateContent"}`;
+      const timer = setTimeout(() => ctrl.abort(), stream ? 20000 : 45000);
+      const fail = why => { console.error("gemini", model, why); pending--; if (settled) return; if (idx < list.length) launch(); else if (pending === 0) finish(null); };
+      fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY }, body: payload, signal: ctrl.signal })
+        .then(async res => {
+          if (res.ok) { if (settled) { res.body?.cancel().catch(() => {}); return; } finish({ res, ctrl }); }
+          else fail(res.status + " " + (await res.text().catch(() => "")).slice(0, 160));
+        })
+        .catch(e => { if (!settled) fail(String(e).slice(0, 100)); })
+        .finally(() => clearTimeout(timer));
+      setTimeout(() => { if (!settled) launch(); }, HEDGE_MS);
+    };
+    launch();
+  });
 }
 // SSE 스트림에서 candidates[0].content.parts 를 순서대로 뽑는다. text는 onText로 즉시 흘려보낸다.
 async function streamRound(env, contents, { toolsOn, onText }) {
-  const body = { contents, systemInstruction: { parts: [{ text: PERSONA }] }, generationConfig: { maxOutputTokens: 900, temperature: 0.7 } };
+  // thinkingLevel low: 기본 thinking은 첫 응답까지 10초 넘게 걸리는 일이 잦다(실측). 도구 선택 정도는 low로 충분하다.
+  const body = { contents, systemInstruction: { parts: [{ text: PERSONA }] }, generationConfig: { maxOutputTokens: 900, temperature: 0.7, thinkingConfig: { thinkingLevel: "low" } } };
   if (toolsOn) body.tools = TOOLS;
   const r = await geminiFetch(env, body, { stream: true });
   if (!r) throw new Error("upstream");
   const parts = []; const dec = new TextDecoder(); let buf = "", finish = null;
   const reader = r.body.getReader();
+  // 스트림이 시작된 뒤 15초 동안 아무 조각도 안 오면 멈춘 것으로 보고 끊는다
+  const readWithTimeout = () => new Promise((res, rej) => { const t = setTimeout(() => { reader.cancel().catch(() => {}); rej(new Error("stream stall")); }, 15000); reader.read().then(v => { clearTimeout(t); res(v); }, e => { clearTimeout(t); rej(e); }); });
   while (true) {
-    const { value, done } = await reader.read(); if (done) break;
+    const { value, done } = await readWithTimeout(); if (done) break;
     buf += dec.decode(value, { stream: true });
     const lines = buf.split("\n"); buf = lines.pop();
     for (const line of lines) {
@@ -257,6 +276,24 @@ export class ChatRelay {
   async fetch(request) {
     const url = new URL(request.url); const body = await request.json();
     if (url.pathname === "/summarize") return Response.json(await summarize(this.env, body.items || []));
+    if (url.pathname === "/probe") { // 디버그: 모델별 응답 시작 시간 (스트리밍 첫 바이트)
+      const out = [];
+      for (const model of body.models || []) {
+        const t0 = Date.now();
+        try {
+          const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": this.env.GEMINI_API_KEY }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "한 문장으로 인사해 주세요." }] }], tools: TOOLS, generationConfig: { maxOutputTokens: 60, ...(body.gen || {}) } }), signal: AbortSignal.timeout(25000) });
+          const th = Date.now() - t0; let first = null;
+          if (r.ok) { const reader = r.body.getReader(); await reader.read(); first = Date.now() - t0; reader.cancel().catch(() => {}); }
+          out.push({ model, status: r.status, headers_ms: th, first_ms: first, err: r.ok ? undefined : (await r.text().catch(() => "")).slice(0, 120) });
+        } catch (e) { out.push({ model, err: String(e).slice(0, 80), ms: Date.now() - t0 }); }
+      }
+      return Response.json(out);
+    }
+    if (url.pathname === "/models") { // 디버그: 이 키로 쓸 수 있는 모델
+      const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": this.env.GEMINI_API_KEY } });
+      const j = await r.json();
+      return Response.json((j.models || []).filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => m.name.replace("models/", "")));
+    }
     // 응답 스트림을 먼저 열고, 제어 줄(\x1e + JSON + 개행)로 진행 상태를 보낸 뒤 본문을 잇는다
     const { readable, writable } = new TransformStream();
     const w = writable.getWriter(); const enc = new TextEncoder();
@@ -292,6 +329,8 @@ async function admin(request, env) {
     return relay.fetch("https://relay/summarize", { method: "POST", body: JSON.stringify({ items: body.summarize }) });
   }
   if (typeof body.query === "string") return Response.json(await searchDocs(env, { query: body.query, project: body.project }));
+  if (Array.isArray(body.probe)) { const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" }); return relay.fetch("https://relay/probe", { method: "POST", body: JSON.stringify({ models: body.probe, gen: body.gen }) }); }
+  if (body.models) { const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" }); return relay.fetch("https://relay/models", { method: "POST", body: "{}" }); }
   return new Response("bad request", { status: 400 });
 }
 
