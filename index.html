@@ -89,8 +89,8 @@
   .stub{padding-top:18px;font-size:13px;color:var(--fg3)}
   .ev.r .stub{text-align:right}
   .card{display:flex;flex-direction:column;gap:12px;text-align:left;cursor:pointer;position:relative}
-  .card .pic{aspect-ratio:4/3;background:var(--bg2);border:1px solid var(--line2);border-radius:4px;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
-  .card .pic img{width:100%;height:100%;object-fit:contain;object-position:top;transition:transform .8s var(--ease)}
+  .card .pic{aspect-ratio:4/3;background:var(--bg2);border:1px solid var(--line2);border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+  .card .pic img{width:100%;height:100%;object-fit:contain;object-position:center;transition:transform .8s var(--ease)}
   .card:hover .pic{transform:translateY(-4px);box-shadow:0 20px 44px -20px rgba(36,71,184,.3);border-color:var(--line)}
   .card:hover .pic img{transform:scale(1.02)}
   .card .k{display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--fg3)}
