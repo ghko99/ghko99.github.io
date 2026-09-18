@@ -27,6 +27,10 @@ const lines = [
   "## 프로젝트",
   ...PROJECTS.map(p => `[${p.t}${p.ko ? " — " + p.ko : ""}] ${p.y}, ${p.who}${p.res ? ", 성과: " + p.res : ""}. 기술: ${(p.tags || []).join(", ")}. ${p.meta || ""} 개요: ${strip(p.intro.html)} 문제 해결 과정: ${p.nodes.map(node).join(" | ")} 링크: ${(p.links || []).map(l => l[0] + " " + l[1]).join(", ")}`),
 ];
+const repos = readFileSync(new URL("./src/repos.txt", import.meta.url), "utf8");
+lines.push("", "## GitHub 저장소 (github.com/ghko99) — 질문과 관련된 저장소가 있으면 링크를 함께 알려준다",
+  "논문·프로젝트와 저장소 연결: KAES 저널 논문/HCLT 2023 → Korean-Text-Data-Augmentation, KCC 2023 → aes_data_augment, TKIPS 논문 → lora-self-consistency-aes, UKTA 논문/U-KTA 과제 → aes-ukta-exp (웹은 ttytu/UKTA-web), FEAK 논문 → yunjinyong730/Advanced_UKTA, 석사논문/글결 → essay-agent, aes-llm-training, essay_scoring_llm, kanana-wntl-14all-strategy-comparison, LH 청약 챗봇 → aichipcon_AIF_sLLM, HSCODE → Hscode, 화장품 OEM → cosmetics-oem-erp-prototype, AI-Hub 데이터 구축 → Korean-Text-Data-Augmentation. YM-나을텍 비식별화 과제와 멀티모달 인재양성 과제는 공개 저장소가 없음.",
+  repos);
 const text = lines.join("\n");
 writeFileSync(new URL("./src/context.js", import.meta.url), "export const CONTEXT = " + JSON.stringify(text) + ";\n");
 console.log("context.js written:", text.length, "chars");
