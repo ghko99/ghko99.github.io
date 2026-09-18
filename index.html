@@ -484,7 +484,7 @@ const PUBS = [
   t:'데이터 증강을 이용한 KoBERT 기반 에세이 자동 평가 성능 향상', authors:'고강희, 김도국', tags:['KoBERT + GRU','LSTM + Word2Vec','Topic/Type 삽입'],
   links:[['논문 PDF','papers/pub-kcc.pdf'],['DBpia','https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11488531'],['GitHub','https://github.com/ghko99/aes_data_augment']],
   meta:'학부연구생 시절의 첫 논문 · AI-HUB 에세이 50,400편 · 11개 루브릭',
-  intro:{html:`<p>사람은 글 전체의 주제와 내부 요소의 관계를 보고 점수를 주지만, 당시의 국내 AES 모델은 어휘와 문법만 보았습니다. 글의 Topic과 Type 정보를 데이터에 삽입하는 증강으로 KoBERT 채점기의 일치도를 한 단계 끌어올린 첫 연구입니다.</p>`, imgs:[{k:'kc0_overview',c:'데이터 증강을 활용한 AES 모델 개요'}]},
+  intro:{html:`<p>글의 Topic과 Type 정보를 데이터에 삽입하는 증강으로 KoBERT 채점기의 일치도를 한 단계 끌어올린 첫 연구입니다.</p>`, imgs:[{k:'kc0_overview',c:'데이터 증강을 활용한 AES 모델 개요'}]},
   nodes:[
    {t:'모델 선택', q:`<ul><li>KoBERT 기반과 LSTM 기반 중 어느 쪽을 출발점으로 삼아야 할까?</li></ul>`, a:`<ul><li>AI-Hub가 제공한 KoBERT + GRU와 LSTM + Word2Vec을 비교했습니다. 일치도(Kappa)가 0.7947 대 0.7870으로 KoBERT 기반이 높아 이쪽을 선택했습니다.</li></ul>`},
    {t:'Topic과 Type 삽입', q:`<ul><li>어떤 정보를, 어느 위치에 넣어야 할까? 한국어 에세이의 41%가 10문장 이하인데, 너무 자주 넣으면 어떻게 될까?</li></ul>`, a:`<ul><li>넣는 정보는 세 가지입니다. Type 2(논술형, 수필형), Type 5(주장, 찬반, 대안, 설명, 글짓기), Topic 50(주제 50개).</li><li>넣는 간격은 1문장마다부터 5문장마다까지 다섯 가지입니다. 정보 3가지 × 간격 5가지, 총 15가지 조합을 비교했습니다.</li><li>"[학습과 여가활동] 저는 학습시간이 5시간…"과 같은 형태입니다.</li></ul>`},
