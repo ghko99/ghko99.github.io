@@ -11,7 +11,39 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "Korean-Text-Data-Augmentation",
-    "branch": "master"
+    "branch": "master",
+    "files": [
+     "README.md",
+     "augmentation.py",
+     "dataset_utils.py",
+     "docs/model_cache_notes.md",
+     "docs/output_filtering.md",
+     "docs/quality_checks.md",
+     "docs/setup.md",
+     "mbart_aug.py",
+     "mbart_data.py",
+     "mbart_train.py",
+     "mlm_augmentation.py",
+     "mlm_insert_augmentation.py",
+     "mlm_train.py",
+     "requirements.txt",
+     "save_data.py",
+     "sts/base_config.yaml",
+     "sts/dataloader.py",
+     "sts/lightning_logs/version_0/hparams.yaml",
+     "sts/lightning_logs/version_1/hparams.yaml",
+     "sts/lightning_logs/version_2/hparams.yaml",
+     "sts/lightning_logs/version_3/hparams.yaml",
+     "sts/lightning_logs/version_4/hparams.yaml",
+     "sts/mbart_config.yaml",
+     "sts/model.py",
+     "sts/random_masking_insertion_config.yaml",
+     "sts/random_masking_replacement_config.yaml",
+     "sts/t5_config.yaml",
+     "sts/train.py",
+     "sts/train.sh",
+     "t5_augmentation.py"
+    ]
    }
   ],
   "pdf": "https://ghko99.github.io/papers/pub-kaes.pdf"
@@ -27,7 +59,27 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "lora-self-consistency-aes",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "docs/generation_audit.md",
+     "docs/run_tracking.md",
+     "docs/self_consistency_notes.md",
+     "main_pipeline.py",
+     "modules/aes_dataloader.py",
+     "modules/class_balanced_focal_loss.py",
+     "modules/custom_trainer.py",
+     "modules/evaluate_module.py",
+     "modules/inference_module.py",
+     "modules/number_token_loss.py",
+     "modules/number_tokenizer.py",
+     "modules/train_module.py",
+     "modules/wasserstein_number_token_loss.py",
+     "requirements.txt",
+     "run_consistency_kanana_wntl.sh",
+     "run_consistency_ntl_emo_wntl.sh",
+     "self_consistency.py"
+    ]
    }
   ],
   "pdf": "https://ghko99.github.io/papers/pub-tkips.pdf"
@@ -54,7 +106,19 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "aes-ukta-exp",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "config.py",
+     "docs/artifact_policy.md",
+     "docs/experiment_notes.md",
+     "docs/feature_audit.md",
+     "embedding.py",
+     "hyper_parameter_search.py",
+     "kobert_gru_with_features.py",
+     "performance.py",
+     "requirements.txt"
+    ]
    }
   ],
   "pdf": "https://ghko99.github.io/papers/pub-ukta.pdf"
@@ -70,7 +134,39 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "Korean-Text-Data-Augmentation",
-    "branch": "master"
+    "branch": "master",
+    "files": [
+     "README.md",
+     "augmentation.py",
+     "dataset_utils.py",
+     "docs/model_cache_notes.md",
+     "docs/output_filtering.md",
+     "docs/quality_checks.md",
+     "docs/setup.md",
+     "mbart_aug.py",
+     "mbart_data.py",
+     "mbart_train.py",
+     "mlm_augmentation.py",
+     "mlm_insert_augmentation.py",
+     "mlm_train.py",
+     "requirements.txt",
+     "save_data.py",
+     "sts/base_config.yaml",
+     "sts/dataloader.py",
+     "sts/lightning_logs/version_0/hparams.yaml",
+     "sts/lightning_logs/version_1/hparams.yaml",
+     "sts/lightning_logs/version_2/hparams.yaml",
+     "sts/lightning_logs/version_3/hparams.yaml",
+     "sts/lightning_logs/version_4/hparams.yaml",
+     "sts/mbart_config.yaml",
+     "sts/model.py",
+     "sts/random_masking_insertion_config.yaml",
+     "sts/random_masking_replacement_config.yaml",
+     "sts/t5_config.yaml",
+     "sts/train.py",
+     "sts/train.sh",
+     "t5_augmentation.py"
+    ]
    }
   ],
   "pdf": "https://ghko99.github.io/papers/pub-hclt.pdf"
@@ -86,7 +182,17 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "aes_data_augment",
-    "branch": "master"
+    "branch": "master",
+    "files": [
+     "README.md",
+     "aes_embedding.py",
+     "aes_train.py",
+     "docs/augmentation_tracking.md",
+     "docs/evaluation_protocol.md",
+     "docs/reproducibility.md",
+     "requirements.txt",
+     "tokenization_kobert.py"
+    ]
    }
   ],
   "pdf": "https://ghko99.github.io/papers/pub-kcc.pdf"
@@ -102,19 +208,113 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "essay-agent",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "backend/__init__.py",
+     "backend/agent.py",
+     "backend/main.py",
+     "backend/model.py",
+     "backend/prompt.py",
+     "backend/rubric.py",
+     "backend/score_percentiles.py",
+     "backend/scoring_rules.py",
+     "backend/tools/__init__.py",
+     "backend/tools/_common.py",
+     "backend/tools/keyword_coverage.py",
+     "backend/tools/lexical_grounding.py",
+     "backend/tools/linguistic_analysis.py",
+     "backend/tools/norm_lookup.py",
+     "backend/tools/orthography_probe.py",
+     "backend/tools/rubric_retrieve.py",
+     "backend/tools/terminology_grounding.py",
+     "backend/topics.py",
+     "frontend/app.js",
+     "frontend/index.html",
+     "frontend/robots.txt",
+     "requirements.txt",
+     "run.sh"
+    ]
    },
    {
     "name": "aes-llm-training",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "collator.py",
+     "docs/checkpoint_selection.md",
+     "docs/evaluation_notes.md",
+     "docs/prediction_audit.md",
+     "docs/release_checklist.md",
+     "docs/run_tracking.md",
+     "evaluate.py",
+     "inference.py",
+     "number_token_loss.py",
+     "number_tokenizer.py",
+     "requirements.txt",
+     "train.py",
+     "train.sh",
+     "train_multi_gpu.sh",
+     "trainer.py"
+    ]
    },
    {
     "name": "essay_scoring_llm",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "assets/adapter/README.md",
+     "assets/adapter/chat_template.jinja",
+     "docs/OUTPUT_SCHEMA.md",
+     "essay_scoring_llm/__init__.py",
+     "essay_scoring_llm/__main__.py",
+     "essay_scoring_llm/baseline.py",
+     "essay_scoring_llm/batch.py",
+     "essay_scoring_llm/cache.py",
+     "essay_scoring_llm/cli.py",
+     "essay_scoring_llm/config.py",
+     "essay_scoring_llm/correction.py",
+     "essay_scoring_llm/dataset.py",
+     "essay_scoring_llm/experiment.py",
+     "essay_scoring_llm/feak.py",
+     "essay_scoring_llm/feak_feature/README.md",
+     "essay_scoring_llm/feak_feature/__init__.py",
+     "essay_scoring_llm/feak_feature/feak_feature.py",
+     "essay_scoring_llm/feak_feature/korcat_core/apps/morph/bareun.py",
+     "essay_scoring_llm/feak_feature/korcat_core/apps/morph/morph.py",
+     "essay_scoring_llm/feak_feature/korcat_core/apps/morph/utagger.py",
+     "essay_scoring_llm/feak_feature/requirements.txt",
+     "essay_scoring_llm/feak_feature/sample_essay.txt",
+     "essay_scoring_llm/feak_feature/test_features.py",
+     "essay_scoring_llm/number_tokenizer.py",
+     "essay_scoring_llm/qwk.py",
+     "essay_scoring_llm/rounder.py",
+     "essay_scoring_llm/rubrics.py",
+     "essay_scoring_llm/scaling.py",
+     "essay_scoring_llm/schema.py",
+     "essay_scoring_llm/single.py",
+     "essay_scoring_llm/soft_sc.py",
+     "essay_scoring_llm/visualize.py",
+     "pyproject.toml",
+     "requirements-live.txt",
+     "requirements.txt",
+     "tests/test_smoke.py"
+    ]
    },
    {
     "name": "kanana-wntl-14all-strategy-comparison",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "compare_14_all_inference_strategies.py",
+     "kanana_wntl_20260407_002343/README.md",
+     "kanana_wntl_20260407_002343/chat_template.jinja",
+     "modules/inference_module.py",
+     "modules/number_tokenizer.py",
+     "requirements.txt",
+     "run_14_all_strategy_comparison.sh",
+     "weighted_digit_inference.py"
+    ]
    }
   ]
  },
@@ -129,11 +329,76 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "essay-agent",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "backend/__init__.py",
+     "backend/agent.py",
+     "backend/main.py",
+     "backend/model.py",
+     "backend/prompt.py",
+     "backend/rubric.py",
+     "backend/score_percentiles.py",
+     "backend/scoring_rules.py",
+     "backend/tools/__init__.py",
+     "backend/tools/_common.py",
+     "backend/tools/keyword_coverage.py",
+     "backend/tools/lexical_grounding.py",
+     "backend/tools/linguistic_analysis.py",
+     "backend/tools/norm_lookup.py",
+     "backend/tools/orthography_probe.py",
+     "backend/tools/rubric_retrieve.py",
+     "backend/tools/terminology_grounding.py",
+     "backend/topics.py",
+     "frontend/app.js",
+     "frontend/index.html",
+     "frontend/robots.txt",
+     "requirements.txt",
+     "run.sh"
+    ]
    },
    {
     "name": "essay_scoring_llm",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "assets/adapter/README.md",
+     "assets/adapter/chat_template.jinja",
+     "docs/OUTPUT_SCHEMA.md",
+     "essay_scoring_llm/__init__.py",
+     "essay_scoring_llm/__main__.py",
+     "essay_scoring_llm/baseline.py",
+     "essay_scoring_llm/batch.py",
+     "essay_scoring_llm/cache.py",
+     "essay_scoring_llm/cli.py",
+     "essay_scoring_llm/config.py",
+     "essay_scoring_llm/correction.py",
+     "essay_scoring_llm/dataset.py",
+     "essay_scoring_llm/experiment.py",
+     "essay_scoring_llm/feak.py",
+     "essay_scoring_llm/feak_feature/README.md",
+     "essay_scoring_llm/feak_feature/__init__.py",
+     "essay_scoring_llm/feak_feature/feak_feature.py",
+     "essay_scoring_llm/feak_feature/korcat_core/apps/morph/bareun.py",
+     "essay_scoring_llm/feak_feature/korcat_core/apps/morph/morph.py",
+     "essay_scoring_llm/feak_feature/korcat_core/apps/morph/utagger.py",
+     "essay_scoring_llm/feak_feature/requirements.txt",
+     "essay_scoring_llm/feak_feature/sample_essay.txt",
+     "essay_scoring_llm/feak_feature/test_features.py",
+     "essay_scoring_llm/number_tokenizer.py",
+     "essay_scoring_llm/qwk.py",
+     "essay_scoring_llm/rounder.py",
+     "essay_scoring_llm/rubrics.py",
+     "essay_scoring_llm/scaling.py",
+     "essay_scoring_llm/schema.py",
+     "essay_scoring_llm/single.py",
+     "essay_scoring_llm/soft_sc.py",
+     "essay_scoring_llm/visualize.py",
+     "pyproject.toml",
+     "requirements-live.txt",
+     "requirements.txt",
+     "tests/test_smoke.py"
+    ]
    }
   ]
  },
@@ -148,7 +413,56 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "aichipcon_AIF_sLLM",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "LHAPI/collect_DATA/api_request_specific.js",
+     "LHAPI/collect_DATA/deduplicate_specific_csv.js",
+     "LHAPI/collect_DATA/download_PDFs_공고중.js",
+     "LHAPI/search_API/search_python.py",
+     "README.md",
+     "ai/model/__init__.py",
+     "ai/model/chatbot_model.py",
+     "ai/model/ex.py",
+     "ai/model/exex.py",
+     "ai/model/rag_generator.py",
+     "ai/model/rag_retriever.py",
+     "ai/model/survey_model.py",
+     "backend/app.py",
+     "backend/app_flask.py",
+     "backend/chatbot/__init__.py",
+     "backend/chatbot/chatbot.py",
+     "backend/search/search.py",
+     "backend/search/search_2.py",
+     "backend/search/search_3.py",
+     "backend/search/search_engine.ipynb",
+     "docs/data_pipeline_notes.md",
+     "docs/deployment_runbook.md",
+     "docs/local_setup.md",
+     "docs/monitoring_notes.md",
+     "docs/rag_evaluation_notes.md",
+     "frontend/README.md",
+     "frontend/app/chatbot/Chatbot.tsx",
+     "frontend/app/chatbot/page.tsx",
+     "frontend/app/dashboard/page.tsx",
+     "frontend/app/ex/page.tsx",
+     "frontend/app/intro/page.tsx",
+     "frontend/app/layout.tsx",
+     "frontend/app/page.tsx",
+     "frontend/app/survey/page.tsx",
+     "frontend/components/AgeSelector.tsx",
+     "frontend/components/DetailedFilters.tsx",
+     "frontend/components/DetailedSearchForm.tsx",
+     "frontend/components/PDFViewer.tsx",
+     "frontend/hooks/use-mobile.tsx",
+     "frontend/lib/utils.ts",
+     "frontend/public/survey-data.tsx",
+     "frontend/tailwind.config.ts",
+     "locust/locust.py",
+     "script.sh",
+     "vllm_backend/.pre-commit-config.yaml",
+     "vllm_backend/README.md",
+     "vllm_backend/pyproject.toml"
+    ]
    }
   ]
  },
@@ -163,7 +477,19 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "aes-ukta-exp",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "config.py",
+     "docs/artifact_policy.md",
+     "docs/experiment_notes.md",
+     "docs/feature_audit.md",
+     "embedding.py",
+     "hyper_parameter_search.py",
+     "kobert_gru_with_features.py",
+     "performance.py",
+     "requirements.txt"
+    ]
    }
   ]
  },
@@ -178,7 +504,68 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "cosmetics-oem-erp-prototype",
-    "branch": "main"
+    "branch": "main",
+    "files": [
+     "README.md",
+     "ai-server/README.md",
+     "ai-server/api/ai_endpoints.py",
+     "ai-server/api/models_endpoint.py",
+     "ai-server/api/product_forms_endpoint.py",
+     "ai-server/main.py",
+     "ai-server/requirements.txt",
+     "ai-server/services/ai_service.py",
+     "ai-server/services/product_forms.py",
+     "backend/api/admin.py",
+     "backend/api/product_form.py",
+     "backend/api/requests.py",
+     "backend/database.py",
+     "backend/main.py",
+     "backend/models.py",
+     "backend/requirements.txt",
+     "backend/schemas.py",
+     "backend/services/product_form_service.py",
+     "backend/services/product_forms_client.py",
+     "docker-compose.yml",
+     "frontend/README.md",
+     "frontend/app/admin/page.tsx",
+     "frontend/app/auto-form/korean/page.tsx",
+     "frontend/app/auto-form/page.tsx",
+     "frontend/app/layout.tsx",
+     "frontend/app/oem-form-test/OEMCosmeticsForm.jsx",
+     "frontend/app/oem-form-test/page.jsx",
+     "frontend/app/page.tsx",
+     "frontend/components/Admin/AdminLayout.tsx",
+     "frontend/components/Admin/Header.tsx",
+     "frontend/components/Admin/LeftSidebar.tsx",
+     "frontend/components/Admin/MainWorkspace.tsx",
+     "frontend/components/Admin/RequestDetail.tsx",
+     "frontend/components/Admin/RequestList.tsx",
+     "frontend/components/Admin/RightSidebar.tsx",
+     "frontend/components/Admin/tabs/RequestDetailTab.tsx",
+     "frontend/components/Admin/tabs/RequestListTab.tsx",
+     "frontend/components/AutoForm/ChatPanel.tsx",
+     "frontend/components/AutoForm/FormPanel.tsx",
+     "frontend/components/AutoForm/KoreanFormPanel.tsx",
+     "frontend/components/AutoForm/ProductSelection.tsx",
+     "frontend/components/AutoForm/SubmissionPopup.tsx",
+     "frontend/components/theme-provider.tsx",
+     "frontend/components/theme-toggle.tsx",
+     "frontend/hooks/use-mobile.ts",
+     "frontend/hooks/use-toast.ts",
+     "frontend/lib/api.ts",
+     "frontend/lib/stores/chatStore.ts",
+     "frontend/lib/stores/tabStore.ts",
+     "frontend/lib/utils.ts",
+     "frontend/next.config.ts",
+     "llm-product-transfer-form/README.md",
+     "llm-product-transfer-form/llm_product_form_gpt.py",
+     "llm-product-transfer-form/requirements.txt",
+     "llm-test-client.js",
+     "run_backend.sh",
+     "run_frontend.sh",
+     "test_llm_form.py",
+     "test_product_form_api.py"
+    ]
    }
   ]
  },
@@ -193,7 +580,39 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "Korean-Text-Data-Augmentation",
-    "branch": "master"
+    "branch": "master",
+    "files": [
+     "README.md",
+     "augmentation.py",
+     "dataset_utils.py",
+     "docs/model_cache_notes.md",
+     "docs/output_filtering.md",
+     "docs/quality_checks.md",
+     "docs/setup.md",
+     "mbart_aug.py",
+     "mbart_data.py",
+     "mbart_train.py",
+     "mlm_augmentation.py",
+     "mlm_insert_augmentation.py",
+     "mlm_train.py",
+     "requirements.txt",
+     "save_data.py",
+     "sts/base_config.yaml",
+     "sts/dataloader.py",
+     "sts/lightning_logs/version_0/hparams.yaml",
+     "sts/lightning_logs/version_1/hparams.yaml",
+     "sts/lightning_logs/version_2/hparams.yaml",
+     "sts/lightning_logs/version_3/hparams.yaml",
+     "sts/lightning_logs/version_4/hparams.yaml",
+     "sts/mbart_config.yaml",
+     "sts/model.py",
+     "sts/random_masking_insertion_config.yaml",
+     "sts/random_masking_replacement_config.yaml",
+     "sts/t5_config.yaml",
+     "sts/train.py",
+     "sts/train.sh",
+     "t5_augmentation.py"
+    ]
    }
   ]
  },
@@ -208,7 +627,22 @@ export const REGISTRY = [
   "repos": [
    {
     "name": "Hscode",
-    "branch": "master"
+    "branch": "master",
+    "files": [
+     "README.md",
+     "accuracy.py",
+     "crawl_data.py",
+     "docs/data_contract.md",
+     "docs/error_analysis.md",
+     "docs/evaluation.md",
+     "docs/inference_notes.md",
+     "docs/setup.md",
+     "embedding.py",
+     "preprocess.py",
+     "recommend.py",
+     "requirements.txt",
+     "train_test_split.py"
+    ]
    }
   ]
  }

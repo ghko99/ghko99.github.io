@@ -220,6 +220,7 @@ for (const f of files) {
 // ---------- 6. 출력 ----------
 const seen = new Set(); const uniq = chunks.filter(c => !seen.has(c.id) && seen.add(c.id));
 writeFileSync(OUT, uniq.map(c => JSON.stringify(c)).join("\n") + "\n");
-const reg = registry.map(r => ({ ...r, repos: r.repos.map(name => ({ name, branch: branchOf[name] || "main" })), pdf: papers.some(f => f.paper.id === r.id) ? `https://ghko99.github.io/papers/${r.id}.pdf` : undefined }));
+const filesOf = {}; for (const f of files) if (!f.paper) (filesOf[f.repo] ||= []).push(f.path);
+const reg = registry.map(r => ({ ...r, repos: r.repos.map(name => ({ name, branch: branchOf[name] || "main", files: filesOf[name] || [] })), pdf: papers.some(f => f.paper.id === r.id) ? `https://ghko99.github.io/papers/${r.id}.pdf` : undefined }));
 writeFileSync(new URL("./src/registry.js", import.meta.url), "// build-index.mjs가 생성. 프로젝트 목록과 연결 저장소.\nexport const REGISTRY = " + JSON.stringify(reg, null, 1) + ";\n");
 console.log(`site ${siteCount} + repo ${repoCount} + paper ${paperCount} = ${uniq.length} chunks → ${OUT}; registry ${reg.length} projects`);
