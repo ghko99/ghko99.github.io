@@ -61,7 +61,7 @@ const chunks = [];
 const id = (...k) => createHash("sha1").update(k.join("\u0000")).digest("hex").slice(0, 24);
 function add(text, meta) {
   text = text.trim(); if (!text) return;
-  chunks.push({ id: id(meta.src, meta.url || "", meta.path || "", meta.l1 || 0, text.slice(0, 80)), text, meta });
+  chunks.push({ id: id(meta.src, meta.url || "", meta.path || "", meta.l1 || 0, text), text, meta }); // 본문 전체를 해시: 내용이 바뀌면 id도 바뀌어 증분 업로드에 잡힌다
 }
 for (const [kind, list] of [["pub", PUBS], ["proj", PROJECTS]]) {
   for (const p of list) {
