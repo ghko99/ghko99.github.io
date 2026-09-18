@@ -1,6 +1,7 @@
 # 사이트 파일과 채팅 워커 소스만 올립니다
 *
 !index.html
+!og.png
 !.gitignore
 !README.md
 !papers/
