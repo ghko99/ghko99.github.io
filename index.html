@@ -110,6 +110,34 @@
     .rv.from-l,.rv.from-r{transform:translateY(24px)}
   }
 
+  /* toggles */
+  .tgl{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:12.5px}
+  .tgl button{padding:5px 12px;color:var(--fg3);background:var(--bg)}
+  .tgl button.on{background:var(--fg);color:var(--bg)}
+  .tgl button:not(.on):hover{color:var(--fg)}
+  .fold{font-size:12.5px;color:var(--fg3);padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+  .fold:hover{color:var(--fg);border-color:var(--fg3)}
+  .cv-head .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  #cvbody[hidden]{display:none}
+  /* horizontal timeline */
+  .tlh{overflow-x:auto;scrollbar-width:thin;padding:8px 0 16px;margin-top:8px}
+  .tlh[hidden]{display:none}
+  .tlh .track{position:relative;display:flex;align-items:flex-start;gap:16px;padding-top:22px;min-width:max-content}
+  .tlh .track::before{content:"";position:absolute;left:0;right:0;top:7px;height:1px;background:var(--line)}
+  .tlh .hyr,.tlh .hev,.tlh .hms{position:relative;flex:none}
+  .tlh .hyr{font-family:var(--serif);font-weight:700;font-size:15px;color:var(--bg);background:var(--fg);border-radius:999px;padding:2px 12px;margin-top:-22px;align-self:flex-start;line-height:1.5}
+  .tlh .hev{width:218px;text-align:left;padding:0 0 0 2px;border-left:1px solid var(--line2)}
+  .tlh .hev::before,.tlh .hms::before{content:"";position:absolute;left:-5px;top:-20px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+  .tlh .hms::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent2)}
+  .tlh .hev .d,.tlh .hms .d{display:block;font-size:12px;color:var(--fg3);font-variant-numeric:tabular-nums;padding-left:10px}
+  .tlh .hev .k{display:inline-block;font-size:11px;color:var(--accent);background:var(--accent2);border-radius:3px;padding:0 6px;margin:6px 0 4px 10px}
+  .tlh .hev b{display:block;font-family:var(--serif);font-size:14.5px;font-weight:700;line-height:1.45;padding-left:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .tlh .hev:hover b{color:var(--accent)}
+  .tlh .hev .s{display:block;font-size:12px;color:var(--fg3);padding-left:10px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tlh .hms{width:170px;padding-left:12px;border-left:1px solid var(--line2);font-size:12.5px;color:var(--fg2);line-height:1.5}
+  .tlh .hms .d{padding-left:0;margin-bottom:4px}
+  #tl[hidden]{display:none}
+
   /* cv */
   .cvsec{padding-block:clamp(40px,6vw,72px);border-top:1px solid var(--line2)}
   .cv-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:28px}
@@ -297,7 +325,8 @@
 
 <main>
   <section class="cvsec" id="cv"><div class="wrap">
-    <div class="cv-head rv"><h2>이력</h2><a class="ul" href="https://github.com/ghko99" target="_blank" rel="noopener">github.com/ghko99</a></div>
+    <div class="cv-head rv"><h2>이력</h2><div class="tools"><a class="ul" href="https://github.com/ghko99" target="_blank" rel="noopener">github.com/ghko99</a><button type="button" class="fold" id="cv-fold" aria-expanded="true" aria-controls="cvbody">접기</button></div></div>
+    <div id="cvbody">
     <div class="cvb rv">
       <h3>학력</h3>
       <div class="row"><div><b>인하대학교 대학원 전기컴퓨터공학과 · 인공지능 전공</b><span>공학석사 · 금융인공지능(AIF) 연구실 · 지도교수 김도국 · 학점 4.38 / 4.5</span></div><em>2024.09 – 2026.08</em></div>
@@ -344,11 +373,14 @@
       <div class="row"><div><b><a class="pl" href="#pub-tkips">다중 목적 학습과 Self-Consistency를 활용한 생성형 LLM의 자동 에세이 채점 성능 최적화</a></b><span>정보처리학회논문지 (TKIPS) 15(5) · KCI 등재지 · 1저자</span></div><em>2026.05</em></div>
       <div class="row"><div><b><a class="pl" href="#pub-kaes">Enhancing Korean Automated Essay Scoring via Linguistically Informed Augmentation and Topic-Aware Preprocessing</a></b><span>Natural Language Processing (Cambridge University Press) · SCI(E) · 1저자 · 심사 중 (R1 수정본 제출)</span></div><em>2025.06 –</em></div>
     </div>
+    </div>
   </div></section>
 
   <section class="tlsec" id="timeline"><div class="wrap">
-    <div class="head"><h2>타임라인 · 2022 – 2026</h2><p>논문과 프로젝트를 시간순으로 놓았습니다. 카드를 누르면 그 일의 문제 해결 과정이 단계별로 열립니다.</p></div>
+    <div class="head"><h2>타임라인 · 2022 – 2026</h2><p>논문과 프로젝트를 시간순으로 놓았습니다. 카드를 누르면 그 일의 문제 해결 과정이 단계별로 열립니다.</p>
+      <div class="tgl" style="margin-top:14px" role="group" aria-label="타임라인 보기 방식"><button type="button" id="tl-v" class="on">세로 · 자세히</button><button type="button" id="tl-h">가로 · 핵심만</button></div></div>
     <div class="tl" id="tl"></div>
+    <div class="tlh" id="tlh" hidden><div class="track" id="tlh-track"></div></div>
   </div></section>
 
 </main>
@@ -613,6 +645,29 @@ const EVENTS = [
     </div>`;
   });
   document.getElementById('tl').innerHTML=html;
+})();
+/* 가로 타임라인 (핵심만) */
+(function(){
+  let html='', year='';
+  EVENTS.forEach(e=>{
+    const y=e.d.slice(0,4); if(y!==year){ year=y; html+=`<div class="hyr">${y}</div>`; }
+    if(e.ms){ html+=`<div class="hms"><span class="d">${esc(e.d)}</span>${esc(e.ms.split('. ')[0].split(' — ')[0])}</div>`; return; }
+    const it=byId(e.k,e.id); const kind=e.k==='pub'?'논문':'프로젝트';
+    const sub=e.k==='pub'?esc(it.venue):(it.res?esc(it.res):esc(it.who));
+    html+=`<button type="button" class="hev" data-open="${e.k}:${it.id}"><span class="d">${esc(e.d)}</span><span class="k">${kind}</span><b>${esc(it.ko||it.t)}</b><span class="s">${sub}</span></button>`;
+  });
+  document.getElementById('tlh-track').innerHTML=html;
+  const tl=document.getElementById('tl'), tlh=document.getElementById('tlh'), bv=document.getElementById('tl-v'), bh=document.getElementById('tl-h');
+  function mode(m){ const h=m==='h'; tl.hidden=h; tlh.hidden=!h; bv.classList.toggle('on',!h); bh.classList.toggle('on',h); try{ localStorage.setItem('tlmode',m); }catch{} }
+  bv.onclick=()=>mode('v'); bh.onclick=()=>mode('h');
+  let saved='v'; try{ saved=localStorage.getItem('tlmode')||'v'; }catch{} if(saved==='h') mode('h');
+})();
+/* 이력 접기 */
+(function(){
+  const b=document.getElementById('cv-fold'), body=document.getElementById('cvbody');
+  function set(open){ body.hidden=!open; b.textContent=open?'접기':'펼치기'; b.setAttribute('aria-expanded',String(open)); if(open) body.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); try{ localStorage.setItem('cvopen',open?'1':'0'); }catch{} }
+  b.onclick=()=>set(body.hidden);
+  let saved='1'; try{ saved=localStorage.getItem('cvopen')||'1'; }catch{} if(saved==='0') set(false);
 })();
 const rvObs=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); rvObs.unobserve(en.target); } }); },{rootMargin:'0px 0px -6% 0px',threshold:.05});
 document.querySelectorAll('.rv').forEach(el=>rvObs.observe(el));
