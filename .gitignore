@@ -1,0 +1,5 @@
+# 사이트 파일만 올립니다
+*
+!index.html
+!.gitignore
+!README.md
