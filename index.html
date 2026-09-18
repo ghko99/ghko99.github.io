@@ -682,13 +682,15 @@ const CHAT_ENDPOINT = "https://goganghee-chat.goganghee.workers.dev";
   const bub=(cls,text)=>{ const b=document.createElement('div'); b.className='bub '+cls; b.textContent=text; log.appendChild(b); log.scrollTop=log.scrollHeight; return b; };
   const him=(text)=>{ const b=bub('him',''); linkify(b,text); return b; };
   function lock(msg){ locked=true; input.disabled=true; send.disabled=true; input.placeholder=msg; sugg.hidden=true; }
-  function open(){
+  function open(focus=true){
     dm.hidden=false;
     if(!opened){ opened=true; const t=document.createElement('div'); t.className='dm-time'; t.textContent=now(); log.appendChild(t);
       const hi='안녕하세요! 고강희입니다. 논문이나 프로젝트에서 궁금한 게 있으면 편하게 물어보세요.'; him(hi); turns.push({role:'assistant',content:hi}); }
-    setTimeout(()=>input.focus(),50);
+    if(focus) setTimeout(()=>input.focus(),50);
   }
-  document.getElementById('photo').onclick=open;
+  document.getElementById('photo').onclick=()=>open();
+  // 처음 열 때 채팅창을 켜 둔다. 좁은 화면(모바일)은 채팅창이 화면을 다 가리므로 사진을 눌렀을 때만 연다.
+  if(window.matchMedia('(min-width:760px)').matches) open(false);
   document.getElementById('dm-close').onclick=()=>{ dm.hidden=true; };
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!dm.hidden&&lb.hidden&&!ov.classList.contains('on')) dm.hidden=true; });
   async function request(){
