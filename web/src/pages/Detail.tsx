@@ -4,6 +4,18 @@ import { byId, img, ORDER } from '../data'
 import { stackOf } from '../data/stack'
 import type { Img, Item, Kind, Node } from '../data/types'
 
+/** 링크 아이콘: 아는 사이트는 로고, 논문 PDF는 문서 아이콘, 나머지는 그 사이트의 파비콘 */
+function linkIcon(label: string, url: string): string {
+  if (url.startsWith('papers/')) return '/logos/pdf.svg'
+  let host = ''; try { host = new URL(url).hostname.replace(/^www\./, '') } catch { /* ignore */ }
+  const known: [RegExp, string][] = [
+    [/github\.com$/, 'github.svg'], [/^doi\.org$/, 'doi.svg'], [/arxiv\.org$/, 'arxiv.svg'], [/drive\.google\.com$/, 'googledrive.svg'], [/youtu\.?be/, 'youtube.svg'],
+    [/dl\.acm\.org$/, 'acm.svg'], [/kci\.go\.kr$/, 'kci.png'], [/cambridge\.org$/, 'cup.png'], [/aihub\.or\.kr$/, 'aihub.png'], [/upflow\.ai\.kr$/, 'upflow.png'], [/hclt|sites\.google\.com/, 'sighclt.png'],
+  ]
+  for (const [re, f] of known) if (re.test(host)) return `/logos/${f}`
+  return `https://www.google.com/s2/favicons?domain=${host}&sz=64`
+}
+
 function Figs({ imgs }: { imgs?: Img[] }) {
   const [lb, setLb] = useState<Img | null>(null)
   if (!imgs?.length) return null
@@ -86,7 +98,7 @@ export default function Detail() {
         {kind === 'pub' ? <><b className="font-medium text-ink-2">{it.venue}</b> · {it.y}{it.role ? ` · ${it.role}` : ''}<br />{it.authors}</> : <><b className="font-medium text-ink-2">{it.y}</b> · {it.who}{it.res ? ` · ${it.res}` : ''}</>}
         {it.meta && <><br />{it.meta}</>}
       </div>
-      {!!it.links?.length && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[13.5px]">{it.links.map(([n, u]) => <a key={u} className="text-ink-2 underline decoration-line underline-offset-4 hover:text-accent" href={u.startsWith('papers/') ? '/' + u : u} target="_blank" rel="noopener">{n}</a>)}</div>}
+      {!!it.links?.length && <div className="mt-4 flex flex-wrap gap-2 text-[13px]">{it.links.map(([n, u]) => <a key={u} className="inline-flex items-center gap-1.5 rounded-md border border-line bg-paper px-2.5 py-1 text-ink-2 transition hover:border-ink-3 hover:text-ink" href={u.startsWith('papers/') ? '/' + u : u} target="_blank" rel="noopener"><img src={linkIcon(n, u)} alt="" className="h-[15px] w-[15px] rounded-[3px] object-contain" loading="lazy" />{n}</a>)}</div>}
       {(() => { const st = stackOf(kind!, id!); return st ? (
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-ink-2">
           {st.map(([name, logo]) => <span key={name} className="inline-flex items-center gap-1.5">{logo && <img src={`/logos/${logo}`} alt="" className="h-[16px] w-[16px] object-contain" loading="lazy" />}{name}</span>)}

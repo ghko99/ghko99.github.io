@@ -30,9 +30,9 @@ export default function Hero() {
             {PROFILE.name}<span className="ml-3 text-[0.4em] font-normal tracking-normal text-ink-3">{PROFILE.en}</span>
           </h1>
           <p className="mt-3 text-[18px] font-medium tracking-tight text-ink-2">NLP · LLM · 인공지능 석사 신입</p>
-          <dl className="mt-5 grid max-w-[60ch] grid-cols-[max-content_1fr] gap-x-5 gap-y-2 text-[14.5px] leading-relaxed">
+          <dl className="mt-5 grid max-w-[60ch] grid-cols-[max-content_1fr] gap-x-5 gap-y-2.5 leading-relaxed">
             {BRIEF.map(([k, v]) => (
-              <div key={k} className="contents"><dt className="text-[13px] text-ink-3">{k}</dt><dd className="text-ink-2">{v}</dd></div>
+              <div key={k} className="contents"><dt className="text-[13.5px] font-semibold tracking-wide text-ink-3">{k}</dt><dd className="text-[15px] font-medium text-ink">{v}</dd></div>
             ))}
           </dl>
           <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-[14px] text-ink-2">
