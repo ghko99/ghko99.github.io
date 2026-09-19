@@ -64,7 +64,7 @@ export default function CV() {
           { when: '2026.03 – 2026.09', title: '딥러닝 기반 모호성 분석 및 비식별화 모듈 개발', sub: 'YM-나을텍 용역과제 · 참여 연구원 · 법률·판결문 LLM 파인튜닝과 학습 데이터 전처리, 민감 속성 정의와 비식별화 모듈' },
           { when: '2025.07 – 2025.12', title: '실험실 특화형 창업선도대학 단독형 2기 (인하대학교)', logos: ['compa.svg'], sub: '참여 연구원 · 창업팀 Upflow AI 기술 총괄' },
           { when: '2025.07 – 2025.10', title: '산업융합형 멀티모달 생성 인공지능 인재양성', logos: ['iitp.svg'], sub: '참여 연구원 · 보고서 자동 생성 담당' },
-          { when: '2025.03 – 2026.02', title: '사용자 중심의 한국어 텍스트 분석 도구(U-KTA) 개발', logos: ['nrf.svg'], sub: '참여 연구원 · 설명 가능한 글쓰기 평가 모델 담당 · ACM SAC 2025, 2026' },
+          { when: '2025.03 – 2026.02', title: '사용자 중심의 한국어 텍스트 분석 도구(U-KTA) 개발', logos: ['nrf.svg'], sub: '참여 연구원 · 딥러닝 언어모델 성능 고도화 담당 · ACM SAC 2025, 2026' },
           { when: '2023.07 – 2023.12', title: '한국어 성능이 개선된 초거대 AI 언어모델 개발 및 데이터 구축', logos: ['nia.png', 'aihub.png'], sub: '참여 연구원 · 일상어 8.6억 어절 증강·품질 검증 · AI-Hub 개방' },
         ]} />
         <div className="grid grid-cols-1 gap-x-12 md:grid-cols-2">
