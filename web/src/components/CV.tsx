@@ -82,7 +82,7 @@ export default function CV() {
             ]} />
           </div>
           <div>
-            <Sec title="수상" rows={[{ when: '2024.12', title: '제1회 AI 반도체 기술인재 선발대회 우수상', logos: ['kait.svg', 'msit.svg', 'rebellions.svg'], logosBelow: true, sub: '한국정보통신진흥협회 회장상 · sLLM/sLM 분야 · 수요기업 리벨리온 · 전국 91팀 중 2위' }]} />
+            <Sec title="수상" rows={[{ when: '2024.12', title: '제1회 AI 반도체 기술인재 선발대회 우수상 · 전국 91팀 중 2위', logos: ['kait.svg', 'msit.svg', 'rebellions.svg'], logosBelow: true, sub: '한국정보통신진흥협회 회장상 · sLLM/sLM 분야 · 수요기업 리벨리온' }]} />
             <h3 className="mb-1 border-b-2 border-ink pb-2 text-[12px] font-bold tracking-[.1em]">기술</h3>
             <div className="text-[13.5px] text-ink-2">
               {TECH.map(([k, v]) => (
