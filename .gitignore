@@ -1,6 +1,11 @@
 # 사이트 파일과 채팅 워커 소스만 올립니다
 *
 !index.html
+!.nojekyll
+!assets/
+!assets/*
+!img/
+!img/*
 !.gitignore
 !README.md
 !papers/

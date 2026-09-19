@@ -31,7 +31,7 @@ function Step({ n, i, steps, onGo }: { n: Node; i: number; steps: Node[]; onGo: 
   const one = !(n.q && n.a)
   return (
     <div className="mt-9">
-      <div className="mb-6 flex flex-wrap items-baseline gap-3.5"><small className="text-[12.5px] font-medium text-accent">{i + 1} / {total}</small><h2 className="text-[24px] font-extrabold tracking-tight sm:text-[28px]">{n.t}</h2>{n.s && <span className="text-[13.5px] text-ink-2">{n.s}</span>}</div>
+      <div className="mb-6 flex flex-wrap items-baseline gap-3.5"><small className="text-[12.5px] tabular-nums text-ink-3">{i + 1} / {total}</small><h2 className="text-[22px] font-bold tracking-tight sm:text-[26px]">{n.t}</h2>{n.s && <span className="text-[13.5px] text-ink-2">{n.s}</span>}</div>
       {(n.q || n.a) && (
         <div className={`prose-qa grid gap-6 ${one ? 'grid-cols-1' : 'grid-cols-1'}`}>
           {n.q && <div className="q"><h4 className="mb-3 flex items-center gap-2.5 text-[11.5px] font-bold tracking-[.14em] text-ink-3 before:h-px before:w-[22px] before:bg-ink-3">고민</h4><div dangerouslySetInnerHTML={{ __html: n.q }} /></div>}
@@ -63,14 +63,23 @@ export default function Detail() {
   const it: Item | undefined = kind && id ? byId(kind, id) : undefined
   const [cur, setCur] = useState(0)
   useEffect(() => { setCur(0); window.scrollTo(0, 0); if (it) document.title = `${it.t} — 고강희` }, [kind, id, it])
+  // 닫기: 사이트 안에서 들어왔으면 뒤로(스크롤 위치 유지), 링크로 바로 열었으면 타임라인으로
+  const close = () => { const st = window.history.state as { idx?: number } | null; if (st && st.idx && st.idx > 0) nav(-1); else nav('/?s=timeline') }
+  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role=dialog]')) close() }; addEventListener('keydown', k); return () => removeEventListener('keydown', k) })
   if (!it) return <div className="p-10">없는 항목입니다. <Link to="/" className="text-accent underline">홈으로</Link></div>
   const idx = ORDER.findIndex(([k, p]) => k === kind && p.id === id); const prev = ORDER[idx - 1]; const next = ORDER[idx + 1]
   const go = (j: number) => { setCur(j); setTimeout(() => document.getElementById('np')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0) }
   const steps = it.nodes
   return (
-    <div className="mx-auto max-w-[1120px] px-5 pb-32 pt-8 sm:px-8 sm:pt-12">
-      <div className="mb-3 text-[12.5px] font-medium tracking-wide text-accent">{kind === 'pub' ? '논문' : '프로젝트'}{kind === 'pub' && it.st ? ` · ${it.st}` : ''}</div>
-      <h1 className="text-[28px] font-extrabold leading-tight tracking-[-0.02em] sm:text-[40px]">{it.t}{it.ko && <span className="mt-2 block text-[16px] font-normal tracking-normal text-ink-2">{it.ko}</span>}</h1>
+    <div className="mx-auto max-w-[1120px] px-5 pb-32 pt-6 sm:px-8 sm:pt-8">
+      <button type="button" onClick={close} aria-label="닫기" title="닫기 (Esc)" className="fixed right-5 top-[68px] z-30 flex h-9 w-9 items-center justify-center rounded-full border border-line bg-paper text-ink-2 shadow-[0_4px_14px_-6px_rgba(15,23,42,.3)] hover:border-ink hover:text-ink">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M2 2l10 10M12 2L2 12" /></svg>
+      </button>
+      <div className="mb-6 flex items-center justify-between text-[13px] text-ink-3">
+        <button type="button" onClick={close} className="hover:text-ink">← 타임라인으로 돌아가기</button>
+        <span>{kind === 'pub' ? '논문' : '프로젝트'}{kind === 'pub' && it.st ? ` · ${it.st}` : ''}</span>
+      </div>
+      <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] sm:text-[34px]">{it.t}{it.ko && <span className="mt-2 block text-[16px] font-normal tracking-normal text-ink-2">{it.ko}</span>}</h1>
       <div className="mt-4 text-[13.5px] leading-relaxed text-ink-3">
         {kind === 'pub' ? <><b className="font-medium text-ink-2">{it.venue}</b> · {it.y}{it.role ? ` · ${it.role}` : ''}<br />{it.authors}</> : <><b className="font-medium text-ink-2">{it.y}</b> · {it.who}{it.res ? ` · ${it.res}` : ''}</>}
         {it.meta && <><br />{it.meta}</>}
@@ -85,7 +94,7 @@ export default function Detail() {
         <div className="flex overflow-x-auto pb-2 pt-1.5">
           {steps.map((n, j) => (
             <button key={j} type="button" onClick={() => go(j)} className="relative flex min-w-[112px] max-w-[180px] flex-1 flex-col items-start gap-1.5 pr-3.5 text-left before:absolute before:left-0 before:right-0 before:top-[13px] before:h-px before:bg-line first:before:left-[13px] last:before:right-auto last:before:w-[13px]">
-              <small className={`relative z-[1] flex h-[26px] w-[26px] items-center justify-center rounded-full border-[1.5px] text-[11.5px] font-semibold tabular-nums ${j === cur ? 'border-accent bg-accent text-white ring-4 ring-accent-2' : j < cur ? 'border-ink bg-ink text-paper' : 'border-line bg-paper text-ink-3'}`}>{j + 1}</small>
+              <small className={`relative z-[1] flex h-[26px] w-[26px] items-center justify-center rounded-full border-[1.5px] text-[11.5px] font-semibold tabular-nums ${j === cur ? 'border-ink bg-ink text-paper' : j < cur ? 'border-ink-2 bg-paper text-ink-2' : 'border-line bg-paper text-ink-3'}`}>{j + 1}</small>
               <b className={`text-[13px] leading-snug ${j === cur ? 'font-semibold text-ink' : 'font-medium text-ink-2'}`}>{n.t}</b>
               {n.s && <i className="-mt-1 text-[11.5px] not-italic text-ink-3">{n.s}</i>}
             </button>

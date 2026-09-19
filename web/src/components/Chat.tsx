@@ -7,7 +7,7 @@ const HI = '안녕하세요! 고강희입니다. 논문이나 프로젝트에서
 
 type Msg = { who: 'me' | 'him'; text: string; status?: string; sources?: { t: string; u: string }[] }
 const listeners = new Set<() => void>()
-/** 어디서든 채팅창을 연다 (히어로 사진, 런처) */
+/** 어디서든 채팅창을 연다 */
 export const openChat = () => listeners.forEach((f) => f())
 
 const clean = (t: string) => t.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '$1($2)').replace(/`([^`]+)`/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^[\s]*[-*•]\s+/gm, '').replace(/^#+\s*/gm, '').replace(/^(고강희|Ganghee)\s*[:：]\s*/, '').replace(/\n{3,}/g, '\n\n').trim()
@@ -67,8 +67,8 @@ export default function Chat() {
   return (
     <>
       {!open && (
-        <button type="button" onClick={() => setOpen(true)} className="fixed bottom-5 right-5 z-[39] inline-flex items-center gap-2.5 rounded-full bg-ink py-2.5 pl-2.5 pr-4 text-[14px] font-semibold text-paper shadow-[0_12px_30px_-10px_rgba(15,23,42,.45)] transition hover:-translate-y-0.5 hover:bg-accent hover:text-white">
-          <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-accent-2 text-[15px]">💬<i className="absolute -bottom-px -right-px h-[9px] w-[9px] rounded-full border-2 border-ink bg-emerald-400" /></span>고강희에게 질문하기
+        <button type="button" onClick={() => setOpen(true)} className="fixed bottom-5 right-5 z-[39] inline-flex items-center gap-2.5 rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.5)] transition hover:bg-accent">
+          <i className="h-[7px] w-[7px] rounded-full bg-emerald-400" />고강희에게 질문하기
         </button>
       )}
       {open && (
