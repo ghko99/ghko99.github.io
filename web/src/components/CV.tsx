@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 type Row = { when: string; title: string; sub?: string; href?: string; tag?: string; logos?: string[]; inline?: boolean; logosBelow?: boolean }
 const Sec = ({ title, rows }: { title: string; rows: Row[] }) => (
   <div className="mb-8">
-    <h3 className="mb-1 border-b-2 border-ink pb-2 text-[12px] font-bold tracking-[.1em]">{title}</h3>
+    <h3 className="mb-1 border-b-2 border-ink pb-2 text-[14px] font-bold tracking-[.06em]">{title}</h3>
     {rows.map((r, i) => (
       <div key={i} className="grid grid-cols-1 gap-x-6 gap-y-1 border-b border-line-2 py-3 last:border-0 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div>
@@ -83,7 +83,7 @@ export default function CV() {
           </div>
           <div>
             <Sec title="수상" rows={[{ when: '2024.12', title: '제1회 AI 반도체 기술인재 선발대회 우수상 · 전국 91팀 중 2위', logos: ['kait.svg', 'msit.svg', 'rebellions.svg'], logosBelow: true, sub: '한국정보통신진흥협회 회장상 · sLLM/sLM 분야 · 수요기업 리벨리온' }]} />
-            <h3 className="mb-1 border-b-2 border-ink pb-2 text-[12px] font-bold tracking-[.1em]">기술</h3>
+            <h3 className="mb-1 border-b-2 border-ink pb-2 text-[14px] font-bold tracking-[.06em]">기술</h3>
             <div className="text-[13.5px] text-ink-2">
               {TECH.map(([k, v]) => (
                 <div key={k} className="border-b border-line-2 py-2.5 last:border-0">
