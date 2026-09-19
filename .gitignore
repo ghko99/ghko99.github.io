@@ -13,3 +13,8 @@ chat-worker/.wrangler/
 chat-worker/dist/
 chat-worker/.dev.vars
 chat-worker/package-lock.json
+!web/
+!web/**
+web/node_modules/
+web/dist/
+web/public/papers/

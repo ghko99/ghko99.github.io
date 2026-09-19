@@ -1,0 +1,31 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import Hero from '../components/Hero'
+import CV from '../components/CV'
+import Timeline from '../components/Timeline'
+import { PROFILE } from '../data'
+
+export default function Home() {
+  const { search } = useLocation()
+  // 상세 페이지에서 "이력/타임라인"으로 돌아올 때 해당 절로 스크롤
+  useEffect(() => {
+    const s = new URLSearchParams(search).get('s')
+    if (s) setTimeout(() => document.getElementById(s)?.scrollIntoView({ behavior: 'smooth' }), 50)
+    document.title = '고강희 · Ganghee Go'
+  }, [search])
+  return (
+    <>
+      <Hero />
+      <main>
+        <CV />
+        <Timeline />
+      </main>
+      <footer className="border-t border-line-2 py-8 text-[13px] text-ink-3">
+        <div className="mx-auto flex max-w-[1120px] flex-wrap justify-between gap-2 px-5 sm:px-8">
+          <span>{PROFILE.name} · {PROFILE.en}</span>
+          <span>{PROFILE.email} · github.com/ghko99 · 2026.09</span>
+        </div>
+      </footer>
+    </>
+  )
+}

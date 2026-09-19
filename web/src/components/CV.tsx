@@ -1,0 +1,74 @@
+type Row = { when: string; title: string; sub?: string; href?: string; tag?: string }
+const Sec = ({ title, rows }: { title: string; rows: Row[] }) => (
+  <div className="mb-8">
+    <h3 className="mb-1 border-b-2 border-ink pb-2 text-[12px] font-bold tracking-[.1em]">{title}</h3>
+    {rows.map((r, i) => (
+      <div key={i} className="grid grid-cols-1 gap-x-6 gap-y-1 border-b border-line-2 py-3 last:border-0 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div>
+          <b className="block text-[15px] font-semibold leading-snug">
+            {r.tag && <span className="mr-2 rounded-full bg-accent-2 px-2 py-px text-[11.5px] font-semibold text-accent">{r.tag}</span>}
+            {r.href ? <a className="underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent" href={r.href}>{r.title}</a> : r.title}
+          </b>
+          {r.sub && <span className="mt-0.5 block text-[13.5px] text-ink-2">{r.sub}</span>}
+        </div>
+        <em className="whitespace-nowrap pt-0.5 text-[13px] not-italic tabular-nums text-ink-3">{r.when}</em>
+      </div>
+    ))}
+  </div>
+)
+
+export default function CV() {
+  return (
+    <section id="cv" className="border-t border-line-2 py-12 sm:py-16">
+      <div className="mx-auto max-w-[1120px] px-5 sm:px-8">
+        <div className="mb-7 flex items-baseline justify-between gap-4">
+          <h2 className="text-[26px] font-extrabold tracking-tight sm:text-[32px]">이력</h2>
+          <a className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 hover:text-accent" href="https://github.com/ghko99" target="_blank" rel="noopener">github.com/ghko99</a>
+        </div>
+        <Sec title="학력" rows={[
+          { when: '2024.09 – 2026.08', title: '인하대학교 대학원 전기컴퓨터공학과 · 인공지능 전공', sub: '공학석사 · 금융인공지능(AIF) 연구실 · 지도교수 김도국 · 학점 4.38 / 4.5' },
+          { when: '2018.03 – 2024.02', title: '인하대학교 컴퓨터공학과', sub: '공학사 · 우수 졸업 · 학점 4.15 / 4.5 (전공 4.23) · 졸업 석차 13 / 138' },
+        ]} />
+        <Sec title="논문" rows={[
+          { when: '2026.05', tag: '국내저널', href: '#/p/pub/tkips', title: '다중 목적 학습과 Self-Consistency를 활용한 생성형 LLM의 자동 에세이 채점 성능 최적화', sub: '정보처리학회논문지 (TKIPS) 15(5) · KCI 등재지 · 1저자' },
+          { when: '2026.03', tag: '국제학회', href: '#/p/pub/feak', title: 'From Evaluation to Feedback: A Feature-Based and LLM-Constrained Tool for Korean Writing', sub: 'ACM SAC 2026 · Thessaloniki, Greece · 2저자' },
+          { when: '2025.03', tag: '국제학회', href: '#/p/pub/ukta', title: 'UKTA: Unified Korean Text Analyzer', sub: 'ACM SAC 2025 · Catania, Italy · 공동 1저자 · 구두 발표' },
+          { when: '2023.10', tag: '국내학회', href: '#/p/pub/hclt', title: '에세이 자동 평가 모델 성능 향상을 위한 데이터 증강과 전처리', sub: 'HCLT 2023 한글 및 한국어 정보처리 학술대회 · 1저자 · 구두 발표' },
+          { when: '2023.06', tag: '국내학회', href: '#/p/pub/kcc', title: '데이터 증강을 이용한 KoBERT 기반 에세이 자동 평가 성능 향상', sub: 'KCC 2023 한국컴퓨터종합학술대회 · 1저자 · 포스터' },
+          { when: '2025.06 –', tag: '심사중', href: '#/p/pub/kaes', title: 'Enhancing Korean Automated Essay Scoring via Linguistically Informed Augmentation and Topic-Aware Preprocessing', sub: 'Natural Language Processing (Cambridge University Press) · SCI(E) · 1저자 · R1 수정본 제출' },
+        ]} />
+        <Sec title="참여 과제" rows={[
+          { when: '2026.03 – 2026.09', title: '딥러닝 기반 모호성 분석 및 비식별화 모듈 개발', sub: 'YM-나을텍 용역과제 · 참여 연구원 · 법률·판결문 LLM 파인튜닝과 학습 데이터 전처리, 민감 속성 정의와 비식별화 모듈' },
+          { when: '2025.07 – 2025.12', title: '실험실 특화형 창업선도대학 단독형 2기 (인하대학교)', sub: '과학기술사업화진흥원 · 참여 연구원 · 창업팀 Upflow AI 기술 총괄' },
+          { when: '2025.07 – 2025.10', title: '산업융합형 멀티모달 생성 인공지능 인재양성', sub: '정보통신기획평가원 · 참여 연구원 · 보고서 자동 생성 담당' },
+          { when: '2025.03 – 2026.02', title: '사용자 중심의 한국어 텍스트 분석 도구(U-KTA) 개발', sub: '한국연구재단 · 참여 연구원 · 설명 가능한 글쓰기 평가 모델 담당 · ACM SAC 2025, 2026' },
+          { when: '2023.07 – 2023.12', title: '한국어 성능이 개선된 초거대 AI 언어모델 개발 및 데이터 구축', sub: '한국지능정보사회진흥원 · 참여 연구원 · 일상어 8.6억 어절 증강·품질 검증 · AI-Hub 개방' },
+        ]} />
+        <div className="grid grid-cols-1 gap-x-12 md:grid-cols-2">
+          <div>
+            <Sec title="수상" rows={[{ when: '2024.12', title: '제1회 AI 반도체 기술인재 선발대회 우수상', sub: '한국정보통신진흥협회 회장상 · 과학기술정보통신부 · sLLM/sLM 분야 · 전국 91팀 중 2위' }]} />
+            <Sec title="그 외 활동" rows={[
+              { when: '2025.04 –', title: '창업팀 Upflow · AI 기술 총괄', sub: '실험실 특화형 창업 과제 참여 · 2025 예비창업패키지 1차 지원 통과' },
+              { when: '2022.12 – 2024.02', title: '금융인공지능(AIF) 연구실 학부연구생', sub: '인하대학교 · 한국어 자동 에세이 채점 연구' },
+              { when: '2023.04 – 2024.02', title: 'SW 인재양성 · 벤처스타트업 아카데미 1기', sub: '인하대학교 · 알고리즘·자료구조 교육 수료' },
+              { when: '2022.03 – 2022.06', title: '다학년 연구 프로젝트', sub: '인하대학교' },
+            ]} />
+          </div>
+          <div>
+            <Sec title="자격 · 어학" rows={[
+              { when: '2026.08', title: 'ADsP 데이터분석 준전문가', sub: '한국데이터산업진흥원' },
+              { when: '2026.08', title: 'TOEIC Speaking IH', sub: '140 / 200' },
+              { when: '2026.08', title: 'AICE Associate', sub: 'AI 활용능력 인증 · KT' },
+            ]} />
+            <h3 className="mb-1 border-b-2 border-ink pb-2 text-[12px] font-bold tracking-[.1em]">기술</h3>
+            <div className="text-[13.5px] text-ink-2">
+              {[['언어 · 프레임워크', 'Python, PyTorch, Hugging Face Transformers, PEFT, FastAPI'], ['LLM · NLP', 'LLM Fine-tuning, LoRA/QLoRA, RAG, LangChain, FAISS, vLLM, Ollama, Automated Essay Scoring, Korean NLP'], ['데이터 · 엔지니어링', 'Pandas, NumPy, Dask, scikit-learn, Docker, Git, Linux/Shell, Anaconda'], ['API · 도구', 'OpenAI API, Claude API, Weights & Biases, TensorBoard, Triton Inference Server']].map(([k, v]) => (
+                <div key={k} className="border-b border-line-2 py-2.5 last:border-0"><b className="block text-[13px] font-semibold text-ink">{k}</b>{v}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

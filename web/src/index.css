@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --color-ink: #0f172a;
+  --color-ink-2: #475569;
+  --color-ink-3: #94a3b8;
+  --color-line: #e2e8f0;
+  --color-line-2: #eef2f7;
+  --color-paper: #ffffff;
+  --color-paper-2: #f8fafc;
+  --color-accent: #2563eb;
+  --color-accent-2: #eff6ff;
+}
+
+html { scroll-behavior: smooth; }
+body { @apply bg-paper text-ink font-sans antialiased; font-size: 15px; line-height: 1.75; letter-spacing: -0.01em; word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 상세 페이지의 고민·해결 본문(원본 HTML) */
+.prose-qa ul { @apply list-none p-0 m-0; }
+.q ul { @apply border-l-2 border-line pl-4; }
+.q li { @apply text-[17px] font-semibold leading-relaxed mb-2; }
+.a li { @apply relative pl-[18px] leading-[1.95] mb-2.5; }
+.a li::before { content: ""; @apply absolute left-0 top-[0.95em] w-2 h-px bg-accent; }
+.a b, .intro b { @apply font-semibold; background: linear-gradient(transparent 62%, var(--color-accent-2) 62%); }
+.a pre { @apply text-[13px] leading-relaxed bg-paper-2 border border-line-2 rounded-md p-3 whitespace-pre-wrap mb-2.5; }
+.intro p { @apply text-[15.5px] leading-[1.9] text-ink-2; }
