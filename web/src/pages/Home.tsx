@@ -11,6 +11,14 @@ export default function Home() {
   useEffect(() => {
     const s = new URLSearchParams(search).get('s')
     if (s) setTimeout(() => document.getElementById(s)?.scrollIntoView({ behavior: 'smooth' }), 50)
+    // 상세 페이지를 닫고 돌아온 경우: 카드를 눌렀을 때의 스크롤 위치로 복원
+    try {
+      if (sessionStorage.getItem('restoreScroll') === '1') {
+        const y = Number(sessionStorage.getItem('homeScroll') || 0)
+        sessionStorage.removeItem('restoreScroll'); sessionStorage.removeItem('homeScroll')
+        requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, y)))
+      }
+    } catch { /* ignore */ }
     document.title = '고강희 · Ganghee Go'
   }, [search])
   return (

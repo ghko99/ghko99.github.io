@@ -67,8 +67,18 @@ export default function Chat() {
   return (
     <>
       {!open && (
-        <button type="button" onClick={() => setOpen(true)} className="fixed bottom-5 right-5 z-[39] inline-flex items-center gap-2.5 rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.5)] transition hover:bg-accent">
-          <i className="h-[7px] w-[7px] rounded-full bg-emerald-400" />고강희에게 질문하기
+        <button type="button" onClick={() => setOpen(true)} aria-label="고강희에게 질문하기" title="고강희에게 질문하기" className="group fixed bottom-5 right-5 z-[39] flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.6)] transition hover:-translate-y-0.5 hover:bg-accent">
+          {/* 작은 로봇 얼굴 */}
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M16 4v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="16" cy="3.5" r="1.8" fill="currentColor" />
+            <rect x="5" y="8" width="22" height="17" rx="6" stroke="currentColor" strokeWidth="2" />
+            <circle cx="12" cy="15.5" r="1.9" fill="currentColor" />
+            <circle cx="20" cy="15.5" r="1.9" fill="currentColor" />
+            <path d="M12 20.5c1.2 1.3 2.5 1.9 4 1.9s2.8-.6 4-1.9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M2.5 14v5M29.5 14v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          <i className="absolute right-[3px] top-[3px] h-3 w-3 rounded-full border-2 border-paper bg-emerald-400" />
         </button>
       )}
       {open && (

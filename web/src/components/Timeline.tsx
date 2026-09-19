@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { site, byId, img } from '../data'
 import { stackOf } from '../data/stack'
+import { cardOf } from '../data/card'
 import type { Kind } from '../data/types'
 
 /** 스크롤에 따라 나타나는 카드 */
@@ -35,7 +36,7 @@ function Horizontal() {
           const sub = e.k === 'pub' ? it.venue : it.res || it.who
           return (
             <div key={i} className="contents">{yearEl}
-              <Link to={`/p/${e.k}/${it.id}`} className="group relative w-[218px] flex-none border-l border-line-2 pl-0.5 text-left before:absolute before:-left-[5px] before:-top-[20px] before:h-[9px] before:w-[9px] before:rounded-full before:border before:border-ink-3 before:bg-paper">
+              <Link to={`/p/${e.k}/${it.id}`} onClick={() => { try { sessionStorage.setItem('homeScroll', String(window.scrollY)) } catch { /* ignore */ } }} className="group relative w-[218px] flex-none border-l border-line-2 pl-0.5 text-left before:absolute before:-left-[5px] before:-top-[20px] before:h-[9px] before:w-[9px] before:rounded-full before:border before:border-ink-3 before:bg-paper">
                 <span className="block pl-2.5 text-[12px] tabular-nums text-ink-3">{e.d}</span>
                 <span className="mb-1 mt-1.5 block pl-2.5 text-[11.5px] font-medium text-ink-2">{e.k === 'pub' ? '논문' : '프로젝트'}</span>
                 <b className="line-clamp-3 block pl-2.5 text-[14.5px] font-semibold leading-[1.45] group-hover:text-accent">{it.ko || it.t}</b>
@@ -87,13 +88,21 @@ export default function Timeline() {
             const kind = e.k === 'pub' ? '논문' : '프로젝트'
             const sub = e.k === 'pub' ? it.venue : it.who
             const span = it.y.includes('–') ? ' – ' + it.y.split('–')[1].trim() : ''
+            const cd = cardOf(e.k, it.id)
             const card = (
-              <Link to={`/p/${e.k}/${it.id}`} className="group flex flex-col gap-3 text-left">
-                {it.cover && <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-md border border-line-2 bg-paper-2 transition group-hover:border-ink-3"><img src={img(it.cover)} alt="" loading="lazy" className="h-full w-full object-contain" /></div>}
+              <Link to={`/p/${e.k}/${it.id}`} onClick={() => { try { sessionStorage.setItem('homeScroll', String(window.scrollY)) } catch { /* ignore */ } }} className="group flex flex-col gap-2.5 text-left">
+                {it.cover && <div className="mb-0.5 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-md border border-line-2 bg-paper-2 transition group-hover:border-ink-3"><img src={img(it.cover)} alt="" loading="lazy" className="h-full w-full object-contain" /></div>}
                 <div className="flex items-center gap-2.5 text-[12.5px] text-ink-3"><b className="font-medium text-ink-2">{kind}</b><span className="text-line">|</span><span>{e.d}{span}</span>{e.k === 'pub' && it.st && <span>· {it.st}</span>}</div>
                 <h3 className="text-[18px] font-semibold leading-snug tracking-tight transition group-hover:text-accent">{it.t}{it.ko && <span className="mt-0.5 block text-[13.5px] font-normal text-ink-2">{it.ko}</span>}</h3>
-                <div className="text-[13.5px] text-ink-2">{sub}{e.k === 'pub' && it.role ? ` · ${it.role}` : ''}{e.k === 'proj' && it.res ? ` · ${it.res}` : ''}</div>
-                <div className="text-[13.5px] text-ink-2">{e.sum}</div>
+                {(cd?.logos.length || e.k === 'pub' || !cd) ? <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-ink-2">
+                  {cd?.logos.map((l) => <img key={l} src={`/logos/${l}`} alt="" className="inline-block h-[18px] w-auto max-w-[140px] object-contain" loading="lazy" />)}
+                  {(e.k === 'pub' || !cd) && <span>{sub}</span>}
+                </div> : null}
+                <div className="text-[13.5px] leading-relaxed text-ink-2">{cd ? cd.what : e.sum}</div>
+                {cd && <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-0.5 text-[13px] text-ink-2">
+                  <dt className="font-medium text-ink">역할</dt><dd>{cd.role}</dd>
+                  <dt className="font-medium text-ink">성과</dt><dd>{cd.result}</dd>
+                </dl>}
                 <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-ink-3">{(stackOf(e.k, it.id) || (it.tags || []).map((t) => [t] as [string])).slice(0, 6).map(([t, logo]) => <span key={t} className="inline-flex items-center gap-1">{logo && <img src={`/logos/${logo}`} alt="" className="h-[14px] w-[14px] object-contain" loading="lazy" />}{t}</span>)}</div>
                 <div className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 transition group-hover:text-accent group-hover:decoration-accent">문제 해결 과정 보기</div>
               </Link>

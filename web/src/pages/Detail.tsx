@@ -64,8 +64,8 @@ export default function Detail() {
   const it: Item | undefined = kind && id ? byId(kind, id) : undefined
   const [cur, setCur] = useState(0)
   useEffect(() => { setCur(0); window.scrollTo(0, 0); if (it) document.title = `${it.t} — 고강희` }, [kind, id, it])
-  // 닫기: 사이트 안에서 들어왔으면 뒤로(스크롤 위치 유지), 링크로 바로 열었으면 타임라인으로
-  const close = () => { const st = window.history.state as { idx?: number } | null; if (st && st.idx && st.idx > 0) nav(-1); else nav('/?s=timeline') }
+  // 닫기: 타임라인에서 들어왔으면 보던 위치로 돌아가고(Home이 homeScroll을 복원), 링크로 바로 열었으면 타임라인으로
+  const close = () => { let y: string | null = null; try { y = sessionStorage.getItem('homeScroll') } catch { /* ignore */ } if (y) { try { sessionStorage.setItem('restoreScroll', '1') } catch { /* ignore */ } nav('/') } else nav('/?s=timeline') }
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role=dialog]')) close() }; addEventListener('keydown', k); return () => removeEventListener('keydown', k) })
   if (!it) return <div className="p-10">없는 항목입니다. <Link to="/" className="text-accent underline">홈으로</Link></div>
   const idx = ORDER.findIndex(([k, p]) => k === kind && p.id === id); const prev = ORDER[idx - 1]; const next = ORDER[idx + 1]
