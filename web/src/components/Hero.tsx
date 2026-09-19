@@ -4,7 +4,6 @@ const BRIEF: [string, string][] = [
   ['연구 분야', '자연어처리 · LLM · Automated Essay Scoring'],
   ['관심 분야', 'Agent · LLM · RAG · 데이터 증강'],
   ['경험', 'LLM 파인튜닝 · RAG · 데이터 엔지니어링 · NPU 추론 서빙'],
-  ['강점', '실행력 · 협업 · 책임감 · 성실성'],
 ]
 const FACTS: [string, string][] = [
   ['2편', '국제학회 논문 게재 · ACM SAC 2025, 2026'],
