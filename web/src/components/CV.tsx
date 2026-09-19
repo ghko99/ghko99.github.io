@@ -43,7 +43,6 @@ export default function CV() {
         <div className="mb-7 flex items-baseline justify-between gap-4">
           <h2 className="text-[26px] font-bold tracking-tight sm:text-[30px]">이력</h2>
           <div className="flex items-center gap-4">
-            <a className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 hover:text-accent" href="https://github.com/ghko99" target="_blank" rel="noopener">github.com/ghko99</a>
             <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="cvbody" className="rounded-full border border-line px-3 py-1 text-[12.5px] text-ink-3 hover:border-ink-3 hover:text-ink">{open ? '접기' : '펼치기'}</button>
           </div>
         </div>
