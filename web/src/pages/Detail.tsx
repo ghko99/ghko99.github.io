@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { byId, img, ORDER } from '../data'
+import { stackOf } from '../data/stack'
 import type { Img, Item, Kind, Node } from '../data/types'
 
 function Figs({ imgs }: { imgs?: Img[] }) {
@@ -85,7 +86,11 @@ export default function Detail() {
         {it.meta && <><br />{it.meta}</>}
       </div>
       {!!it.links?.length && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[13.5px]">{it.links.map(([n, u]) => <a key={u} className="text-ink-2 underline decoration-line underline-offset-4 hover:text-accent" href={u.startsWith('papers/') ? '/' + u : u} target="_blank" rel="noopener">{n}</a>)}</div>}
-      {!!it.tags?.length && <div className="mt-3 text-[12.5px] text-ink-3">{it.tags.join(' · ')}</div>}
+      {(() => { const st = stackOf(kind!, id!); return st ? (
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-ink-2">
+          {st.map(([name, logo]) => <span key={name} className="inline-flex items-center gap-1.5">{logo && <img src={`/logos/${logo}`} alt="" className="h-[16px] w-[16px] object-contain" loading="lazy" />}{name}</span>)}
+        </div>
+      ) : !!it.tags?.length && <div className="mt-3 text-[12.5px] text-ink-3">{it.tags.join(' · ')}</div> })()}
 
       <div className="mt-10"><Figs imgs={it.intro.imgs} /><h3 className="mb-2 text-[12.5px] font-medium text-ink-3">개요</h3><div className="intro" dangerouslySetInnerHTML={{ __html: it.intro.html }} /></div>
 

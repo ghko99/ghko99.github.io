@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { site, byId, img } from '../data'
+import { stackOf } from '../data/stack'
 import type { Kind } from '../data/types'
 
 /** 스크롤에 따라 나타나는 카드 */
@@ -93,7 +94,7 @@ export default function Timeline() {
                 <h3 className="text-[18px] font-semibold leading-snug tracking-tight transition group-hover:text-accent">{it.t}{it.ko && <span className="mt-0.5 block text-[13.5px] font-normal text-ink-2">{it.ko}</span>}</h3>
                 <div className="text-[13.5px] text-ink-2">{sub}{e.k === 'pub' && it.role ? ` · ${it.role}` : ''}{e.k === 'proj' && it.res ? ` · ${it.res}` : ''}</div>
                 <div className="text-[13.5px] text-ink-2">{e.sum}</div>
-                <div className="flex flex-wrap gap-x-2.5 text-[12.5px] text-ink-3">{(it.tags || []).slice(0, 5).map((t) => <span key={t}>{t}</span>)}</div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-ink-3">{(stackOf(e.k, it.id) || (it.tags || []).map((t) => [t] as [string])).slice(0, 6).map(([t, logo]) => <span key={t} className="inline-flex items-center gap-1">{logo && <img src={`/logos/${logo}`} alt="" className="h-[14px] w-[14px] object-contain" loading="lazy" />}{t}</span>)}</div>
                 <div className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 transition group-hover:text-accent group-hover:decoration-accent">문제 해결 과정 보기</div>
               </Link>
             )
