@@ -6,6 +6,8 @@
 !assets/*
 !img/
 !img/*
+!logos/
+!logos/*
 !.gitignore
 !README.md
 !papers/
