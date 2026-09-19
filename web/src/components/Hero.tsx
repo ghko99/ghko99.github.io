@@ -35,11 +35,17 @@ export default function Hero() {
               <div key={k} className="contents"><dt className="text-[13.5px] font-semibold tracking-wide text-ink-3">{k}</dt><dd className="text-[15px] font-medium text-ink">{v}</dd></div>
             ))}
           </dl>
-          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-[14px] text-ink-2">
-            <a className="underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent" href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
-            <a className="underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent" href={PROFILE.github} target="_blank" rel="noopener">GitHub</a>
-            <a className="underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent" href={PROFILE.blog} target="_blank" rel="noopener">Blog</a>
-            <a className="underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent" href={PROFILE.orcid} target="_blank" rel="noopener">ORCID</a>
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[14px] text-ink-2">
+            {([
+              ['mail.svg', PROFILE.email, `mailto:${PROFILE.email}`],
+              ['github.svg', 'GitHub', PROFILE.github],
+              ['velog.svg', 'Blog', PROFILE.blog],
+              ['orcid.svg', 'ORCID', PROFILE.orcid],
+            ] as [string, string, string][]).map(([icon, label, href]) => (
+              <a key={label} className="inline-flex items-center gap-1.5 hover:text-accent" href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
+                <img src={`/logos/${icon}`} alt="" className="h-[16px] w-[16px] object-contain" />{label}
+              </a>
+            ))}
           </div>
           <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2 border-t border-line pt-5">
             {FACTS.map(([n, l]) => (
