@@ -84,6 +84,8 @@ export default function Detail() {
   const idx = ORDER.findIndex(([k, p]) => k === kind && p.id === id); const prev = ORDER[idx - 1]; const next = ORDER[idx + 1]
   const go = (j: number) => { setCur(j); setTimeout(() => document.getElementById('np')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0) }
   const steps = it.nodes
+  // 다른 항목으로 넘어간 직후에는 cur가 이전 항목의 단계 번호라서(초기화는 effect에서) 범위를 넘을 수 있다
+  const ci = Math.min(cur, steps.length - 1)
   return (
     <div className="mx-auto max-w-[1120px] px-5 pb-32 pt-6 sm:px-8 sm:pt-8">
       <button type="button" onClick={close} aria-label="닫기" title="닫기 (Esc)" className="fixed right-5 top-[68px] z-30 flex h-9 w-9 items-center justify-center rounded-full border border-line bg-paper text-ink-2 shadow-[0_4px_14px_-6px_rgba(15,23,42,.3)] hover:border-ink hover:text-ink">
@@ -112,14 +114,14 @@ export default function Detail() {
         <div className="flex overflow-x-auto pb-2 pt-1.5">
           {steps.map((n, j) => (
             <button key={j} type="button" onClick={() => go(j)} className="relative flex min-w-[112px] max-w-[180px] flex-1 flex-col items-start gap-1.5 pr-3.5 text-left before:absolute before:left-0 before:right-0 before:top-[13px] before:h-px before:bg-line first:before:left-[13px] last:before:right-auto last:before:w-[13px]">
-              <small className={`relative z-[1] flex h-[26px] w-[26px] items-center justify-center rounded-full border-[1.5px] text-[11.5px] font-semibold tabular-nums ${j === cur ? 'border-ink bg-ink text-paper' : j < cur ? 'border-ink-2 bg-paper text-ink-2' : 'border-line bg-paper text-ink-3'}`}>{j + 1}</small>
-              <b className={`text-[13px] leading-snug ${j === cur ? 'font-semibold text-ink' : 'font-medium text-ink-2'}`}>{n.t}</b>
+              <small className={`relative z-[1] flex h-[26px] w-[26px] items-center justify-center rounded-full border-[1.5px] text-[11.5px] font-semibold tabular-nums ${j === ci ? 'border-ink bg-ink text-paper' : j < ci ? 'border-ink-2 bg-paper text-ink-2' : 'border-line bg-paper text-ink-3'}`}>{j + 1}</small>
+              <b className={`text-[13px] leading-snug ${j === ci ? 'font-semibold text-ink' : 'font-medium text-ink-2'}`}>{n.t}</b>
               {n.s && <i className="-mt-1 text-[11.5px] not-italic text-ink-3">{n.s}</i>}
             </button>
           ))}
         </div>
       </div>
-      <div id="np"><Step n={steps[cur]} i={cur} steps={steps} onGo={go} /></div>
+      <div id="np"><Step n={steps[ci]} i={ci} steps={steps} onGo={go} /></div>
 
       <div className="mt-14 flex flex-wrap justify-between gap-4 border-t border-line pt-6 text-[14px]">
         {prev ? <button type="button" onClick={() => nav(`/p/${prev[0]}/${prev[1].id}`)} className="text-left text-ink-2 hover:text-accent"><small className="block text-[12px] text-ink-3">이전 · 시간순</small>{prev[1].t}</button> : <span />}
