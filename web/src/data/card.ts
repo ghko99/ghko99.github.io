@@ -8,7 +8,7 @@ export const CARD: Record<string, Card> = {
   'pub-hclt': { logos: ['sighclt.png'], what: '에세이 데이터의 품질과 다양성을 높이기 위한 세 가지 데이터 증강법(MLM, T5, Random Masking)을 비교한 연구.', role: '1저자 · 데이터 증강·전처리 설계와 실험 전체', result: 'HCLT 2023 구두 발표' },
   'proj-lh': { logos: ['kait.svg', 'msit.svg', 'rebellions.svg'], what: '4인 팀 프로젝트. 사용자 조건에 맞는 청약 공고를 추천하고 20페이지가 넘는 공고문 내용을 RAG로 답하는 24시간 상담 챗봇.', role: 'RAG 검색 시스템 구축 · 소형 LLM(EEVE-10.8B) 파인튜닝', result: 'sLLM/sLM 분야 우수상' },
   'pub-ukta': { logos: ['acm.svg'], what: '형태소 분석부터 작문 평가까지 세 층을 한 곳에서 제공하는 한국어 최초의 통합 텍스트 분석기.', role: '공동 1저자 · 294개 언어 자질을 결합한 딥러닝 채점 모델 개발', result: 'ACM SAC 2025 게재 · 구두 발표' },
-  'proj-ukta-proj': { logos: ['nrf.svg'], what: '국어교육학과·KDD 연구실과 협업한 정부과제. 설명 가능한 텍스트 분석·글쓰기 평가 도구 개발.', role: 'AI 모델링 · 딥러닝 채점 모델 성능 고도화', result: '국제학회 논문 2건 게재' },
+  'proj-ukta-proj': { logos: ['nrf.svg'], what: '국어교육학과·KDD 연구실과 협업한 정부과제. 설명 가능한 텍스트 분석·글쓰기 평가 도구 개발.', role: '딥러닝 언어모델 성능 고도화 담당', result: '국제학회 논문 2건 게재' },
   'proj-oem': { logos: ['upflow.png'], what: '화장품 OEM/ODM 공장용 AI SaaS형 ERP. 형식이 제각각인 의뢰서를 LLM으로 표준 의뢰서로 바꾸고, 내부 데이터와 5개국 성분 규제를 RAG로 통합 검색.', role: 'AI 개발 총괄 · LLM 문서 구조화 추출과 RAG 검색 파이프라인 설계·구현', result: 'MVP 구축 · 예비창업패키지 1차 통과' },
   'pub-kaes': { logos: ['cup.png'], what: '한국어 특성을 반영한 두 가지 증강(CHEF, RMI)과 주제 인식 전처리를 KoBERT-GRU 채점기에 적용하고 통계 검정으로 검증한 연구.', role: '1저자 · 데이터 증강 기법 제안, 실험과 통계 검증 전체', result: 'SCI(E) 저널 심사 중' },
   'pub-feak': { logos: ['acm.svg'], what: '정량 진단은 전용 모델이, 설명은 LLM이 맡도록 제약해 환각 없는 작문 피드백을 만드는 도구.', role: '2저자 · 딥러닝 채점(진단) 모델 담당', result: 'ACM SAC 2026 게재' },
