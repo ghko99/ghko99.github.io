@@ -105,14 +105,14 @@ export default function Chat() {
             <path d="M12 20.5c1.2 1.3 2.5 1.9 4 1.9s2.8-.6 4-1.9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M2.5 14v5M29.5 14v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
-          <i className="absolute right-[3px] top-[3px] h-3 w-3 rounded-full border-2 border-paper bg-emerald-400" />
+          <i className={`absolute right-[3px] top-[3px] h-3 w-3 rounded-full border-2 border-paper ${locked ? 'bg-red-500' : 'bg-emerald-400'}`} />
         </button>
       )}
       {open && (
         <div role="dialog" aria-label="고강희와 채팅" className="fixed bottom-5 right-5 z-40 flex h-[min(640px,calc(100vh-80px))] w-[min(400px,calc(100vw-40px))] flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_24px_70px_-20px_rgba(15,23,42,.35)]">
           <div className="flex items-center gap-3 border-b border-line-2 px-3.5 py-3">
             <img src={img('profile')} alt="" className="h-10 w-10 rounded-full border-2 border-accent-2 object-cover object-[50%_18%]" />
-            <div className="min-w-0 flex-1 leading-tight"><b className="block text-[15px] font-semibold">고강희</b><span className="flex items-center gap-1.5 text-[12px] text-ink-3"><i className="h-[7px] w-[7px] rounded-full bg-emerald-400" />지금 답할 수 있어요</span></div>
+            <div className="min-w-0 flex-1 leading-tight"><b className="block text-[15px] font-semibold">고강희</b><span className="flex items-center gap-1.5 text-[12px] text-ink-3"><i className={`h-[7px] w-[7px] rounded-full ${locked ? 'bg-red-500' : 'bg-emerald-400'}`} />{locked ? '오늘은 여기까지 답했습니다' : '지금 답할 수 있어요'}</span></div>
             <button type="button" onClick={() => setOpen(false)} className="px-2 py-1.5 text-[13px] text-ink-3 hover:text-ink">닫기</button>
           </div>
           <div ref={logRef} className="flex flex-1 flex-col gap-1.5 overflow-y-auto bg-paper-2 px-3.5 py-4">
