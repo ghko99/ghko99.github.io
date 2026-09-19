@@ -40,7 +40,6 @@ export default function Hero() {
               ['mail.svg', PROFILE.email, `mailto:${PROFILE.email}`],
               ['github.svg', 'GitHub', PROFILE.github],
               ['velog.svg', 'Blog', PROFILE.blog],
-              ['orcid.svg', 'ORCID', PROFILE.orcid],
             ] as [string, string, string][]).map(([icon, label, href]) => (
               <a key={label} className="inline-flex items-center gap-1.5 hover:text-accent" href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
                 <img src={`/logos/${icon}`} alt="" className="h-[16px] w-[16px] object-contain" />{label}
