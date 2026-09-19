@@ -17,8 +17,14 @@ const FACTS: [string, string][] = [
 export default function Hero() {
   return (
     <header id="top" className="py-12 sm:py-20">
-      <div className="mx-auto grid max-w-[1120px] grid-cols-1 items-center gap-8 px-5 sm:px-8 md:grid-cols-[minmax(220px,340px)_1fr] md:gap-16">
-        <img src={img('profile')} alt="고강희" className="block w-full max-w-[240px] rounded-md border border-line md:max-w-none" />
+      <div className="mx-auto grid max-w-[1120px] grid-cols-1 items-center gap-8 px-5 sm:px-8 md:grid-cols-[280px_1fr] md:gap-16">
+        {/* 원형 사진: 커서를 올리면 뒤집히며 다른 사진이 나온다 */}
+        <div className="flip w-[200px] sm:w-[240px] md:w-[280px]" tabIndex={0} aria-label="고강희 사진">
+          <div className="flip-inner aspect-square">
+            <img src={img('profile')} alt="고강희" className="flip-face" />
+            <img src="/img/profile2.jpg" alt="" className="flip-face flip-back" loading="lazy" />
+          </div>
+        </div>
         <div>
           <div className="mb-3 text-[13px] text-ink-3">인하대학교 대학원 인공지능 전공 · 공학석사</div>
           <h1 className="text-[36px] font-bold leading-[1.1] tracking-[-0.02em] sm:text-[44px]">

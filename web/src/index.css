@@ -25,3 +25,11 @@ body { @apply bg-paper text-ink font-sans antialiased; font-size: 15px; line-hei
 .a b, .intro b { @apply font-semibold text-ink; }
 .a pre { @apply text-[13px] leading-relaxed bg-paper-2 border border-line-2 rounded-md p-3 whitespace-pre-wrap mb-2.5; }
 .intro p { @apply text-[15.5px] leading-[1.9] text-ink-2; }
+
+/* 히어로 원형 사진 뒤집기 */
+.flip { perspective: 1200px; }
+.flip-inner { position: relative; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+.flip:hover .flip-inner, .flip:focus-visible .flip-inner { transform: rotateY(180deg); }
+.flip-face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; border-radius: 9999px; border: 1px solid var(--color-line); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-back { transform: rotateY(180deg); }
+@media (prefers-reduced-motion: reduce) { .flip-inner { transition: none; } }
