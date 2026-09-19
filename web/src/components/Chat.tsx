@@ -10,8 +10,20 @@ const listeners = new Set<() => void>()
 /** 어디서든 채팅창을 연다 */
 export const openChat = () => listeners.forEach((f) => f())
 
-const clean = (t: string) => t.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '$1($2)').replace(/`([^`]+)`/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^[\s]*[-*•]\s+/gm, '').replace(/^#+\s*/gm, '').replace(/^(고강희|Ganghee)\s*[:：]\s*/, '').replace(/\n{3,}/g, '\n\n').trim()
+const clean = (t: string) => t.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '$1($2)').replace(/`([^`]+)`/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^[\s]*[-*•]\s+/gm, '- ').replace(/^#+\s*/gm, '').replace(/^(고강희|Ganghee)\s*[:：]\s*/, '').replace(/\n{3,}/g, '\n\n').trim()
 const URL_RE = /(https?:\/\/[^\s<>()\]]+[^\s<>()\].,!?;:'"]|(?:github\.com|velog\.io|geulgyeol\.tech|ukta\.inha\.ac\.kr)\/[^\s<>()\]]+[^\s<>()\].,!?;:'"]|[\w.+-]+@[\w-]+\.[\w.]+)/g
+/** 답변 본문: "- "로 시작하는 연속된 줄은 목록으로, 나머지는 문단 그대로 */
+function Body({ text }: { text: string }) {
+  const lines = text.split('\n'); const out: React.ReactNode[] = []; let i = 0
+  while (i < lines.length) {
+    if (/^- /.test(lines[i])) {
+      const items: string[] = []
+      while (i < lines.length && /^- /.test(lines[i])) items.push(lines[i++].slice(2))
+      out.push(<ul key={'l' + i} className="my-1 list-none pl-0">{items.map((it, k) => <li key={k} className="relative pl-[14px] before:absolute before:left-0 before:top-[0.7em] before:h-[5px] before:w-[5px] before:rounded-full before:bg-ink-3"><Linkify text={it} /></li>)}</ul>)
+    } else { out.push(<span key={'t' + i}><Linkify text={lines[i]} />{i < lines.length - 1 ? '\n' : ''}</span>); i++ }
+  }
+  return <>{out}</>
+}
 function Linkify({ text }: { text: string }) {
   const out: React.ReactNode[] = []; let i = 0; let m: RegExpExecArray | null; const re = new RegExp(URL_RE)
   while ((m = re.exec(text))) { out.push(text.slice(i, m.index)); const raw = m[0]; out.push(<a key={m.index} href={raw.includes('@') ? 'mailto:' + raw : raw.startsWith('http') ? raw : 'https://' + raw} target="_blank" rel="noopener" className="break-all text-accent underline underline-offset-2">{raw}</a>); i = m.index + raw.length }
@@ -107,7 +119,7 @@ export default function Chat() {
             {msgs.map((m, i) => (
               <div key={i} className="contents">
                 <div className={`max-w-[84%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-[14.5px] leading-relaxed ${m.who === 'me' ? 'self-end rounded-br-md bg-accent text-white' : 'self-start rounded-bl-md border border-line-2 bg-paper'} ${m.status ? 'flex items-center gap-2 text-[13.5px] text-ink-3' : ''}`}>
-                  {m.status ? (m.status === '···' ? '···' : <><span className="h-3 w-3 flex-none animate-spin rounded-full border-2 border-line-2 border-t-accent" />{m.status}</>) : m.who === 'him' ? <Linkify text={m.text} /> : m.text}
+                  {m.status ? (m.status === '···' ? '···' : <><span className="h-3 w-3 flex-none animate-spin rounded-full border-2 border-line-2 border-t-accent" />{m.status}</>) : m.who === 'him' ? <Body text={m.text} /> : m.text}
                 </div>
                 {!!m.sources?.length && <div className="-mt-1 mb-0.5 ml-1 flex max-w-[84%] flex-wrap items-center gap-1.5 self-start text-[11.5px] text-ink-3">참고{m.sources.map((s) => <a key={s.u} href={s.u} target="_blank" rel="noopener" className="rounded-full border border-line-2 bg-paper px-2 py-px hover:border-accent hover:text-accent">{s.t}</a>)}</div>}
               </div>
