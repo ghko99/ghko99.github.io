@@ -72,7 +72,7 @@ export default function CV() {
             <Sec title="자격 · 어학" rows={[
               { when: '2026.08', title: 'ADsP 데이터분석 준전문가', logos: ['kdata.png'], inline: true },
               { when: '2026.08', title: 'AICE Associate', logos: ['kt.svg'], inline: true },
-              { when: '2026.08', title: 'TOEIC Speaking IH', logos: ['toeic.png'], inline: true },
+              { when: '2026.08', title: 'TOEIC Speaking IH', logos: ['ybm.svg'], inline: true },
             ]} />
             <Sec title="그 외 활동" rows={[
               { when: '2025.04 –', title: '창업팀 Upflow · AI 기술 총괄', logos: ['upflow.png'], inline: true, sub: '2025 예비창업패키지 1차 지원 통과 · 실험실 특화형 창업선도대학 과제 참여' },
