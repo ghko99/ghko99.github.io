@@ -13,8 +13,9 @@ function Figs({ imgs }: { imgs?: Img[] }) {
       <div className={two ? 'columns-1 gap-5 md:columns-2' : ''}>
         {imgs.map((im) => (
           <figure key={im.k} onClick={() => setLb(im)} className={`mb-5 cursor-zoom-in break-inside-avoid ${im.w ? 'md:[column-span:all] mx-auto max-w-[760px]' : ''} ${im.sm ? 'max-w-[380px]' : ''}`}>
-            <img src={img(im.k)} alt={im.c || ''} loading="lazy" className={`w-full rounded-md border border-line bg-white ${im.sm ? 'p-2.5' : ''}`} />
-            {im.c && <figcaption className="mt-2 text-[12.5px] text-ink-3">{im.c}</figcaption>}
+            {/* 세로로 긴 그림은 폭을 채우지 않고 높이를 제한해 가운데 놓는다 */}
+            <img src={img(im.k)} alt={im.c || ''} loading="lazy" className={`mx-auto block max-h-[480px] w-auto max-w-full rounded-md border border-line bg-white ${im.sm ? 'p-2.5' : ''}`} />
+            {im.c && <figcaption className="mt-2 text-center text-[12.5px] text-ink-3">{im.c}</figcaption>}
           </figure>
         ))}
       </div>
