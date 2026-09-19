@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 type Row = { when: string; title: string; sub?: string; href?: string; tag?: string; logos?: string[]; inline?: boolean; logosBelow?: boolean }
 const Sec = ({ title, rows }: { title: string; rows: Row[] }) => (
   <div className="mb-8">
-    <h3 className="mb-1 border-b-2 border-ink pb-2 text-[14px] font-bold tracking-[.06em]">{title}</h3>
+    <h3 className="mb-1 border-b-2 border-ink pb-2 text-[17px] font-bold tracking-[.02em]">{title}</h3>
     {rows.map((r, i) => (
       <div key={i} className="grid grid-cols-1 gap-x-6 gap-y-1 border-b border-line-2 py-3 last:border-0 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div>
@@ -41,7 +41,7 @@ export default function CV() {
     <section id="cv" className="border-t border-line-2 py-12 sm:py-16">
       <div className="mx-auto max-w-[1120px] px-5 sm:px-8">
         <div className="mb-7 flex items-baseline justify-between gap-4">
-          <h2 className="text-[22px] font-bold tracking-tight sm:text-[26px]">이력</h2>
+          <h2 className="text-[26px] font-bold tracking-tight sm:text-[30px]">이력</h2>
           <div className="flex items-center gap-4">
             <a className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 hover:text-accent" href="https://github.com/ghko99" target="_blank" rel="noopener">github.com/ghko99</a>
             <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="cvbody" className="rounded-full border border-line px-3 py-1 text-[12.5px] text-ink-3 hover:border-ink-3 hover:text-ink">{open ? '접기' : '펼치기'}</button>
@@ -83,7 +83,7 @@ export default function CV() {
           </div>
           <div>
             <Sec title="수상" rows={[{ when: '2024.12', title: '제1회 AI 반도체 기술인재 선발대회 우수상 · 전국 91팀 중 2위', logos: ['kait.svg', 'msit.svg', 'rebellions.svg'], logosBelow: true, sub: '한국정보통신진흥협회 회장상 · sLLM/sLM 분야 · 수요기업 리벨리온' }]} />
-            <h3 className="mb-1 border-b-2 border-ink pb-2 text-[14px] font-bold tracking-[.06em]">기술</h3>
+            <h3 className="mb-1 border-b-2 border-ink pb-2 text-[17px] font-bold tracking-[.02em]">기술</h3>
             <div className="text-[13.5px] text-ink-2">
               {TECH.map(([k, v]) => (
                 <div key={k} className="border-b border-line-2 py-2.5 last:border-0">

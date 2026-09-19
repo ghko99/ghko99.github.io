@@ -61,7 +61,7 @@ export default function Timeline() {
     <section id="timeline" className="border-t border-line-2 pb-24 pt-12 sm:pt-16">
       <div className="mx-auto max-w-[1120px] px-5 sm:px-8">
         <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
-          <h2 className="text-[22px] font-bold tracking-tight sm:text-[26px]">타임라인 <span className="ml-2 text-[13px] font-normal text-ink-3">2022 – 2026 · 논문과 프로젝트를 시간순으로</span></h2>
+          <h2 className="text-[26px] font-bold tracking-tight sm:text-[30px]">타임라인 <span className="ml-2 text-[13px] font-normal text-ink-3">2022 – 2026 · 논문과 프로젝트를 시간순으로</span></h2>
           <div role="group" aria-label="타임라인 보기 방식" className="inline-flex overflow-hidden rounded-full border border-line text-[12.5px]">
             <button type="button" className={tgl('v')} onClick={() => setMode('v')}>세로 · 자세히</button>
             <button type="button" className={tgl('h')} onClick={() => setMode('h')}>가로 · 핵심만</button>
