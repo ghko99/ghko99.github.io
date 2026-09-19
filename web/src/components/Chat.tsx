@@ -20,6 +20,16 @@ function Linkify({ text }: { text: string }) {
 
 export default function Chat() {
   const [open, setOpen] = useState(false)
+  // 런처가 구석에 있어 놓치기 쉬우므로, 처음 한 번만 잠깐 말풍선으로 알린다
+  const [hint, setHint] = useState(false)
+  useEffect(() => {
+    let seen = false; try { seen = sessionStorage.getItem('chatHint') === '1' } catch { /* ignore */ }
+    if (seen) return
+    const t1 = setTimeout(() => setHint(true), 1500)
+    const t2 = setTimeout(() => setHint(false), 9500)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
+  const dismissHint = () => { setHint(false); try { sessionStorage.setItem('chatHint', '1') } catch { /* ignore */ } }
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
@@ -66,8 +76,13 @@ export default function Chat() {
 
   return (
     <>
+      {!open && hint && (
+        <button type="button" onClick={() => { dismissHint(); setOpen(true) }} className="fixed bottom-[26px] right-[84px] z-[39] max-w-[240px] rounded-xl border border-line bg-paper px-3.5 py-2.5 text-left text-[13px] leading-snug text-ink shadow-[0_10px_24px_-12px_rgba(15,23,42,.4)] after:absolute after:-right-[6px] after:top-1/2 after:h-3 after:w-3 after:-translate-y-1/2 after:rotate-45 after:border-r after:border-t after:border-line after:bg-paper">
+          안녕하세요, 고강희입니다. 논문이나 프로젝트에서 궁금한 점이 있으면 여기서 물어보세요.
+        </button>
+      )}
       {!open && (
-        <button type="button" onClick={() => setOpen(true)} aria-label="고강희에게 질문하기" title="고강희에게 질문하기" className="group fixed bottom-5 right-5 z-[39] flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.6)] transition hover:-translate-y-0.5 hover:bg-accent">
+        <button type="button" onClick={() => { dismissHint(); setOpen(true) }} aria-label="고강희에게 질문하기" title="고강희에게 질문하기" className="group fixed bottom-5 right-5 z-[39] flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.6)] transition hover:-translate-y-0.5 hover:bg-accent">
           {/* 작은 로봇 얼굴 */}
           <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
             <path d="M16 4v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
