@@ -25,8 +25,8 @@ export default function Chat() {
   useEffect(() => {
     let seen = false; try { seen = sessionStorage.getItem('chatHint') === '1' } catch { /* ignore */ }
     if (seen) return
-    const t1 = setTimeout(() => setHint(true), 1500)
-    const t2 = setTimeout(() => setHint(false), 9500)
+    const t1 = setTimeout(() => setHint(true), 300)
+    const t2 = setTimeout(() => setHint(false), 12000)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
   const dismissHint = () => { setHint(false); try { sessionStorage.setItem('chatHint', '1') } catch { /* ignore */ } }
