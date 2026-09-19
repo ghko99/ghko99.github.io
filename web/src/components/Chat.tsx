@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { img } from '../data'
 
 const ENDPOINT = 'https://goganghee-chat.goganghee.workers.dev'
-const SESSION_MAX = 5
+const SESSION_MAX = 10
 const HI = '안녕하세요! 고강희입니다. 논문이나 프로젝트에서 궁금한 게 있으면 편하게 물어보세요.'
 
 type Msg = { who: 'me' | 'him'; text: string; status?: string; sources?: { t: string; u: string }[] }
