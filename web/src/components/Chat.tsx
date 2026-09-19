@@ -32,16 +32,14 @@ function Linkify({ text }: { text: string }) {
 
 export default function Chat() {
   const [open, setOpen] = useState(false)
-  // 런처가 구석에 있어 놓치기 쉬우므로, 처음 한 번만 잠깐 말풍선으로 알린다
+  // 런처가 구석에 있어 놓치기 쉬우므로, 페이지를 열 때마다 잠깐 말풍선으로 알린다
   const [hint, setHint] = useState(false)
   useEffect(() => {
-    let seen = false; try { seen = sessionStorage.getItem('chatHint') === '1' } catch { /* ignore */ }
-    if (seen) return
     const t1 = setTimeout(() => setHint(true), 300)
     const t2 = setTimeout(() => setHint(false), 12000)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
-  const dismissHint = () => { setHint(false); try { sessionStorage.setItem('chatHint', '1') } catch { /* ignore */ } }
+  const dismissHint = () => setHint(false)
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
@@ -89,7 +87,7 @@ export default function Chat() {
   return (
     <>
       {!open && hint && (
-        <button type="button" onClick={() => { dismissHint(); setOpen(true) }} className="fixed bottom-[26px] right-[84px] z-[39] max-w-[240px] rounded-xl border border-line bg-paper px-3.5 py-2.5 text-left text-[13px] leading-snug text-ink shadow-[0_10px_24px_-12px_rgba(15,23,42,.4)] after:absolute after:-right-[6px] after:top-1/2 after:h-3 after:w-3 after:-translate-y-1/2 after:rotate-45 after:border-r after:border-t after:border-line after:bg-paper">
+        <button type="button" onClick={() => { dismissHint(); setOpen(true) }} className="fixed bottom-[22px] right-[84px] z-[39] max-w-[300px] rounded-xl border border-line bg-paper px-4 py-3 text-left text-[14px] leading-snug text-ink shadow-[0_10px_24px_-12px_rgba(15,23,42,.4)] after:absolute after:-right-[6px] after:top-1/2 after:h-3 after:w-3 after:-translate-y-1/2 after:rotate-45 after:border-r after:border-t after:border-line after:bg-paper">
           안녕하세요, 고강희입니다. 논문이나 프로젝트에서 궁금한 점이 있으면 여기서 물어보세요.
         </button>
       )}
