@@ -19,7 +19,7 @@ function Body({ text }: { text: string }) {
     if (/^- /.test(lines[i])) {
       const items: string[] = []
       while (i < lines.length && /^- /.test(lines[i])) items.push(lines[i++].slice(2))
-      out.push(<ul key={'l' + i} className="my-1 list-none pl-0">{items.map((it, k) => <li key={k} className="relative pl-[14px] before:absolute before:left-0 before:top-[0.7em] before:h-[5px] before:w-[5px] before:rounded-full before:bg-ink-3"><Linkify text={it} /></li>)}</ul>)
+      out.push(<ul key={'l' + i} className="my-1 list-none pl-0">{items.map((it, k) => <li key={k} className="flex gap-1.5"><span className="flex-none text-ink-3">•</span><span><Linkify text={it} /></span></li>)}</ul>)
     } else { out.push(<span key={'t' + i}><Linkify text={lines[i]} />{i < lines.length - 1 ? '\n' : ''}</span>); i++ }
   }
   return <>{out}</>
