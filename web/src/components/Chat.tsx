@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { img } from '../data'
 
 const ENDPOINT = 'https://goganghee-chat.goganghee.workers.dev'
-const SESSION_MAX = 10
+const SESSION_MAX = 5
 const HI = '안녕하세요! 고강희입니다. 논문이나 프로젝트에서 궁금한 게 있으면 편하게 물어보세요.'
 
 type Msg = { who: 'me' | 'him'; text: string; status?: string; sources?: { t: string; u: string }[] }
@@ -81,7 +81,7 @@ export default function Chat() {
       text = clean(text); update((m) => ({ ...m, status: undefined, text, sources }))
       turns.current.push({ role: 'assistant', content: text })
       if (flag === 'abuse' && ++strikes.current >= 3) { update((m) => ({ ...m, text: '이 대화는 여기까지 하겠습니다.' })); setLocked('대화가 종료되었습니다.'); return }
-      if (sent.current >= SESSION_MAX) { setMsgs((ms) => [...ms, { who: 'him', text: '여기까지 답하겠습니다. 더 궁금하신 점은 khko99@naver.com 로 보내 주시면 직접 답하겠습니다.' }]); setLocked('이메일로 문의해 주십시오.') }
+      if (sent.current >= SESSION_MAX) { setMsgs((ms) => [...ms, { who: 'him', text: `여기까지 ${SESSION_MAX}개 질문에 답했습니다. 더 궁금하신 점은 khko99@naver.com 으로 보내 주시면 직접 답하겠습니다.` }]); setLocked('이메일로 문의해 주십시오.') }
     } catch { update((m) => ({ ...m, status: undefined, text: '연결이 잠시 끊겼습니다. 다시 한번 보내 주십시오.' })); turns.current.pop() }
     finally { setBusy(false); if (!locked) setTimeout(() => inRef.current?.focus(), 0) }
   }
@@ -112,7 +112,7 @@ export default function Chat() {
         <div role="dialog" aria-label="고강희와 채팅" className="fixed bottom-5 right-5 z-40 flex h-[min(640px,calc(100vh-80px))] w-[min(400px,calc(100vw-40px))] flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_24px_70px_-20px_rgba(15,23,42,.35)]">
           <div className="flex items-center gap-3 border-b border-line-2 px-3.5 py-3">
             <img src={img('profile')} alt="" className="h-10 w-10 rounded-full border-2 border-accent-2 object-cover object-[50%_18%]" />
-            <div className="min-w-0 flex-1 leading-tight"><b className="block text-[15px] font-semibold">고강희</b><span className="flex items-center gap-1.5 text-[12px] text-ink-3"><i className={`h-[7px] w-[7px] rounded-full ${locked ? 'bg-red-500' : 'bg-emerald-400'}`} />{locked ? '오늘은 여기까지 답했습니다' : '지금 답할 수 있어요'}</span></div>
+            <div className="min-w-0 flex-1 leading-tight"><b className="block text-[15px] font-semibold">고강희</b><span className="flex items-center gap-1.5 text-[12px] text-ink-3"><i className={`h-[7px] w-[7px] rounded-full ${locked ? 'bg-red-500' : 'bg-emerald-400'}`} />{locked ? '여기까지 답했습니다' : `지금 답할 수 있어요 · 질문 ${Math.max(0, SESSION_MAX - msgs.filter((m) => m.who === 'me').length)}개 남음`}</span></div>
             <button type="button" onClick={() => setOpen(false)} className="px-2 py-1.5 text-[13px] text-ink-3 hover:text-ink">닫기</button>
           </div>
           <div ref={logRef} className="flex flex-1 flex-col gap-1.5 overflow-y-auto bg-paper-2 px-3.5 py-4">
