@@ -5,7 +5,7 @@ import { CONTEXT } from "./context.js";
 import { REGISTRY } from "./registry.js";
 
 const OWNER = "ghko99";
-const EMBED_MODEL = "@cf/baai/bge-m3";
+const EMBED_MODEL = "gemini-embedding-001"; // 768차원(outputDimensionality). Workers AI 일일 한도에 묶이지 않도록 Gemini 임베딩을 쓴다.
 const MAX_TURNS = 12, MAX_CHARS = 600;
 const MAX_ROUNDS = 5;      // 도구 호출 왕복 최대 횟수
 const MAX_TOOL_CALLS = 6;
@@ -154,11 +154,15 @@ function geminiFetch(env, body, { stream }) {
 // SSE 스트림에서 candidates[0].content.parts 를 순서대로 뽑는다. text는 onText로 즉시 흘려보낸다.
 async function streamRound(env, contents, { toolsOn, onText }) {
   // thinkingLevel low: 기본 thinking은 첫 응답까지 10초 넘게 걸리는 일이 잦다(실측). 도구 선택 정도는 low로 충분하다.
-  const body = { contents, systemInstruction: { parts: [{ text: PERSONA }] }, generationConfig: { maxOutputTokens: 900, temperature: 0.7, thinkingConfig: { thinkingLevel: "low" } } };
+  const body = { contents, systemInstruction: { parts: [{ text: PERSONA }] }, generationConfig: { maxOutputTokens: 3000, temperature: 0.7, thinkingConfig: { thinkingLevel: "low" } } };
+  // maxOutputTokens에는 thinking 토큰도 포함된다. 900이면 생각이 길어진 턴에서 본문이 한두 문장 만에 잘렸다(실측: 잘린 답이 매번 다른 위치에서 조용히 끝남).
   if (toolsOn) body.tools = TOOLS;
   const r = await geminiFetch(env, body, { stream: true });
   if (!r) throw new Error("upstream");
-  const parts = []; const dec = new TextDecoder(); let buf = "", finish = null;
+  const model = r.url.match(/models\/([^:]+):/)?.[1] || "?";
+  const parts = []; const dec = new TextDecoder(); let buf = "", finish = null, first = true;
+  // 드물게 첫 토큰이 깨진 문자열("álás" 같은 악센트 라틴 글자)로 나온다. 한국어 답변 앞머리에 그런 조각이 오면 걷어내고 어느 모델인지 기록한다.
+  const scrub = t => { if (!first) return t; first = false; const m = t.match(/^(?=[A-Za-z\u00C0-\u024F]*[\u00C0-\u024F])[A-Za-z\u00C0-\u024F]{1,12}(?=[가-힣])/); if (m) { console.error("garbled-start", model, JSON.stringify(t.slice(0, 40))); return t.slice(m[0].length).replace(/^[^\S\n]+/, ""); } return t; };
   const reader = r.body.getReader();
   // 스트림이 시작된 뒤 15초 동안 아무 조각도 안 오면 멈춘 것으로 보고 끊는다
   const readWithTimeout = () => new Promise((res, rej) => { const t = setTimeout(() => { reader.cancel().catch(() => {}); rej(new Error("stream stall")); }, 15000); reader.read().then(v => { clearTimeout(t); res(v); }, e => { clearTimeout(t); rej(e); }); });
@@ -173,19 +177,32 @@ async function streamRound(env, contents, { toolsOn, onText }) {
       for (const p of cand?.content?.parts || []) {
         if (p.text) {
           if (p.thought) continue;
+          const txt = scrub(p.text); if (!txt) continue;
           const last = parts[parts.length - 1];
-          if (last && last.text !== undefined && !last.functionCall) last.text += p.text; else parts.push({ text: p.text });
-          await onText(p.text);
+          if (last && last.text !== undefined && !last.functionCall) last.text += txt; else parts.push({ text: txt });
+          await onText(txt);
         } else if (p.functionCall) parts.push(p); // thoughtSignature 포함 그대로 보존
       }
       if (cand?.finishReason) finish = cand.finishReason;
     }
   }
+  if (finish && finish !== "STOP") console.error("finish", model, finish, parts.reduce((n, p) => n + (p.text?.length || 0), 0));
   return { parts, finish };
 }
 
 // ---------- 도구 구현 ----------
-async function embed(env, texts) { return (await env.AI.run(EMBED_MODEL, { text: texts })).data; }
+// task: "RETRIEVAL_QUERY"(질문) | "RETRIEVAL_DOCUMENT"(색인). 한 요청에 최대 100개. 위치 제한 때문에 반드시 DO(wnam) 안에서 부른다.
+async function embed(env, texts, task = "RETRIEVAL_QUERY") {
+  const out = [];
+  for (let i = 0; i < texts.length; i += 100) {
+    const batch = texts.slice(i, i + 100);
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${EMBED_MODEL}:batchEmbedContents`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+      body: JSON.stringify({ requests: batch.map(t => ({ model: `models/${EMBED_MODEL}`, content: { parts: [{ text: String(t).slice(0, 8000) }] }, outputDimensionality: 768, taskType: task })) }), signal: AbortSignal.timeout(60000) });
+    if (!r.ok) { const e = new Error(`embed ${r.status}: ${(await r.text().catch(() => "")).slice(0, 1500)}`); e.status = r.status; throw e; }
+    const j = await r.json(); for (const e of j.embeddings || []) out.push(e.values);
+  }
+  return out;
+}
 const repoInfo = name => { for (const r of REGISTRY) for (const x of r.repos) if (x.name === name) return { ...x, project: r.id }; return null; };
 const projectName = id => REGISTRY.find(r => r.id === id)?.name || id;
 
@@ -333,6 +350,28 @@ export class ChatRelay {
       }
       return Response.json(out);
     }
+    if (url.pathname === "/admin") {
+      try {
+        if (Array.isArray(body.upsert)) {
+          let n = 0;
+          for (let i = 0; i < body.upsert.length; i += 100) {
+            const batch = body.upsert.slice(i, i + 100);
+            const vecs = await embed(this.env, batch.map(c => c.text), "RETRIEVAL_DOCUMENT");
+            await this.env.VEC.upsert(batch.map((c, j) => ({ id: c.id, values: vecs[j], metadata: { ...c.meta, text: c.text } })));
+            n += batch.length;
+          }
+          return Response.json({ upserted: n });
+        }
+        if (typeof body.query === "string") return Response.json(await searchDocs(this.env, { query: body.query, project: body.project, source: body.source }));
+      } catch (e) { return Response.json({ error: String(e.message || e) }, { status: e.status === 429 ? 429 : 500 }); }
+      return new Response("bad request", { status: 400 });
+    }
+    if (url.pathname === "/embedtest") { // 디버그: Gemini 임베딩 가능 여부
+      const t0 = Date.now();
+      const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents", { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": this.env.GEMINI_API_KEY }, body: JSON.stringify({ requests: (body.texts || ["테스트"]).map(t => ({ model: "models/gemini-embedding-001", content: { parts: [{ text: t }] }, outputDimensionality: 768, taskType: "RETRIEVAL_DOCUMENT" })) }) });
+      const j = await r.json().catch(() => ({}));
+      return Response.json({ status: r.status, ms: Date.now() - t0, dims: j.embeddings?.[0]?.values?.length, n: j.embeddings?.length, err: j.error?.message });
+    }
     if (url.pathname === "/models") { // 디버그: 이 키로 쓸 수 있는 모델
       const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": this.env.GEMINI_API_KEY } });
       const j = await r.json();
@@ -357,24 +396,18 @@ async function admin(request, env) {
   const auth = request.headers.get("Authorization") || "";
   if (!env.DEBUG_TOKEN || auth !== "Bearer " + env.DEBUG_TOKEN) return new Response("forbidden", { status: 403 });
   const body = await request.json();
-  if (Array.isArray(body.upsert)) {
-    let n = 0;
-    for (let i = 0; i < body.upsert.length; i += 40) {
-      const batch = body.upsert.slice(i, i + 40);
-      const vecs = await embed(env, batch.map(c => c.text));
-      await env.VEC.upsert(batch.map((c, j) => ({ id: c.id, values: vecs[j], metadata: { ...c.meta, text: c.text } })));
-      n += batch.length;
-    }
-    return Response.json({ upserted: n });
+  if (Array.isArray(body.upsert) || typeof body.query === "string") { // 임베딩이 필요한 작업은 DO(wnam)에서
+    const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" });
+    return relay.fetch("https://relay/admin", { method: "POST", body: JSON.stringify(body) });
   }
   if (Array.isArray(body.deleteIds)) { await env.VEC.deleteByIds(body.deleteIds); return Response.json({ deleted: body.deleteIds.length }); }
   if (Array.isArray(body.summarize)) {
     const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" });
     return relay.fetch("https://relay/summarize", { method: "POST", body: JSON.stringify({ items: body.summarize }) });
   }
-  if (typeof body.query === "string") return Response.json(await searchDocs(env, { query: body.query, project: body.project, source: body.source }));
   if (body.rawfilter) { const [vec] = await embed(env, [body.q || "test"]); const r = await env.VEC.query(vec, { topK: 5, returnMetadata: "indexed", filter: body.rawfilter }); return Response.json({ count: r.count, matches: (r.matches || []).map(m => ({ score: m.score, md: m.metadata })) }); }
   if (Array.isArray(body.probe)) { const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" }); return relay.fetch("https://relay/probe", { method: "POST", body: JSON.stringify({ models: body.probe, gen: body.gen }) }); }
+  if (body.embedtest) { const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" }); return relay.fetch("https://relay/embedtest", { method: "POST", body: JSON.stringify({ texts: body.texts }) }); }
   if (body.models) { const relay = env.RELAY.get(env.RELAY.idFromName("us"), { locationHint: "wnam" }); return relay.fetch("https://relay/models", { method: "POST", body: "{}" }); }
   return new Response("bad request", { status: 400 });
 }

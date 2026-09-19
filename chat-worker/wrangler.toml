@@ -21,9 +21,7 @@ class_name = "ChatRelay"
 tag = "v1"
 new_sqlite_classes = ["ChatRelay"]
 
-[ai]
-binding = "AI"
 
 [[vectorize]]
 binding = "VEC"
-index_name = "portfolio-chunks"
+index_name = "portfolio-gemini"

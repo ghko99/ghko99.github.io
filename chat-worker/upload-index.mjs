@@ -21,14 +21,15 @@ async function call(body) {
   if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
   return r.json();
 }
-const B = 120; let done = 0;
+const B = 25; let done = 0; // Gemini 임베딩 무료 등급: 분당 3만 토큰 → 25개(≈1.5만 토큰)씩, 배치 사이 60초
 for (let i = 0; i < todo.length; i += B) {
   const batch = todo.slice(i, i + B);
   for (let attempt = 1; ; attempt++) {
     try { await call({ upsert: batch }); break; }
-    catch (e) { if (attempt >= 3) throw e; console.error("retry", attempt, e.message); await new Promise(r => setTimeout(r, 2000 * attempt)); }
+    catch (e) { if (attempt >= 12) throw e; const wait = /429|quota|RESOURCE_EXHAUSTED/.test(e.message) ? 65000 : 3000 * attempt; console.error(`\nretry ${attempt} (${wait / 1000}s): ${e.message.slice(0, 120)}`); await new Promise(r => setTimeout(r, wait)); }
   }
   done += batch.length; process.stdout.write(`\r올린 청크 ${done}/${todo.length}`);
+  if (done < todo.length) await new Promise(r => setTimeout(r, 61000));
   writeFileSync("index-manifest.json", JSON.stringify([...new Set([...prev, ...todo.slice(0, done).map(c => c.id)])]));
 }
 console.log();
