@@ -72,7 +72,7 @@ export default function CV() {
             <Sec title="수상" rows={[{ when: '2024.12', title: '제1회 AI 반도체 기술인재 선발대회 우수상', sub: '한국정보통신진흥협회 회장상 · 과학기술정보통신부 · sLLM/sLM 분야 · 전국 91팀 중 2위' }]} />
             <h3 className="mb-1 border-b-2 border-ink pb-2 text-[12px] font-bold tracking-[.1em]">기술</h3>
             <div className="text-[13.5px] text-ink-2">
-              {[['언어 · 프레임워크', 'Python, PyTorch, Hugging Face Transformers, PEFT, FastAPI'], ['LLM · NLP', 'LLM Fine-tuning, LoRA/QLoRA, RAG, LangChain, FAISS, vLLM, Ollama, Automated Essay Scoring, Korean NLP'], ['데이터 · 엔지니어링', 'Pandas, NumPy, Dask, scikit-learn, Docker, Git, Linux/Shell, Anaconda'], ['API · 도구', 'OpenAI API, Claude API, Weights & Biases, TensorBoard, Triton Inference Server']].map(([k, v]) => (
+              {[['언어 · 프레임워크', 'Python, PyTorch, Hugging Face Transformers, FastAPI'], ['언어모델', 'Llama 3.1, Gemma 3, Kanana, EEVE-Korean, KoBERT, KoELECTRA, KoT5, mBART'], ['LLM 학습 · 서빙', 'PEFT, Unsloth, LangChain, vLLM, Ollama, OpenAI API'], ['데이터', 'Pandas, Dask, NumPy, scikit-learn'], ['인프라 · 도구', 'Docker, Linux, Git, Anaconda, VS Code, Claude Code']].map(([k, v]) => (
                 <div key={k} className="border-b border-line-2 py-2.5 last:border-0"><b className="block text-[13px] font-semibold text-ink">{k}</b>{v}</div>
               ))}
             </div>
