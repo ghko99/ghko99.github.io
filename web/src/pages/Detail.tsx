@@ -78,7 +78,8 @@ export default function Detail() {
   const nav = useNavigate()
   const it: Item | undefined = kind && id ? byId(kind, id) : undefined
   const [cur, setCur] = useState(0)
-  useEffect(() => { setCur(0); window.scrollTo(0, 0); if (it) document.title = `${it.t} — ${T('고강희', 'Ganghee Go')}` }, [kind, id, it])
+  useEffect(() => { setCur(0); window.scrollTo(0, 0); if (it) document.title = `${it.t} — ${T('고강희', 'Ganghee Go')}`   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kind, id])  // it는 영어 모드에서 매 렌더 새 객체라, 의존성에 넣으면 단계 선택이 계속 1로 되돌아간다
   // 닫기: 타임라인에서 들어왔으면 보던 위치로 돌아가고(Home이 homeScroll을 복원), 링크로 바로 열었으면 타임라인으로
   const close = () => { let y: string | null = null; try { y = sessionStorage.getItem('homeScroll') } catch { /* ignore */ } if (y) { try { sessionStorage.setItem('restoreScroll', '1') } catch { /* ignore */ } nav('/') } else nav('/?s=timeline') }
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role=dialog]')) close() }; addEventListener('keydown', k); return () => removeEventListener('keydown', k) })
