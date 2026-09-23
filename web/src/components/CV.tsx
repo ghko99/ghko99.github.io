@@ -51,7 +51,7 @@ export default function CV() {
         <div id="cvbody" hidden={!open}>
         <Sec title={T('학력', 'Education')} rows={[
           { when: '2024.09 – 2026.08', title: T('인하대학교 대학원 전기컴퓨터공학과 · 인공지능 전공', 'MS, Electrical and Computer Engineering (AI), Inha University'), logos: ['inha.png'], sub: T('공학석사 · 금융인공지능(AIF) 연구실 · 지도교수 김도국 · 학점 4.38 / 4.5', 'AI in Finance (AIF) Lab · Advisor: Prof. Do-Guk Kim · GPA 4.38 / 4.5') },
-          { when: '2018.03 – 2024.02', title: T('인하대학교 컴퓨터공학과', 'BS, Computer Engineering, Inha University'), logos: ['inha.png'], sub: T('공학사 · 우수 졸업 · 학점 4.15 / 4.5 (전공 4.23) · 졸업 석차 상위 10%', 'Graduated with honors · GPA 4.15 / 4.5 (major 4.23) · Top 10% of the class') },
+          { when: '2018.03 – 2024.02', title: T('인하대학교 컴퓨터공학과', 'BS, Computer Engineering, Inha University'), logos: ['inha.png'], sub: T('공학사 · 학점 4.15 / 4.5 (전공 4.23)', 'BS · GPA 4.15 / 4.5 (major 4.23)') },
         ]} />
         <Sec title={T('논문', 'Publications')} rows={[
           { when: '2026.05', tag: T('국내저널', 'Journal'), href: '#/p/pub/tkips', logos: ['kips.png', 'kci.png'], title: T('다중 목적 학습과 Self-Consistency를 활용한 생성형 LLM의 자동 에세이 채점 성능 최적화', 'Optimizing Automated Essay Scoring of Generative LLMs Using Multi-objective Learning and Self-Consistency'), sub: T('정보처리학회논문지 (TKIPS) 15(5) · 1저자', 'KIPS Transactions (TKIPS) 15(5) · First author') },
