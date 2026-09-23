@@ -51,7 +51,7 @@ export default function Hero() {
           </div>
           <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2 border-t border-line pt-5">
             {FACTS().map(([n, l]) => (
-              <div key={n} className="text-[13px] text-ink-3"><b className="block text-[20px] font-semibold leading-tight tracking-tight text-ink">{n}</b>{l}</div>
+              <div key={l} className="text-[13px] text-ink-3"><b className="block text-[20px] font-semibold leading-tight tracking-tight text-ink">{n}</b>{l}</div>
             ))}
           </div>
         </div>
