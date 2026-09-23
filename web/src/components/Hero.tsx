@@ -10,7 +10,6 @@ const FACTS = (): [string, string][] => [
   [T('2편', '2'), T('국제학회 논문 게재 · ACM SAC 2025, 2026', 'International conference papers · ACM SAC 2025, 2026')],
   [T('2위', '2nd'), T('AI 반도체 기술인재 선발대회 · 전국 91팀', 'AI Semiconductor Talent Competition · 91 teams nationwide')],
   ['Upflow', T('실험실 창업팀 · AI 기술 총괄', 'Lab-based startup · Head of AI')],
-  ['4.38 / 4.5', T('석사 학점 · 학사 4.15 / 4.5', 'MS GPA · BS 4.15 / 4.5')],
   [T('2건', '2'), T('웹 서비스 배포 · 글결, U-KTA', 'Web services shipped · Geulgyeol, U-KTA')],
   [T('5건', '5'), T('AI · LLM 국책·산학 과제 참여', 'Government and industry AI/LLM projects')],
 ]
