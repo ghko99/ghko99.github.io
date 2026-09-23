@@ -33,3 +33,14 @@ body { @apply bg-paper text-ink font-sans antialiased; font-size: 15px; line-hei
 .flip-face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; border-radius: 9999px; border: 1px solid var(--color-line); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .flip-back { transform: rotateY(180deg); }
 @media (prefers-reduced-motion: reduce) { .flip-inner { transition: none; } }
+
+/* 다크 모드: 토큰만 바꾸면 모든 유틸리티가 따라온다. 기본은 시스템 설정, data-theme이 있으면 그쪽을 따른다 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+  :root:not([data-theme="light"]) { --color-ink:#e7ecf3; --color-ink-2:#aab6c6; --color-ink-3:#7f8c9d; --color-line:#2b3444; --color-line-2:#212836; --color-paper:#0e131b; --color-paper-2:#161d28; --color-accent:#7aa7ff; --color-accent-2:#1b2740; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --color-ink:#e7ecf3; --color-ink-2:#aab6c6; --color-ink-3:#7f8c9d; --color-line:#2b3444; --color-line-2:#212836; --color-paper:#0e131b; --color-paper-2:#161d28; --color-accent:#7aa7ff; --color-accent-2:#1b2740; }
+/* 브랜드 로고는 흰 배경 전용이라 어두운 바탕에서 밝은 판을 깔아 준다 */
+.logo-plate { background:#fff; border-radius:3px; padding:1px; box-sizing:content-box; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) img[src*="/logos/"] { background:#fff; border-radius:3px; padding:1px; box-sizing:content-box; } }
+:root[data-theme="dark"] img[src*="/logos/"] { background:#fff; border-radius:3px; padding:1px; box-sizing:content-box; }

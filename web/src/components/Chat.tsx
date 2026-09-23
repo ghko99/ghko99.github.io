@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { img } from '../data'
+import { T, useLang } from '../i18n'
 
 const ENDPOINT = 'https://goganghee-chat.goganghee.workers.dev'
 const SESSION_MAX = 10
-const HI = '안녕하세요! 고강희입니다. 논문이나 프로젝트에서 궁금한 게 있으면 편하게 물어보세요.'
+const HI = () => T('안녕하세요! 고강희입니다. 논문이나 프로젝트에서 궁금한 게 있으면 편하게 물어보세요.', 'Hello, this is Ganghee Go. Ask me anything about my papers or projects.')
 
 type Msg = { who: 'me' | 'him'; text: string; status?: string; sources?: { t: string; u: string }[] }
 const listeners = new Set<() => void>()
@@ -31,6 +32,7 @@ function Linkify({ text }: { text: string }) {
 }
 
 export default function Chat() {
+  useLang()
   const [open, setOpen] = useState(false)
   // 런처가 구석에 있어 놓치기 쉬우므로, 페이지를 열 때마다 잠깐 말풍선으로 알린다
   const [hint, setHint] = useState(false)
@@ -49,7 +51,7 @@ export default function Chat() {
   const logRef = useRef<HTMLDivElement>(null); const inRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { const f = () => setOpen(true); listeners.add(f); return () => { listeners.delete(f) } }, [])
-  useEffect(() => { if (open && msgs.length === 0) { setMsgs([{ who: 'him', text: HI }]); turns.current.push({ role: 'assistant', content: HI }) } if (open) setTimeout(() => inRef.current?.focus(), 50) }, [open, msgs.length])
+  useEffect(() => { if (open && msgs.length === 0) { setMsgs([{ who: 'him', text: HI() }]); turns.current.push({ role: 'assistant', content: HI() }) } if (open) setTimeout(() => inRef.current?.focus(), 50) }, [open, msgs.length])
   useEffect(() => { const el = logRef.current; if (el) el.scrollTop = el.scrollHeight }, [msgs])
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }; addEventListener('keydown', k); return () => removeEventListener('keydown', k) }, [])
 
@@ -64,7 +66,7 @@ export default function Chat() {
     try {
       let res = await request()
       if (res.status === 502 || res.status === 503) { await new Promise((r) => setTimeout(r, 1500)); res = await request() }
-      if (!res.ok) { update((m) => ({ ...m, status: undefined, text: res.status === 429 ? '지금 질문이 많이 몰려 있습니다. 잠시 후에 다시 물어봐 주십시오.' : '지금은 답변이 어렵습니다. 잠시 후 다시 물어봐 주십시오.' })); turns.current.pop(); return }
+      if (!res.ok) { update((m) => ({ ...m, status: undefined, text: res.status === 429 ? T('지금 질문이 많이 몰려 있습니다. 잠시 후에 다시 물어봐 주십시오.', 'There are a lot of questions right now. Please try again in a moment.') : T('지금은 답변이 어렵습니다. 잠시 후 다시 물어봐 주십시오.', 'I cannot answer right now. Please try again in a moment.') })); turns.current.pop(); return }
       const flag = res.headers.get('X-Flag')
       const reader = res.body!.getReader(); const dec = new TextDecoder(); let raw = ''; let text = ''; let sources: Msg['sources'] = []
       // 제어 줄(\x1e{json}\n)은 진행 상태·참고 자료, 나머지는 본문
@@ -78,9 +80,9 @@ export default function Chat() {
       }
       text = clean(text); update((m) => ({ ...m, status: undefined, text, sources }))
       turns.current.push({ role: 'assistant', content: text })
-      if (flag === 'abuse' && ++strikes.current >= 3) { update((m) => ({ ...m, text: '이 대화는 여기까지 하겠습니다.' })); setLocked('대화가 종료되었습니다.'); return }
-      if (sent.current >= SESSION_MAX) { setMsgs((ms) => [...ms, { who: 'him', text: `여기까지 ${SESSION_MAX}개 질문에 답했습니다. 더 궁금하신 점은 khko99@naver.com 으로 보내 주시면 직접 답하겠습니다.` }]); setLocked('이메일로 문의해 주십시오.') }
-    } catch { update((m) => ({ ...m, status: undefined, text: '연결이 잠시 끊겼습니다. 다시 한번 보내 주십시오.' })); turns.current.pop() }
+      if (flag === 'abuse' && ++strikes.current >= 3) { update((m) => ({ ...m, text: T('이 대화는 여기까지 하겠습니다.', 'I will end this conversation here.') })); setLocked(T('대화가 종료되었습니다.', 'This conversation has ended.')); return }
+      if (sent.current >= SESSION_MAX) { setMsgs((ms) => [...ms, { who: 'him', text: T(`여기까지 ${SESSION_MAX}개 질문에 답했습니다. 더 궁금하신 점은 khko99@naver.com 으로 보내 주시면 직접 답하겠습니다.`, `That is ${SESSION_MAX} questions. For anything else, email khko99@naver.com and I will answer myself.`) }]); setLocked(T('이메일로 문의해 주십시오.', 'Please reach me by email.')) }
+    } catch { update((m) => ({ ...m, status: undefined, text: T('연결이 잠시 끊겼습니다. 다시 한번 보내 주십시오.', 'The connection dropped. Please send it again.') })); turns.current.pop() }
     finally { setBusy(false); if (!locked) setTimeout(() => inRef.current?.focus(), 0) }
   }
 
@@ -88,11 +90,11 @@ export default function Chat() {
     <>
       {!open && hint && (
         <button type="button" onClick={() => { dismissHint(); setOpen(true) }} className="fixed bottom-[22px] right-[84px] z-[39] max-w-[300px] rounded-xl border border-line bg-paper px-4 py-3 text-left text-[14px] leading-snug text-ink shadow-[0_10px_24px_-12px_rgba(15,23,42,.4)] after:absolute after:-right-[6px] after:top-1/2 after:h-3 after:w-3 after:-translate-y-1/2 after:rotate-45 after:border-r after:border-t after:border-line after:bg-paper">
-          안녕하세요, 고강희입니다. 논문이나 프로젝트에서 궁금한 점이 있으면 여기서 물어보세요.
+          {T('안녕하세요, 고강희입니다. 논문이나 프로젝트에서 궁금한 점이 있으면 여기서 물어보세요.', 'Hello, this is Ganghee Go. Ask me about my papers or projects here.')}
         </button>
       )}
       {!open && (
-        <button type="button" onClick={() => { dismissHint(); setOpen(true) }} aria-label="고강희에게 질문하기" title="고강희에게 질문하기" className="group fixed bottom-5 right-5 z-[39] flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.6)] transition hover:-translate-y-0.5 hover:bg-accent">
+        <button type="button" onClick={() => { dismissHint(); setOpen(true) }} aria-label={T('고강희에게 질문하기', 'Ask Ganghee Go')} title={T('고강희에게 질문하기', 'Ask Ganghee Go')} className="group fixed bottom-5 right-5 z-[39] flex h-14 w-14 items-center justify-center rounded-full bg-ink text-paper shadow-[0_10px_24px_-12px_rgba(15,23,42,.6)] transition hover:-translate-y-0.5 hover:bg-accent">
           {/* 작은 로봇 얼굴 */}
           <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
             <path d="M16 4v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -107,11 +109,11 @@ export default function Chat() {
         </button>
       )}
       {open && (
-        <div role="dialog" aria-label="고강희와 채팅" className="fixed bottom-5 right-5 z-40 flex h-[min(640px,calc(100vh-80px))] w-[min(400px,calc(100vw-40px))] flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_24px_70px_-20px_rgba(15,23,42,.35)]">
+        <div role="dialog" aria-label={T('고강희와 채팅', 'Chat with Ganghee Go')} className="fixed bottom-5 right-5 z-40 flex h-[min(640px,calc(100vh-80px))] w-[min(400px,calc(100vw-40px))] flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_24px_70px_-20px_rgba(15,23,42,.35)]">
           <div className="flex items-center gap-3 border-b border-line-2 px-3.5 py-3">
             <img src={img('profile')} alt="" className="h-10 w-10 rounded-full border-2 border-accent-2 object-cover object-[50%_18%]" />
-            <div className="min-w-0 flex-1 leading-tight"><b className="block text-[15px] font-semibold">고강희</b><span className="flex items-center gap-1.5 text-[12px] text-ink-3"><i className={`h-[7px] w-[7px] rounded-full ${locked ? 'bg-red-500' : 'bg-emerald-400'}`} />{locked ? '여기까지 답했습니다' : `지금 답할 수 있어요 · 질문 ${Math.max(0, SESSION_MAX - msgs.filter((m) => m.who === 'me').length)}개 남음`}</span></div>
-            <button type="button" onClick={() => setOpen(false)} className="px-2 py-1.5 text-[13px] text-ink-3 hover:text-ink">닫기</button>
+            <div className="min-w-0 flex-1 leading-tight"><b className="block text-[15px] font-semibold">{T('고강희', 'Ganghee Go')}</b><span className="flex items-center gap-1.5 text-[12px] text-ink-3"><i className={`h-[7px] w-[7px] rounded-full ${locked ? 'bg-red-500' : 'bg-emerald-400'}`} />{locked ? T('여기까지 답했습니다', 'That is all for now') : T(`지금 답할 수 있어요 · 질문 ${Math.max(0, SESSION_MAX - msgs.filter((m) => m.who === 'me').length)}개 남음`, `Online · ${Math.max(0, SESSION_MAX - msgs.filter((m) => m.who === 'me').length)} questions left`)}</span></div>
+            <button type="button" onClick={() => setOpen(false)} className="px-2 py-1.5 text-[13px] text-ink-3 hover:text-ink">{T('닫기', 'Close')}</button>
           </div>
           <div ref={logRef} className="flex flex-1 flex-col gap-1.5 overflow-y-auto bg-paper-2 px-3.5 py-4">
             {msgs.map((m, i) => (
@@ -119,14 +121,14 @@ export default function Chat() {
                 <div className={`max-w-[84%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-[14.5px] leading-relaxed ${m.who === 'me' ? 'self-end rounded-br-md bg-accent text-white' : 'self-start rounded-bl-md border border-line-2 bg-paper'} ${m.status ? 'flex items-center gap-2 text-[13.5px] text-ink-3' : ''}`}>
                   {m.status ? (m.status === '···' ? '···' : <><span className="h-3 w-3 flex-none animate-spin rounded-full border-2 border-line-2 border-t-accent" />{m.status}</>) : m.who === 'him' ? <Body text={m.text} /> : m.text}
                 </div>
-                {!!m.sources?.length && <div className="-mt-1 mb-0.5 ml-1 flex max-w-[84%] flex-wrap items-center gap-1.5 self-start text-[11.5px] text-ink-3">참고{m.sources.map((s) => <a key={s.u} href={s.u} target="_blank" rel="noopener" className="rounded-full border border-line-2 bg-paper px-2 py-px hover:border-accent hover:text-accent">{s.t}</a>)}</div>}
+                {!!m.sources?.length && <div className="-mt-1 mb-0.5 ml-1 flex max-w-[84%] flex-wrap items-center gap-1.5 self-start text-[11.5px] text-ink-3">{T('참고', 'Sources')}{m.sources.map((s) => <a key={s.u} href={s.u} target="_blank" rel="noopener" className="rounded-full border border-line-2 bg-paper px-2 py-px hover:border-accent hover:text-accent">{s.t}</a>)}</div>}
               </div>
             ))}
           </div>
-          {msgs.length <= 1 && !locked && <div className="flex gap-1.5 bg-paper-2 px-3 pt-2.5"><button type="button" onClick={() => ask('안녕하세요')} className="rounded-full border border-line bg-paper px-3 py-1.5 text-[12.5px] text-ink-2 hover:border-accent hover:text-accent">안녕하세요</button></div>}
+          {msgs.length <= 1 && !locked && <div className="flex gap-1.5 bg-paper-2 px-3 pt-2.5"><button type="button" onClick={() => ask(T('안녕하세요', 'Hello'))} className="rounded-full border border-line bg-paper px-3 py-1.5 text-[12.5px] text-ink-2 hover:border-accent hover:text-accent">{T('안녕하세요', 'Hello')}</button></div>}
           <form className="flex gap-2 border-t border-line-2 bg-paper px-3 py-2.5" onSubmit={(e) => { e.preventDefault(); ask(input) }}>
-            <input ref={inRef} value={input} onChange={(e) => setInput(e.target.value)} disabled={!!locked} placeholder={locked || '메시지 보내기'} maxLength={600} autoComplete="off" className="flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-[14.5px] outline-none focus:border-accent disabled:bg-paper-2 disabled:text-ink-3" />
-            <button type="submit" disabled={busy || !!locked} className="rounded-xl bg-accent px-4 py-2 text-[14px] font-semibold text-white disabled:opacity-45">전송</button>
+            <input ref={inRef} value={input} onChange={(e) => setInput(e.target.value)} disabled={!!locked} placeholder={locked || T('메시지 보내기', 'Send a message')} maxLength={600} autoComplete="off" className="flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-[14.5px] outline-none focus:border-accent disabled:bg-paper-2 disabled:text-ink-3" />
+            <button type="submit" disabled={busy || !!locked} className="rounded-xl bg-accent px-4 py-2 text-[14px] font-semibold text-white disabled:opacity-45">{T('전송', 'Send')}</button>
           </form>
         </div>
       )}

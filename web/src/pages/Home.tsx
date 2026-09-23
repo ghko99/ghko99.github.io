@@ -4,8 +4,10 @@ import Hero from '../components/Hero'
 import CV from '../components/CV'
 import Timeline from '../components/Timeline'
 import { PROFILE } from '../data'
+import { T, useLang } from '../i18n'
 
 export default function Home() {
+  useLang()
   const { search } = useLocation()
   // 상세 페이지에서 "이력/타임라인"으로 돌아올 때 해당 절로 스크롤
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function Home() {
         requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, y)))
       }
     } catch { /* ignore */ }
-    document.title = '고강희 · Ganghee Go'
+    document.title = T('고강희 · Ganghee Go', 'Ganghee Go · 고강희')
   }, [search])
   return (
     <>
@@ -30,7 +32,7 @@ export default function Home() {
       </main>
       <footer className="border-t border-line-2 py-8 text-[13px] text-ink-3">
         <div className="mx-auto flex max-w-[1120px] flex-wrap justify-between gap-2 px-5 sm:px-8">
-          <span>{PROFILE.name} · {PROFILE.en}</span>
+          <span>{T(PROFILE.name, PROFILE.en)} · {T(PROFILE.en, PROFILE.name)}</span>
           <span>{PROFILE.email} · github.com/ghko99 · 2026.09</span>
         </div>
       </footer>

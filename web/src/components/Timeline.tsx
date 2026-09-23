@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { site, byId, img } from '../data'
+import { site, byId, img, eventText } from '../data'
+import { T, useLang } from '../i18n'
 import { stackOf } from '../data/stack'
 import { cardOf } from '../data/card'
 import type { Kind } from '../data/types'
@@ -28,7 +29,7 @@ function Horizontal() {
           if (e.ms) return (
             <div key={i} className="contents">{yearEl}
               <div className="relative w-[170px] flex-none border-l border-line-2 pl-3 text-[12.5px] leading-normal text-ink-2 before:absolute before:-left-[4px] before:-top-[20px] before:h-[7px] before:w-[7px] before:rounded-full before:bg-ink-3">
-                <span className="mb-1 block text-[12px] tabular-nums text-ink-3">{e.d}</span>{e.ms.split('. ')[0].split(' — ')[0]}
+                <span className="mb-1 block text-[12px] tabular-nums text-ink-3">{e.d}</span>{eventText(e.d, e.ms).split('. ')[0].split(' — ')[0]}
               </div>
             </div>
           )
@@ -38,7 +39,7 @@ function Horizontal() {
             <div key={i} className="contents">{yearEl}
               <Link to={`/p/${e.k}/${it.id}`} onClick={() => { try { sessionStorage.setItem('homeScroll', String(window.scrollY)) } catch { /* ignore */ } }} className="group relative w-[218px] flex-none border-l border-line-2 pl-0.5 text-left before:absolute before:-left-[5px] before:-top-[20px] before:h-[9px] before:w-[9px] before:rounded-full before:border before:border-ink-3 before:bg-paper">
                 <span className="block pl-2.5 text-[12px] tabular-nums text-ink-3">{e.d}</span>
-                <span className="mb-1 mt-1.5 block pl-2.5 text-[11.5px] font-medium text-ink-2">{e.k === 'pub' ? '논문' : '프로젝트'}</span>
+                <span className="mb-1 mt-1.5 block pl-2.5 text-[11.5px] font-medium text-ink-2">{e.k === 'pub' ? T('논문', 'Paper') : T('프로젝트', 'Project')}</span>
                 <b className="line-clamp-3 block pl-2.5 text-[14.5px] font-semibold leading-[1.45] group-hover:text-accent">{it.ko || it.t}</b>
                 <span className="mt-1 line-clamp-2 block pl-2.5 text-[12px] text-ink-3">{sub}</span>
               </Link>
@@ -53,6 +54,7 @@ function Horizontal() {
 const loadMode = (): 'v' | 'h' => { try { return localStorage.getItem('tlmode') === 'h' ? 'h' : 'v' } catch { return 'v' } }
 
 export default function Timeline() {
+  useLang()
   const [mode, setMode] = useState<'v' | 'h'>(loadMode)
   useEffect(() => { try { localStorage.setItem('tlmode', mode) } catch { /* ignore */ } }, [mode])
   let year = ''; let side = 0
@@ -61,10 +63,10 @@ export default function Timeline() {
     <section id="timeline" className="border-t border-line-2 pb-24 pt-12 sm:pt-16">
       <div className="mx-auto max-w-[1120px] px-5 sm:px-8">
         <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
-          <h2 className="text-[26px] font-bold tracking-tight sm:text-[30px]">타임라인 <span className="ml-2 text-[13px] font-normal text-ink-3">2022 – 2026 · 논문과 프로젝트를 시간순으로</span></h2>
-          <div role="group" aria-label="타임라인 보기 방식" className="inline-flex overflow-hidden rounded-full border border-line text-[12.5px]">
-            <button type="button" className={tgl('v')} onClick={() => setMode('v')}>세로 · 자세히</button>
-            <button type="button" className={tgl('h')} onClick={() => setMode('h')}>가로 · 핵심만</button>
+          <h2 className="text-[26px] font-bold tracking-tight sm:text-[30px]">{T('타임라인', 'Timeline')} <span className="ml-2 text-[13px] font-normal text-ink-3">{T('2022 – 2026 · 논문과 프로젝트를 시간순으로', '2022 – 2026 · papers and projects in order')}</span></h2>
+          <div role="group" aria-label={T('타임라인 보기 방식', 'Timeline view')} className="inline-flex overflow-hidden rounded-full border border-line text-[12.5px]">
+            <button type="button" className={tgl('v')} onClick={() => setMode('v')}>{T('세로 · 자세히', 'Detailed')}</button>
+            <button type="button" className={tgl('h')} onClick={() => setMode('h')}>{T('가로 · 핵심만', 'Compact')}</button>
           </div>
         </div>
         {mode === 'h' && <Horizontal />}
@@ -80,12 +82,12 @@ export default function Timeline() {
               <div key={i}>{yearEl}
                 <Reveal className="relative my-4 flex pl-8 md:justify-center md:pl-0">
                   <span className="absolute left-2 top-1/2 h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink-3 md:left-1/2" />
-                  <span className="text-[13px] text-ink-2 md:ml-[calc(50%+18px)]"><b className="mr-2 font-medium tabular-nums text-ink-3">{e.d}</b>{e.ms}</span>
+                  <span className="text-[13px] text-ink-2 md:ml-[calc(50%+18px)]"><b className="mr-2 font-medium tabular-nums text-ink-3">{e.d}</b>{eventText(e.d, e.ms)}</span>
                 </Reveal>
               </div>
             )
             const it = byId(e.k as Kind, e.id!)!; const L = side % 2 === 0; side++
-            const kind = e.k === 'pub' ? '논문' : '프로젝트'
+            const kind = e.k === 'pub' ? T('논문', 'Paper') : T('프로젝트', 'Project')
             const sub = e.k === 'pub' ? it.venue : it.who
             const span = it.y.includes('–') ? ' – ' + it.y.split('–')[1].trim() : ''
             const cd = cardOf(e.k, it.id)
@@ -100,11 +102,11 @@ export default function Timeline() {
                 </div> : null}
                 <div className="text-[13.5px] leading-relaxed text-ink-2">{cd ? cd.what : e.sum}</div>
                 {cd && <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-0.5 text-[13px] text-ink-2">
-                  <dt className="font-medium text-ink">역할</dt><dd>{cd.role}</dd>
-                  <dt className="font-medium text-ink">성과</dt><dd>{cd.result}</dd>
+                  <dt className="font-medium text-ink">{T('역할', 'Role')}</dt><dd>{cd.role}</dd>
+                  <dt className="font-medium text-ink">{T('성과', 'Outcome')}</dt><dd>{cd.result}</dd>
                 </dl>}
                 <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-ink-3">{(stackOf(e.k, it.id) || (it.tags || []).map((t) => [t] as [string])).slice(0, 6).map(([t, logo]) => <span key={t} className="inline-flex items-center gap-1">{logo && <img src={`/logos/${logo}`} alt="" className="h-[14px] w-[14px] object-contain" loading="lazy" />}{t}</span>)}</div>
-                <div className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 transition group-hover:text-accent group-hover:decoration-accent">문제 해결 과정 보기</div>
+                <div className="text-[13px] text-ink-3 underline decoration-line underline-offset-4 transition group-hover:text-accent group-hover:decoration-accent">{T('문제 해결 과정 보기', 'See how it was solved')}</div>
               </Link>
             )
             return (

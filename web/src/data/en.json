@@ -1,0 +1,1492 @@
+{
+ "pub-kaes": {
+  "st": "Under review · R1",
+  "role": "First author",
+  "meta": "Manuscript NLP-2025-0110.R1 · 44,658 AI-HUB essays · 50 prompts · 11 rubric traits",
+  "tags": [
+   "KoBERT",
+   "mBART-50 CHEF",
+   "KoELECTRA RMI",
+   "10-fold CV",
+   "Holm correction"
+  ],
+  "links": [
+   [
+    "Journal"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Korean automated essay scoring runs into two walls: scarce labelled data and rich morphology. This work applies two Korean-specific augmentation methods (CHEF and RMI) and topic-aware preprocessing to a KoBERT-GRU scorer, verifies statistically that the gains are not chance, and then places the model against the agreement between human raters.</p>",
+   "imgs": [
+    {
+     "c": "Proposed framework — CHEF and RMI augmentation, topic-aware preprocessing, frozen KoBERT + GRU scorer"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Data",
+    "s": "44,658 AI-HUB essays",
+    "q": "<ul><li>Score distributions differ by grade and prompt. How should the data be split so the results can be trusted?</li><li>How do you show that a gain from a single split is not luck?</li></ul>",
+    "a": "<ul><li>After removing duplicates from the original 45,497 essays, <b>44,658</b> were used: 50 prompts, from 4th grade to the final year of high school.</li><li>Three raters scored 11 traits from 0 to 3 each, and their average was taken as the label.</li><li>The data was split into ten folds for cross-validation. Prompt proportions were preserved in each split, and augmented data went only into the training folds so it never leaked into evaluation.</li></ul>",
+    "num": [
+     {
+      "l": "Essays (before and after deduplication)"
+     }
+    ]
+   },
+   {
+    "t": "CHEF augmentation",
+    "s": "mBART-50 based",
+    "q": "<ul><li>Replacing words with other words breaks both meaning and grammar in Korean. Can the key vocabulary stay fixed while only the wording changes?</li></ul>",
+    "a": "<ul><li>Each sentence is parsed into morphemes (mecab-ko); only the content morphemes are kept and the sentence is regenerated from them (mBART-50).</li><li>Particles, endings and register change, so the wording varies. For example \"먹는다\" becomes \"먹습니다\".</li><li>If the generated sentence is shorter than 80% of the original, the original is kept.</li></ul>",
+    "imgs": [
+     {
+      "c": "CHEF — regeneration after morphological analysis, preserving content words"
+     }
+    ]
+   },
+   {
+    "t": "RMI augmentation",
+    "s": "KoELECTRA based",
+    "q": "<ul><li>Can new wording be added without changing a single original word?</li></ul>",
+    "a": "<ul><li>Blanks ([MASK]) are inserted between word segments and a language model (KoELECTRA-base) fills them, at an insertion ratio of 0.3.</li><li>Every original word survives, so the change is controlled, while the added words make the vocabulary shift larger than with CHEF. For example \"사람들은 이 날이 되면 팥죽을 먹는다.\" becomes \"사람들은 보통 이 날이 되면 팥죽을 먹는다.\"</li></ul>",
+    "imgs": [
+     {
+      "c": "RMI — Random Masking Insertion"
+     }
+    ]
+   },
+   {
+    "t": "Topic-aware preprocessing",
+    "s": null,
+    "q": "<ul><li>The same text earns different scores depending on which prompt it answers. How do you tell a model that knows nothing about the prompt?</li></ul>",
+    "a": "<ul><li>The essay's topic is prepended to every sentence. No extra labelling is required.</li><li>KoBERT then reads the sentence together with its topic, and the gains were significant for vocabulary, sentence, length, paragraph structure and topic traits.</li></ul>",
+    "num": [
+     {
+      "l": "FCS QWK · preprocessing only"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Topic-aware preprocessing — topic T prepended to each sentence"
+     }
+    ]
+   },
+   {
+    "t": "KoBERT-GRU scorer",
+    "s": null,
+    "q": "<ul><li>Which model should be the baseline for a fair comparison?</li></ul>",
+    "a": "<ul><li>Sentences become 768-dimensional vectors through a frozen KoBERT, and a three-layer GRU (256, 128, 64) predicts the 11 trait scores. Training used Adam at 5×10⁻⁴, batch 64, MSE loss, on an RTX 3090 Ti.</li><li>After comparing the official reference model and classical machine learning models, KoBERT + GRU was chosen as the baseline.</li></ul>",
+    "table": [
+     [
+      "Model",
+      "FCS QWK"
+     ]
+    ]
+   },
+   {
+    "t": "Augmentation ratio",
+    "s": null,
+    "q": "<ul><li>Is more augmented data always better?</li></ul>",
+    "a": "<ul><li>Ratios of 0.5, 1.0, 1.5, 2.0 and 2.5 times the original were compared. <b>1:1</b> was the only ratio that improved every combination of method and preprocessing. At 0.5 the results were unstable, and beyond 1.5 nothing improved further.</li><li>Meaning preservation was measured too: RMI reached a cosine similarity of <b>0.978</b> and CHEF an STS score of <b>0.928</b>, the highest of the methods.</li></ul>",
+    "imgs": [
+     {
+      "c": "Performance by augmentation ratio — 1:1 is the most stable"
+     }
+    ]
+   },
+   {
+    "t": "Validation and the human ceiling",
+    "s": null,
+    "q": "<ul><li>Is a QWK of 0.43 good or bad? How much do human raters agree with each other?</li></ul>",
+    "a": "<ul><li>Statistical tests checked that the gains were not chance (paired one-sided t-test with Holm–Bonferroni correction, confirmed with Wilcoxon). CHEF, RMI and topic preprocessing each stayed significant after correction. The combined effect is read only as a trend.</li><li>The three raters' original scores were recovered and one rater was compared against the average of the other two, giving the human agreement ceiling. The ceiling is <b>0.523</b>, and the best model reaches <b>83%</b> of it.</li><li>The ranking of traits by difficulty was similar for humans and the model (Spearman 0.82).</li></ul>",
+    "table": [
+     [
+      "Comparison",
+      "Δ FCS",
+      "Holm p"
+     ]
+    ],
+    "num": [
+     {
+      "l": "FCS QWK · CHEF 1:1 + topic"
+     },
+     {
+      "l": "Mean QWK"
+     },
+     {
+      "l": "Originality QWK · CHEF"
+     }
+    ]
+   }
+  ]
+ },
+ "pub-tkips": {
+  "st": "Published",
+  "venue": "KIPS Transactions (TKIPS) 15(5), 437–441",
+  "role": "First author",
+  "t": "Optimizing Automated Essay Scoring Performance of Generative LLMs Using Multi-objective Learning and Self-Consistency",
+  "ko": null,
+  "meta": "40,006 essays from the AI Hub writing assessment dataset · 8 rubric traits · a single LLM with no regression head",
+  "links": [
+   [
+    "Paper PDF"
+   ],
+   [
+    "DOI"
+   ],
+   [
+    "KCI"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Discriminative scorers predict scores well but cannot produce feedback, while generative LLMs treat a score as a <b>text token</b>, so they never learn the order and distance between scores and give a different answer on every run. This work makes one LLM generate rubric scores and feedback together, combining three training losses with self-consistency at inference to address both problems at once.</p>",
+   "imgs": [
+    {
+     "c": "Left: multi-objective training with CE, NTL and SAL. Right: self-consistency inference, averaging scores over several generations"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Scores and feedback from one model",
+    "s": null,
+    "q": "<ul><li>A discriminative model that only outputs a score cannot say why. Can one model produce the score and the feedback together?</li></ul>",
+    "a": "<ul><li>Llama 3.1-8B was fine-tuned with LoRA, which trains only a small set of added weights. The input is the essay and the rubric; the output is eight rubric scores and feedback for each.</li><li>The score is generated first and the feedback after it, so the feedback cannot contradict the score.</li></ul>"
+   },
+   {
+    "t": "Number Token Loss",
+    "s": null,
+    "q": "<ul><li>When the answer is 4, a loss function treats predicting 3 and predicting 9 as the same mistake. Can it be taught that scores are ordered?</li></ul>",
+    "a": "<ul><li>The expected score is computed from the probability the model assigns to each digit, and its distance from the label is added to the loss (Number Token Loss). Scores are then learned as ordered quantities rather than unrelated characters.</li></ul>",
+    "num": [
+     {
+      "l": "Mean QWK · CE only, then with NTL"
+     }
+    ]
+   },
+   {
+    "t": "Semantic Alignment Loss",
+    "s": null,
+    "q": "<ul><li>How do you stop the model from copying the surface wording of the reference feedback?</li></ul>",
+    "a": "<ul><li>The loss shrinks as the predicted feedback moves closer in meaning to the reference (Semantic Alignment Loss, using cosine similarity of sentence embeddings). It pushes the model to learn what the rubric means instead of copying the answer.</li><li>The three losses live on different scales, so the auxiliary weights are rescaled automatically at every step to match the size of the main loss (CE). No manual tuning of weights.</li></ul>",
+    "num": [
+     {
+      "l": "Mean QWK · with SAL"
+     }
+    ]
+   },
+   {
+    "t": "Self-Consistency",
+    "s": null,
+    "q": "<ul><li>The same essay gets a different score on every run. How do you reduce that variance?</li></ul>",
+    "a": "<ul><li>Each essay is scored several times and the results are pooled. Averaging the scores worked better than taking the majority vote.</li><li>That is because a score is an ordered quantity.</li><li>More samples keep improving the result, but the gain flattens after a point.</li></ul>",
+    "table": [
+     [
+      "Decoding",
+      "Mean QWK"
+     ]
+    ],
+    "imgs": [
+     {
+      "c": "QWK by number of samples"
+     }
+    ]
+   },
+   {
+    "t": "Results",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Mean QWK rose from <b>0.520</b> with CE alone to <b>0.593</b> with NTL, <b>0.611</b> with SAL and <b>0.626</b> with self-consistency, passing the regression-head baseline (0.581).</li><li>One LLM produced both scores and feedback, with no separate regression head.</li><li>How useful the feedback actually is, judged by experts and users, is left to future work.</li></ul>",
+    "num": [
+     {
+      "l": "Mean QWK · baseline and final"
+     }
+    ]
+   }
+  ]
+ },
+ "pub-thesis": {
+  "t": "Improving Korean Automated Essay Scoring with Generative Large Language Models",
+  "st": "Master's thesis",
+  "venue": "MS thesis, Electrical and Computer Engineering (AI), Graduate School, Inha University",
+  "authors": "Ganghee Go · Advisor: Do-Guk Kim",
+  "meta": "40,006 essays from the AI Hub writing assessment set (32,006 train / 4,000 dev / 4,000 test) · 8 rubric traits scored 1–9 · A100",
+  "tags": [
+   "Llama 3.1-8B-Instruct",
+   "QLoRA",
+   "WNTL",
+   "SAL",
+   "Expected-value decoding",
+   "Self-consistency",
+   "Paired bootstrap"
+  ],
+  "links": [
+   [
+    "Thesis PDF"
+   ],
+   [
+    "Defense slides"
+   ],
+   [
+    "dCollection"
+   ],
+   [
+    "GitHub · training"
+   ],
+   [
+    "GitHub · deployment package"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Discriminative models give only a score, while generative LLMs give a score and feedback but with lower accuracy and reproducibility. The goal of this thesis was to reach discriminative-baseline accuracy <b>and</b> educational feedback with a single generative model. Two auxiliary losses (WNTL, SAL) were added in training and two decoding strategies (ED, SC) at inference, all validated with paired bootstrap tests.</p>",
+   "imgs": [
+    {
+     "c": "Figure 1 — the proposed generative LLM based essay scoring system"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Data",
+    "s": "40,006 essays · 8 traits",
+    "q": "<ul><li>The data clusters around the middle scores. How can the rare bands (1–3 and 8–9) be predicted?</li><li>On traits where even human raters disagree, how much can be expected of a model?</li></ul>",
+    "a": "<ul><li>Two professional raters scored each essay from 1 to 5; the two scores were summed and reduced by one to give labels from 1 to 9. Both the scores and the expert feedback were used as training targets.</li><li>Sentence cohesion (0.505) and lexical appropriateness (0.484) are traits where the raters themselves agree least. Those numbers set the realistic ceiling for reading model performance.</li></ul>",
+    "imgs": [
+     {
+      "c": "Table 1 — rubric criteria"
+     },
+     {
+      "c": "Figure 2 — label distribution by trait"
+     },
+     {
+      "c": "Figure 2 (continued)"
+     },
+     {
+      "c": "Figure 3 — inter-rater agreement by trait"
+     }
+    ]
+   },
+   {
+    "t": "Model and training setup",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Llama 3.1-8B-Instruct with QLoRA (4-bit quantization plus LoRA, NF4, double quantization). LoRA r=16, α=32, dropout 0.05, applied to q_proj and v_proj.</li><li>Sequence length 2,048, effective batch 32, learning rate 3×10⁻⁴, AdamW, BF16, up to 10 epochs with early stopping after 3 without improvement, seed 42, trained on an A100.</li></ul>",
+    "imgs": [
+     {
+      "c": "Table 2 — training and inference hyperparameters"
+     }
+    ]
+   },
+   {
+    "t": "WNTL",
+    "s": "Weighted number token loss",
+    "q": "<ul><li>Cross-entropy treats score tokens as unrelated categories. How can order and distance be built in, and how can the rare bands be reinforced?</li></ul>",
+    "a": "<ul><li>An expected score is computed from the probability distribution at the score token, and its squared distance from the label is added to the cross-entropy.</li><li>A class weight that grows for rarer scores (clipped to 0.7–2.5) concentrates the correction where the data is thin.</li></ul>",
+    "num": [
+     {
+      "l": "Average QWK · CE only, then with WNTL"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Algorithm 1 — the WNTL and SAL training procedure"
+     }
+    ]
+   },
+   {
+    "t": "SAL",
+    "s": "Semantic alignment of feedback",
+    "q": "<ul><li>How do you stop feedback training from copying the surface form of the reference? And must three losses of different scale be balanced by hand?</li></ul>",
+    "a": "<ul><li>At each feedback token, a meaning vector weighted by the top-k predicted probabilities is pulled towards the reference meaning vector by maximizing cosine similarity.</li><li>The total loss is 0.5 · (L_CE + λ (L_WNTL + L_SAL)). λ is computed automatically at every step from the ratio between CE and the auxiliary losses, so there is no extra hyperparameter to search.</li></ul>",
+    "num": [
+     {
+      "l": "Average QWK · NTL, then NTL+SAL"
+     }
+    ]
+   },
+   {
+    "t": "Experiment 1 · loss combinations",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>With CE alone the model reached 0.5041, below the discriminative baseline (0.5655). A generative architecture is not an advantage by itself.</li><li>SAL+WNTL reached an average of <b>0.6117</b> and an overall QWK of <b>0.7151</b>, passing the baseline on both.</li><li>The largest gains were on sentence cohesion (+96.4%) and lexical appropriateness (+48.6%) — exactly the traits where human raters agreed least.</li><li>WNTL reduced the error (MAE) in the extreme score bands, and the predicted distribution moved back towards the shape of the true one.</li></ul>",
+    "imgs": [
+     {
+      "c": "Table 3 — the six comparison models"
+     },
+     {
+      "c": "Table 4 — rubric QWK by loss configuration"
+     },
+     {
+      "c": "Figure 4 — QWK by trait"
+     },
+     {
+      "c": "Figure 5 — improvement over CE"
+     },
+     {
+      "c": "Figure 6 — MAE by score band"
+     },
+     {
+      "c": "Figure 7 — true and predicted distributions"
+     },
+     {
+      "c": "Figure 8 — confusion matrix for lexical appropriateness"
+     }
+    ]
+   },
+   {
+    "t": "Experiment 2 · decoding strategies",
+    "s": null,
+    "q": "<ul><li>Taking only the single most likely digit throws away the rest of the distribution. Can that information be used without more training? And if the essay is scored several times, how many runs are enough?</li></ul>",
+    "a": "<ul><li>Expected-value decoding, which takes the expectation over the probability distribution, added 0.0066 on average over top-1 with no extra training and no extra inference.</li><li>Averaging 31 runs (SC-Avg) was best, at an average of <b>0.6271</b> and an overall QWK of <b>0.7328</b>. Averaging beat majority voting consistently.</li><li>The number of runs converged around ten. The gains from training and from decoding did not overlap; they added up.</li></ul>",
+    "imgs": [
+     {
+      "c": "Table 5 — performance by decoding strategy"
+     },
+     {
+      "c": "Figure 9 — QWK by number of samples m"
+     },
+     {
+      "c": "Figure 10 — gains from ED and SC by trait"
+     }
+    ]
+   },
+   {
+    "t": "Statistical validation and results",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Every comparison and trait was tested with a paired bootstrap (10,000 resamples). SC-Avg beat the baseline on all eight traits (p &lt; 0.001), and the effect concentrated on the traits with low inter-rater agreement.</li><li>The limits are clear too. Adding WNTL on top of NTL+SAL was not significant on the overall score (p = 0.40); its contribution is better read as restoring balance in the score distribution.</li><li>Feedback quality was not evaluated, and self-consistency makes responses slower because the essay is scored many times.</li></ul>",
+    "num": [
+     {
+      "l": "Average QWK · baseline and final (+10.9%)"
+     },
+     {
+      "l": "Overall QWK"
+     },
+     {
+      "l": "Sentence cohesion"
+     },
+     {
+      "l": "Lexical appropriateness"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Figure 11 — ΔQWK and significance by comparison and trait"
+     }
+    ]
+   }
+  ]
+ },
+ "pub-feak": {
+  "st": "Published",
+  "role": "Second author",
+  "meta": "The 41st ACM/SIGAPP Symposium on Applied Computing · the model diagnoses, the LLM explains · joint work of the AIF Lab, the KDD Lab and the Korean Language Education Lab at Inha University",
+  "tags": [
+   "KoBERT",
+   "BiGRU",
+   "Contextual attention",
+   "Elite gap z-score",
+   "GPT-4o-mini",
+   "Constrained prompting"
+  ],
+  "links": [
+   [
+    "Paper PDF"
+   ],
+   [
+    "DOI"
+   ],
+   [
+    "SAC 2026"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Automated assessment is accurate about the score but silent about what to fix, while a general-purpose LLM explains fluently but hallucinates and overwhelms. FEAK leaves the quantitative diagnosis to a dedicated model and constrains the LLM to <b>only translate</b> that diagnosis into language a student can act on.</p>",
+   "imgs": [
+    {
+     "c": "(A) the essay (B) eight rubric scores (C) feedback with evidence and a revision example"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Evaluation",
+    "s": "Enhanced AWE",
+    "q": "<ul><li>Using all 294 linguistic features (numbers describing the text) is slow and unreliable. Which ones should stay?</li></ul>",
+    "a": "<ul><li>A content-based attention layer sits on top of KoBERT and a BiGRU, letting the model decide which features matter for the essay in front of it.</li><li>Only the <b>29</b> features that were statistically significant out of 294 are used.</li></ul>",
+    "imgs": [
+     {
+      "c": "The three stages: evaluation, feature extraction, feedback"
+     }
+    ]
+   },
+   {
+    "t": "Feature extraction",
+    "s": "Down to six",
+    "q": "<ul><li>If hundreds of diagnostics are shown at once, can a student tell what to fix first?</li></ul>",
+    "a": "<ul><li>Only the two lowest-scoring rubric traits are considered.</li><li>The distance to the top 10% of essays is measured numerically (elite gap, in z-scores).</li><li>A priority score combining that gap, the model's attention and a need-for-improvement weight selects <b>six</b> features.</li></ul>"
+   },
+   {
+    "t": "Feedback",
+    "s": "Constrained prompting",
+    "q": "<ul><li>An LLM that judges for itself starts inventing facts. Can it explain without evaluating?</li></ul>",
+    "a": "<ul><li>GPT-4o-mini receives only the original text and a table of numeric evidence. The instruction is to transcribe, not to judge.</li><li>Every number must be quoted unchanged, and the output order is fixed: observation, related feature, then a before-and-after revision example.</li></ul>",
+    "imgs": [
+     {
+      "c": "Evidence-grounded feedback generation"
+     }
+    ]
+   },
+   {
+    "t": "Validation",
+    "s": "User study with 21 people",
+    "q": null,
+    "a": "<ul><li>Twenty-one users revised their writing from the feedback. The gain with FEAK feedback (<b>+4.43 points</b>) was statistically indistinguishable from expert feedback (+5.43, p=.231) and significantly above general LLM feedback (+2.14, p=.028). Producing the feedback took an expert 471 seconds and FEAK <b>16.4 seconds</b>.</li><li>Users rated FEAK above the general LLM on grounding in evidence (3.78 vs 3.09) and specificity (3.87 vs 3.27).</li><li>The improved analyzer raised average QWK from 0.474 to <b>0.521</b> over UKTA, and originality from 0.172 to 0.318.</li></ul>",
+    "table": [
+     [
+      "Condition",
+      "Draft",
+      "Revision",
+      "Gain",
+      "Time (s)"
+     ]
+    ],
+    "num": [
+     {
+      "l": "Average QWK · UKTA and FEAK"
+     },
+     {
+      "l": "Originality QWK"
+     }
+    ]
+   }
+  ]
+ },
+ "pub-ukta": {
+  "st": "Published",
+  "role": "Co-first author",
+  "meta": "The 40th ACM/SIGAPP Symposium on Applied Computing · * co-first author · responsible for the writing assessment model · joint work of the AIF Lab, the KDD Lab and the Korean Language Education Lab at Inha University",
+  "tags": [
+   "Bareun",
+   "294 lexical features",
+   "KoBERT",
+   "BiGRU",
+   "Attention",
+   "XAI"
+  ],
+  "links": [
+   [
+    "Paper PDF"
+   ],
+   [
+    "DOI"
+   ],
+   [
+    "arXiv"
+   ],
+   [
+    "ukta.inha.ac.kr"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Existing Korean writing assessment tools look from a single angle, let errors in the first stage propagate into every later one, and never explain the score. UKTA is the first unified Korean analyzer to cover <b>three layers</b> in one place, from low-level morphological analysis to high-level writing assessment.</p>",
+   "imgs": [
+    {
+     "c": "(A) input (B) morphological and lexical feature results (C) explainable assessment — rubric scores and contributing features"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Morphological analysis",
+    "s": "Low level",
+    "q": "<ul><li>If the morphological analysis is wrong, everything after it is wrong. Where should the error be stopped?</li></ul>",
+    "a": "<ul><li>The most accurate analyzer available (Bareun) runs first, which keeps errors from spreading downstream. Results are shown as tables and lists and can be downloaded as JSON or TXT.</li></ul>"
+   },
+   {
+    "t": "294 lexical features",
+    "s": "Mid level",
+    "q": "<ul><li>Which numbers describe the quality of a text?</li></ul>",
+    "a": "<ul><li>The basic features are counts, densities and lengths of morphemes and words.</li><li>Lexical diversity is measured with TTR, RTTR, CTTR, MSTTR, MATTR, MTLD, HD-D and Voc-D, computed over all tokens and per part of speech.</li><li>Cohesion is measured with keywords (KeyBERT) and sentence similarity (SBERT): topic consistency, similarity between sentences, and lexical overlap between adjacent sentences and paragraphs.</li></ul>",
+    "imgs": [
+     {
+      "c": "The morphological analysis and lexical feature screens"
+     }
+    ]
+   },
+   {
+    "t": "Writing assessment model",
+    "s": "High level · my part",
+    "q": "<ul><li>A deep learning score gives no reason. Simply concatenating 294 features does not raise accuracy either.</li><li>How should features and context be combined to be accurate and explainable at once?</li></ul>",
+    "a": "<ul><li>At sentence level a frozen KoBERT and a BiGRU build a context vector; at essay level attention over the 294 features builds a feature vector. The two are combined to predict ten rubric scores.</li><li>The attention weights are the explanation: they show how much each feature contributed to the score.</li></ul>",
+    "imgs": [
+     {
+      "c": "Model architecture"
+     },
+     {
+      "c": "Feature attention weights by rubric trait"
+     }
+    ]
+   },
+   {
+    "t": "Results",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>On 46,000 AI-HUB essays, ten rubric traits, averaged over five runs, <b>nine</b> of the ten traits improved. The largest gains were originality (QWK +0.103), length (+0.084) and description (+0.067).</li><li>For high-scoring essays, cohesion and noun-diversity features rose to the top; for low-scoring ones, features signalling a lack of lexical diversity did. The score explains itself through the features.</li></ul>",
+    "num": [
+     {
+      "l": "Average QWK"
+     },
+     {
+      "l": "Average accuracy"
+     },
+     {
+      "l": "Originality QWK"
+     }
+    ]
+   }
+  ]
+ },
+ "pub-hclt": {
+  "t": "Data Augmentation and Preprocessing for Improving Automated Essay Scoring",
+  "st": "Published",
+  "venue": "The 35th Annual Conference on Human and Language Technology (HCLT 2023)",
+  "role": "First author",
+  "authors": "Ganghee Go, Do-Guk Kim",
+  "meta": "50,400 AI-HUB essays · 11 traits · every experiment averaged over five runs",
+  "tags": [
+   "KoBERT + GRU",
+   "KcELECTRA MLM",
+   "KoT5 paraphrase",
+   "Random masking",
+   "Topic labeling"
+  ],
+  "links": [
+   [
+    "Paper PDF"
+   ],
+   [
+    "Korea Science"
+   ],
+   [
+    "HCLT 2023"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>After confirming at KCC 2023 that topic information helps scoring, the next question was how to raise the quality and diversity of the data itself. Topic labeling as preprocessing and three augmentation methods (MLM, T5 paraphrasing, random masking) were applied to a KoBERT scorer and compared.</p>",
+   "imgs": [
+    {
+     "c": "Overview of the AES model with the proposed augmentation and preprocessing"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Topic labeling",
+    "s": "Preprocessing",
+    "q": "<ul><li>How do you tell the model, unambiguously, which of the 50 prompts an essay answers?</li></ul>",
+    "a": "<ul><li>The topic is prepended to every sentence, so \"저는 학습시간이 5시간…\" becomes \"학습과 여가활동 [SEP] 저는 학습시간이 5시간…\".</li><li>This preprocessing alone improved every trait.</li></ul>",
+    "num": [
+     {
+      "l": "Mean trait QWK · preprocessing only"
+     }
+    ]
+   },
+   {
+    "t": "MLM augmentation",
+    "s": null,
+    "q": "<ul><li>Student writing is full of slang and typos. Can a general-purpose language model still produce natural sentences from it?</li></ul>",
+    "a": "<ul><li>KcELECTRA-base-v2022 was further pre-trained on 460,000 sentences of student writing (RTD objective), then used to mask 25% of a sentence and fill it back in.</li><li>\"특히 K-POP으로 인한 가수들이 널리널리 알려져…\" becomes \"최근 K-POP으로 인한 가수들이 더 널리 알려져… 한국을 사랑하는 것 같습니다.\"</li></ul>"
+   },
+   {
+    "t": "T5 augmentation",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>A paraphrasing model (psyche/KoT5-paraphrase-generation) rewrote the text sentence by sentence, and the sentences were reassembled into one essay.</li><li>The same sentence becomes \"특히 K-POP이 널리 퍼지면서 많은 사람들이 한국에 관심을 갖고 한국을 좋아하는 것 같습니다\".</li></ul>"
+   },
+   {
+    "t": "Random masking",
+    "s": null,
+    "q": "<ul><li>Masking words at random removes advanced vocabulary too, which lowers the apparent quality of the writing. What should be masked?</li></ul>",
+    "a": "<ul><li>A morphological analyzer (mecab) tags the parts of speech, and only symbols, numbers, interjections and adverbs are masked; content words carrying meaning are preserved.</li></ul>"
+   },
+   {
+    "t": "Results",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>MLM augmentation was best, at a mean trait QWK of <b>0.5515</b> and a total-score QWK of <b>0.4380</b>.</li><li>Different traits preferred different augmentations: random masking for grammar, consistency and comprehension; T5 for vocabulary, structure, clarity and description; MLM for expression, paragraphing, length and novelty.</li></ul>",
+    "table": [
+     [
+      "Model",
+      "Total QWK",
+      "Pearson"
+     ],
+     [
+      "Baseline"
+     ],
+     [
+      "Topic labeling only"
+     ],
+     [
+      "Topic + T5"
+     ],
+     [
+      "Topic + random masking"
+     ],
+     [
+      "Topic + MLM"
+     ]
+    ],
+    "num": [
+     {
+      "l": "Mean trait QWK"
+     },
+     {
+      "l": "Total score QWK"
+     }
+    ]
+   }
+  ]
+ },
+ "pub-kcc": {
+  "t": "Improving KoBERT-based Automated Essay Scoring with Data Augmentation",
+  "st": "Published",
+  "venue": "Korea Computer Congress 2023 (KCC 2023)",
+  "role": "First author",
+  "authors": "Ganghee Go, Do-Guk Kim",
+  "meta": "First paper, written as an undergraduate researcher · 50,400 AI-HUB essays · 11 rubric traits",
+  "tags": [
+   "KoBERT + GRU",
+   "LSTM + Word2Vec",
+   "Topic/type injection"
+  ],
+  "links": [
+   [
+    "Paper PDF"
+   ],
+   [
+    "DBpia"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>The first study to lift the agreement of a KoBERT scorer by injecting each essay's topic and type into the data as an augmentation.</p>",
+   "imgs": [
+    {
+     "c": "Overview of the AES model with data augmentation"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Choosing the model",
+    "s": null,
+    "q": "<ul><li>Should the starting point be the KoBERT-based model or the LSTM-based one?</li></ul>",
+    "a": "<ul><li>The KoBERT + GRU and LSTM + Word2Vec models released by AI-Hub were compared. Agreement (Kappa) was 0.7947 against 0.7870, so the KoBERT-based model was chosen.</li></ul>"
+   },
+   {
+    "t": "Injecting topic and type",
+    "s": null,
+    "q": "<ul><li>What information should be injected, and where? 41% of Korean essays are ten sentences or shorter, so what happens if it is injected too often?</li></ul>",
+    "a": "<ul><li>Three kinds of information: type 2 (essay, prose), type 5 (argument, pro-and-con, alternative, explanation, composition) and topic 50 (the 50 prompts).</li><li>Five injection intervals, from every sentence to every fifth sentence. Three kinds times five intervals gave fifteen combinations to compare.</li><li>The form is \"[학습과 여가활동] 저는 학습시간이 5시간…\".</li></ul>"
+   },
+   {
+    "t": "Results",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Injecting topic 50 into every sentence was best, at QWK <b>0.8255</b> and Pearson 0.8357. All fifteen combinations beat the baseline and all exceeded 0.8.</li><li>The finer the information (topic 50, then type 5, then type 2), the larger the effect. The agreement grade rose one level, from substantial to almost perfect.</li></ul>",
+    "table": [
+     [
+      "Setting",
+      "Kappa",
+      "Pearson"
+     ]
+    ],
+    "num": [
+     {
+      "l": "Kappa"
+     }
+    ]
+   }
+  ]
+ },
+ "proj-geulgyeol": {
+  "t": "Geulgyeol",
+  "ko": "An evidence-grounded Korean essay scoring agent",
+  "who": "Solo project",
+  "res": "Deployed as a web service",
+  "meta": "Planning, data, training, agent, inference server, frontend and deployment done alone · trained on about 80,000 Korean writing assessments · 8 rubric traits scored 1–9",
+  "tags": [
+   "Kanana-1.5-8B-Instruct",
+   "PEFT · LoRA",
+   "vLLM AsyncLLMEngine",
+   "FastAPI · SSE",
+   "Native function calling",
+   "Bareun · Kiwi · ETRI"
+  ],
+  "links": [
+   [
+    "geulgyeol.tech"
+   ],
+   [
+    "GitHub"
+   ]
+  ],
+  "intro": {
+   "html": "<p>An LLM agent that returns feedback and <b>objective evidence</b> alongside the score. A LoRA-tuned scorer produces the scores, the feedback and its own confidence; the same LLM with the adapter switched off acts as a verification agent, calls external tools, judges independently, and only then are the two combined. It is the method from my master's thesis turned into a service.</p>",
+   "imgs": [
+    {
+     "c": "From the student essay through the LoRA scorer and the base-LLM verification agent to an evidence-grounded report"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "LoRA scorer",
+    "s": "Kanana-1.5-8B",
+    "q": "<ul><li>Cross-entropy treats the gap between 3 and 4 the same as the gap between 3 and 9. Can it teach that scores are ordered?</li><li>And what about data that clusters around the middle scores?</li></ul>",
+    "a": "<ul><li>AI Hub data was preprocessed and Kanana-1.5-8B-Instruct was fine-tuned with LoRA.</li><li>A weighted number token loss trains the distance between the label and the expectation over the probabilities the model assigns to each digit.</li><li>Scores are then learned as quantities with order and distance.</li></ul>"
+   },
+   {
+    "t": "Soft self-consistency",
+    "s": "Inference",
+    "q": "<ul><li>Taking only the most likely digit discards the probability of every other score. Can that be used?</li><li>The same text also scores differently on every run. Is ordinary self-consistency over integer scores enough?</li></ul>",
+    "a": "<ul><li>Expected-value decoding, which takes the expectation over the 1–9 distribution, raised the score from 0.602 to <b>0.610</b> with no extra training.</li><li>Soft self-consistency combines that decoding with repeated scoring.</li><li>Weighing quality against cost, the service uses an ensemble of 30 runs.</li></ul>",
+    "table": [
+     [
+      "Decoding",
+      "Mean QWK"
+     ]
+    ],
+    "imgs": [
+     {
+      "c": "QWK by number of samples"
+     }
+    ]
+   },
+   {
+    "t": "Verification agent",
+    "s": "Blocking anchoring",
+    "q": "<ul><li>Shown the first score, the verification agent simply repeats it even after calling external tools. How do you make it judge independently?</li></ul>",
+    "a": "<pre>Before  LoRA score revealed, agent verifies, agent copies the score\nAfter   LoRA score hidden, agent judges alone, results combined afterwards</pre><ul><li>During verification the LoRA adapter is detached and the first score is hidden, so the agent scores each rubric trait from tool measurements alone.</li><li>The adjustment range is capped so the result cannot swing too far.</li><li>One LLM serves both roles, scoring and verifying, by switching the adapter on and off.</li></ul>"
+   },
+   {
+    "t": "Evidence tools",
+    "s": "Function calling",
+    "q": "<ul><li>Can a student accept a score from feedback that only says \"the sentence is awkward\" or \"the vocabulary is limited\"?</li></ul>",
+    "a": "<ul><li>Each score comes with evidence the student can check: where the error is, what was measured, and the official language rule that applies.</li></ul>",
+    "table": [
+     [
+      "Tool",
+      "What it checks"
+     ],
+     [
+      "Bareun · Kiwi · ETRI",
+      "Spelling and spacing errors"
+     ],
+     [
+      "Korean language norms",
+      "The official rule behind each error"
+     ],
+     [
+      "Basic Korean Dictionary · Urimalsaem",
+      "Vocabulary level and whether a word is in the dictionary"
+     ],
+     [
+      "National Institute of Korean Language term base",
+      "Whether domain terms fit the prompt"
+     ],
+     [
+      "Token log-probability perplexity",
+      "How naturally sentences connect"
+     ],
+     [
+      "Keyword check",
+      "Whether the prompt's requirements are met"
+     ]
+    ]
+   },
+   {
+    "t": "The service",
+    "s": "vLLM · FastAPI · web",
+    "q": null,
+    "a": "<ul><li>The inference server runs on vLLM AsyncLLMEngine, the API on FastAPI with SSE streaming, and the frontend in vanilla JavaScript.</li><li>Pick a prompt, write an essay, and you get a report with the score distribution, the model's confidence, strengths and weaknesses, and a comparison between the first scoring and the agent's verification.</li></ul>",
+    "imgs": [
+     {
+      "c": "Prompt selection — 60 short-answer, 89 argumentative, 15 by topic"
+     }
+    ]
+   },
+   {
+    "t": "Results",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Performance rose from 0.602 with hard greedy decoding to <b>0.625</b> with soft self-consistency.</li><li>Agreement between human raters is 0.6546 and agreement between the model and humans is 0.6247, which is <b>95.4%</b> of the human level.</li><li>Open problems: there are no tools yet for checking factual and logical errors, and the spelling and dictionary features depend on external APIs. The QWK of the combined calibration also needs validation.</li><li>The plan is to extend it into a writing agent that follows a text through repeated revisions.</li></ul>",
+    "num": [
+     {
+      "l": "Mean QWK"
+     },
+     {
+      "l": "Reliability against human raters"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Final performance — model and human raters"
+     }
+    ]
+   }
+  ]
+ },
+ "proj-lh": {
+  "t": "LH housing subscription assistant",
+  "ko": "1st AI Semiconductor Talent Competition · Excellence Award in the sLLM/sLM track (2nd of 91 teams)",
+  "who": "Four-person team AIF · responsible for the RAG system and sLLM fine-tuning",
+  "res": "Excellence Award · 2nd of 91 teams",
+  "meta": "Team AIF — Kwanghoon Shin (augmentation and preprocessing) · Jingam Park (planning and full-stack web) · Taehyung Kwon (data collection, API, vLLM serving) · Ganghee Go (RAG system, sLLM fine-tuning) · Sep–Nov 2024",
+  "tags": [
+   "EEVE-Korean-10.8B",
+   "LoRA",
+   "bge-m3 · FAISS",
+   "Upstage Document Parse",
+   "RAGAS",
+   "Triton · vLLM",
+   "Rebellions ATOM"
+  ],
+  "links": [
+   [
+    "GitHub"
+   ],
+   [
+    "AI Chip PlatformX"
+   ]
+  ],
+  "intro": {
+   "html": "<p>More people hold housing subscription accounts every year, but the process and the 20-plus-page notices are hard to follow. We built a round-the-clock assistant that recommends notices matching the user's situation and answers questions about them with RAG, running entirely on a lightweight LLM on a Rebellions NPU with no external API.</p>",
+   "imgs": [
+    {
+     "c": "1st AI Semiconductor Talent Competition"
+    },
+    {
+     "c": "Excellence Award — sLLM/sLM track, team AIF · 20 Dec 2024"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Choosing the model",
+    "s": null,
+    "q": "<ul><li>Among the lightweight models that run on the Rebellions NPU (the solar and llama families), which handles Korean finance language best?</li><li>With limited fine-tuning resources, does the first choice decide the final quality?</li></ul>",
+    "a": "<ul><li>We went through the Horangi Korean LLM leaderboard and the Allganize finance LLM leaderboard.</li><li>EEVE-Korean-Instruct-10.8B beat GPT-3.5 Turbo on Korean tasks and ran on the NPU, so we chose it.</li></ul>",
+    "imgs": [
+     {
+      "c": "Horangi Korean LLM leaderboard"
+     },
+     {
+      "c": "Allganize finance LLM leaderboard"
+     }
+    ]
+   },
+   {
+    "t": "Chunking the notices",
+    "s": null,
+    "q": "<ul><li>How should a PDF notice that mixes tables and prose be read and split so nothing is cut in half?</li></ul>",
+    "a": "<ul><li>A document parser (Upstage Document Parse) splits the file into elements: paragraphs, sentences and headings.</li><li>Each chunk keeps the heading it belongs to, and the heading-chunk pair is the unit that gets searched.</li></ul>",
+    "imgs": [
+     {
+      "c": "Element-level chunking with heading tags"
+     }
+    ]
+   },
+   {
+    "t": "Hybrid retrieval",
+    "s": null,
+    "q": "<ul><li>Retrieval accuracy was low, so unrelated chunks kept coming back. What should they be filtered on?</li></ul>",
+    "a": "<ul><li>Retrieval combines three scores: lexical match (BM25), heading similarity and body similarity.</li><li>Using question–context–answer data, the weights moved from 1:1:1 to <b>0.1 : 0.2 : 0.7</b>.</li><li>Chunks scoring below 0.77 are dropped, which removes the unrelated material.</li></ul>",
+    "num": [
+     {
+      "l": "RAGAS context precision"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "The hybrid retrieval pipeline"
+     }
+    ]
+   },
+   {
+    "t": "Building and augmenting the data",
+    "s": null,
+    "q": "<ul><li>There is no training data for housing subscriptions. The first model invented facts and answered at length.</li><li>How do you build the data?</li></ul>",
+    "a": "<ul><li>We collected 500 subscription FAQs and Ministry of Land Q&amp;A items, then generated question–context–answer data from the notices with GPT-4. Of 22 million words collected, 20 million survived preprocessing.</li><li>Back-translation (GPT, DeepL) at 4× and rule-based augmentation at 4× brought it to <b>300 million words</b>.</li><li>Quality was managed with a spell checker (py-hanspell) and similarity-based deduplication.</li></ul>",
+    "imgs": [
+     {
+      "c": "Data collection"
+     },
+     {
+      "c": "Back-translation and rule-based augmentation"
+     },
+     {
+      "c": "Quality validation"
+     }
+    ]
+   },
+   {
+    "t": "LoRA fine-tuning",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>EEVE-Korean was fine-tuned with LoRA for one epoch on an A100.</li></ul>",
+    "num": [
+     {
+      "l": "Faithfulness"
+     },
+     {
+      "l": "Answer relevancy"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Training and validation loss"
+     }
+    ]
+   },
+   {
+    "t": "Serving on the NPU",
+    "s": "Triton · Rebellions vLLM",
+    "q": "<ul><li>Can it hold above 20 requests per second when many users are connected at once?</li></ul>",
+    "a": "<ul><li>The model was compiled for Triton Inference Server on a Rebellions ATOM+ server with a maximum batch of 8, with asynchronous streaming.</li><li>A single request runs at 24.7 tokens/s; at batch 8 it reaches <b>143 tokens/s</b>.</li><li>In load testing (Locust), adding 100 users per second, it held a 0% failure rate up to <b>6,000 concurrent users</b>.</li></ul>",
+    "num": [
+     {
+      "l": "tokens/s · single request and batch 8"
+     }
+    ]
+   },
+   {
+    "t": "The service",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>A conversational questionnaire collects the user's situation and recommends matching notices.</li><li>Questions asked while reading a notice are answered in real time, streamed as they are generated.</li></ul>",
+    "imgs": [
+     {
+      "c": "Entering conditions — conversational questionnaire"
+     },
+     {
+      "c": "Personalized notice recommendations"
+     },
+     {
+      "c": "Q&A chatbot over a notice"
+     }
+    ]
+   },
+   {
+    "t": "Evaluation and outcome",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>RAG quality (the mean of four RAGAS metrics) rose from 0.611 to 0.661 with the retrieval work and to <b>0.705</b> with fine-tuning.</li><li>On the Allganize benchmark it answered 36.4 of 60 questions correctly on average — the same level as LangChain with gpt-4-turbo (36.6), reached on the NPU alone with no external API.</li><li>The project won the Excellence Award at the 1st AI Semiconductor Talent Competition, <b>2nd</b> of 91 teams.</li></ul>",
+    "num": [
+     {
+      "l": "Mean RAGAS"
+     },
+     {
+      "l": "Correct answers (60 questions) · gpt-4-turbo scored 36.6"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "RAGAS by stage"
+     },
+     {
+      "c": "RAG benchmark comparison"
+     },
+     {
+      "c": "Final results"
+     }
+    ]
+   }
+  ]
+ },
+ "proj-ukta-proj": {
+  "ko": "A user-centered Korean text analysis and explainable writing assessment tool",
+  "who": "Team of five or more · AI modelling and performance",
+  "res": "Published at ACM SAC 2025 and 2026 · deployed on the web",
+  "meta": "Inha University · National Research Foundation of Korea (NRF) project · Korean language education × AI labs · monthly joint meetings",
+  "tags": [
+   "KoBERT",
+   "GRU",
+   "Attention",
+   "PyTorch",
+   "scikit-learn"
+  ],
+  "links": [
+   [
+    "ukta.inha.ac.kr"
+   ],
+   [
+    "GitHub · UKTA-web"
+   ],
+   [
+    "GitHub · aes-ukta-exp"
+   ]
+  ],
+  "intro": {
+   "html": "<p>One teacher has too many students for individual feedback, and existing AI scoring gives no reasons, sits below 0.5 QWK and only works on the prompts it was trained on. Together with the Korean language education lab we extended an <b>explainable writing assessment tool</b> through four phases, aimed at real classroom use.</p>",
+   "imgs": [
+    {
+     "c": "The UKTA web service — text input screen"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Phase 1 · Explainability",
+    "s": "Sep 2024 – Mar 2025",
+    "q": "<ul><li>A deep learning model never says why it gave that score, and simply concatenating 294 features buys neither accuracy nor interpretation.</li><li>What makes a score defensible?</li></ul>",
+    "a": "<ul><li>We designed an attention layer that learns for itself which features matter.</li><li>Grammar accuracy puts weight on grammatical-error features; creativity puts it on lexical diversity.</li><li>The hierarchical model combining the weighted feature vector with the KoBERT-GRU context vector was published at ACM SAC 2025.</li></ul>",
+    "imgs": [
+     {
+      "c": "Hierarchical fusion architecture"
+     },
+     {
+      "c": "Feature attention weights by rubric trait"
+     }
+    ]
+   },
+   {
+    "t": "Phase 2 · Reliability",
+    "s": "Mar – Jul 2025",
+    "q": "<ul><li>The first model stopped at a QWK of 0.538, only \"moderate\". Was a model reading the body alone missing the prompt and its requirements?</li></ul>",
+    "a": "<ul><li>The input became the prompt and the body together.</li><li>KoBERT's maximum input length went from 50 to 400 tokens.</li><li>Layer normalization and content-based attention were added to the GRU.</li></ul>",
+    "num": [
+     {
+      "l": "QWK · human agreement 0.6383, reliability index 93.5%"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Phase 2 improvements"
+     }
+    ]
+   },
+   {
+    "t": "Phase 3 · Generalization",
+    "s": "Jul – Sep 2025",
+    "q": "<ul><li>Performance collapses on unseen prompts, and a newly released 80,000-essay dataset uses a different rubric that does not match the existing data.</li><li>Can the two datasets be used together?</li></ul>",
+    "a": "<ul><li>We compared the rubrics of both datasets, 120,000 essays in total, and proposed a standard that merges them into three top-level categories: content, organization and expression.</li><li>We set the roadmap for a cross-prompt AES model that can score unseen prompts and led the follow-up research.</li></ul>",
+    "num": [
+     {
+      "l": "Essays covered by the merged rubric"
+     }
+    ]
+   },
+   {
+    "t": "Phase 4 · Evidence-grounded feedback",
+    "s": "Sep 2025 onwards",
+    "q": "<ul><li>Hallucination in LLM feedback, information overload from over 500 diagnostics, and no evidence of educational effect. Can all three be solved at once?</li></ul>",
+    "a": "<ul><li>We split the roles: the automated writing evaluation model diagnoses, the LLM explains.</li><li>A top-k module uses attention to keep only the few factors that matter most.</li><li>A mixed-methods study measuring outcome (RQ1), perception (RQ2) and process (RQ3) was published at ACM SAC 2026.</li></ul>",
+    "imgs": [
+     {
+      "c": "The FEAK architecture"
+     }
+    ]
+   }
+  ]
+ },
+ "proj-oem": {
+  "t": "Cosmetics OEM management platform",
+  "ko": "LLM turns unstructured requests into a standard form; RAG searches the regulations",
+  "who": "Startup team Upflow · Head of AI",
+  "res": "MVP shipped · passed the first round of the Pre-Startup Package",
+  "meta": "2025 Lab-specialized Startup Leading University · Pre-Startup Package · AI convergence project 1 · CEO/CTO + contract designer and developers + six MS students from the AIF Lab",
+  "tags": [
+   "FastAPI",
+   "LangChain",
+   "Pydantic",
+   "GPT-4 · Claude",
+   "Next.js 15 · React 19",
+   "PostgreSQL 17",
+   "FAISS",
+   "AWS · Docker"
+  ],
+  "links": [
+   [
+    "GitHub"
+   ],
+   [
+    "upflow.ai.kr"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Cosmetics OEM/ODM factories receive request forms in every possible shape — handwriting, Excel, HWP, PDF — and staff retype them by hand every time. This project is an <b>AI-based SaaS ERP</b> that automates that work: an LLM converts unstructured requests into a standard form, and RAG searches internal records together with ingredient regulations from five countries.</p>",
+   "imgs": [
+    {
+     "c": "The partner OEM factory — BRCOS"
+    },
+    {
+     "c": "Project goal — a search engine supporting decisions from sample request to production"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Defining the problem on site",
+    "s": null,
+    "q": "<ul><li>Handwritten forms, photos, Excel files and HWP documents all arrive mixed together. How do you get them into one format?</li></ul>",
+    "a": "<ul><li>We visited the factory and collected the request forms actually in use.</li><li>The first task became data standardization and structuring of internal documents, and we defined a standard sample development request form with <b>19</b> required fields.</li></ul>",
+    "imgs": [
+     {
+      "c": "A handwritten request from the factory and the standard sample development form"
+     }
+    ]
+   },
+   {
+    "t": "Standard-form generation agent",
+    "s": null,
+    "q": "<ul><li>How do you get structured data with all 19 fields correctly filled out of an LLM's free-form output?</li></ul>",
+    "a": "<ul><li>An AI module reads Excel, HWP and PDF input, converts it into the standard form and extracts the 19 required fields automatically.</li><li>The output shape is defined as a Pydantic schema, and format instructions through LangChain and OpenAI keep the answer inside that structure.</li><li>The whole flow and the prompts were designed stage by stage.</li></ul>",
+    "imgs": [
+     {
+      "c": "The standard-form generation agent"
+     },
+     {
+      "c": "Structured output architecture with Pydantic"
+     },
+     {
+      "c": "Overall flow and prompt engineering"
+     }
+    ]
+   },
+   {
+    "t": "Request chatbot screen",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Typing the request as a conversation fills the form on the right in real time — built from the first wireframe through to a working test page.</li></ul>",
+    "imgs": [
+     {
+      "c": "Early screen design"
+     },
+     {
+      "c": "Test page — conversation and form filling together"
+     },
+     {
+      "c": "Product request page"
+     },
+     {
+      "c": "Request detail page"
+     }
+    ]
+   },
+   {
+    "t": "Regulation search · change of design",
+    "s": null,
+    "q": "<ul><li>The first design queried external regulation data live through MCP. But if you cannot see inside an MCP function, and cannot change or maintain it, should that structure stay?</li></ul>",
+    "a": "<ul><li>We dropped the MCP-based design.</li><li>Instead we collect the external regulation data ourselves (the Ministry of Food and Drug Safety, cosmetic ingredient databases, EWG and others), preprocess it in-house and search it with RAG.</li><li>A FAISS vector database with LangChain and OpenAI turns the search results into a regulatory report.</li></ul>",
+    "imgs": [
+     {
+      "c": "The first architecture — MCP-based, and its problems"
+     },
+     {
+      "c": "The revised architecture — collect and preprocess the regulations, then search with RAG"
+     }
+    ]
+   },
+   {
+    "t": "Regulation database and reports",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>The regulation data is preprocessed field by field and stored in a database.</li><li>Searching an ingredient from the admin page produces a global ingredient regulation report with the status per country and the source for each.</li></ul>",
+    "imgs": [
+     {
+      "c": "Preprocessing the regulation database and the screen design"
+     },
+     {
+      "c": "First implementation — cosmetic ingredient regulation report"
+     },
+     {
+      "c": "Admin page — generating a global ingredient regulation report"
+     },
+     {
+      "c": "Regulatory analysis report"
+     }
+    ]
+   },
+   {
+    "t": "ERP management screens",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Open requests and their status at a glance.</li><li>Past requests, production history and similar past cases per customer, found through natural-language and vector search.</li></ul>",
+    "imgs": [
+     {
+      "c": "Admin dashboard"
+     },
+     {
+      "c": "Customer history search"
+     },
+     {
+      "c": "Similar request search"
+     }
+    ]
+   },
+   {
+    "t": "Model choice and cost",
+    "s": null,
+    "q": "<ul><li>Which model is right on both cost and quality?</li></ul>",
+    "a": "<ul><li>Five models including GPT-4.1 and Claude Opus were tested on five criteria: context understanding, Korean handling, domain understanding and others.</li><li>We settled on a combination that runs within <b>400,000 KRW per month</b>.</li><li>The system is a microservice design with the FastAPI AI server separated from the business backend.</li></ul>"
+   },
+   {
+    "t": "Outcome and next steps",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>The MVP — request-form automation and the unified search engine — was finished inside the three-month first phase.</li><li>A partnership with an OEM company gave us real operational data.</li><li>I led the industry-academia work with six MS students from the AIF Lab, set the development direction, and designed and integrated the APIs with the frontend and backend.</li><li>Next: deepening the AI features, integrating the backend, building the frontend server, and a full integration and demo.</li></ul>",
+    "num": [
+     {
+      "l": "To a finished MVP"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Roadmap"
+     }
+    ]
+   }
+  ]
+ },
+ "proj-aihub": {
+  "t": "Large-scale Korean language model dataset construction",
+  "ko": "A 2-billion-word corpus · LLaMA-based 13B/33B/65B models released",
+  "who": "Consortium · Inha University Industry-Academic Cooperation Foundation · augmentation pipeline",
+  "res": "Released on AI-Hub",
+  "meta": "2023 AI training data construction program · DGIST (lead) · Uniba · BigWave AI · Inha University (860M everyday-language words)",
+  "tags": [
+   "T5",
+   "klue/bert-base",
+   "KoELECTRA",
+   "KR-SBERT",
+   "Selenium",
+   "py-hanspell"
+  ],
+  "links": [
+   [
+    "AI-Hub"
+   ],
+   [
+    "GitHub"
+   ],
+   [
+    "Press"
+   ],
+   [
+    "Training video"
+   ]
+  ],
+  "intro": {
+   "html": "<p>Publicly available Korean data leaned heavily on news and comments, and the strong models and their data were usually closed. In a project that built a <b>2-billion-word</b> corpus (57% technical, 43% everyday language) and released LLaMA-based 13B, 33B and 65B models, I was responsible for Inha University's part: collecting, augmenting and validating <b>860 million words</b> of everyday language.</p>",
+   "imgs": [
+    {
+     "c": "Project overview"
+    },
+    {
+     "c": "The dataset published on AI-Hub"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Back-translation pipeline",
+    "s": null,
+    "q": "<ul><li>Round-tripping 860 million words through a commercial translation API costs tens of thousands of dollars. Free libraries translate poorly and browser automation is fragile.</li><li>Is there a way to get cost, quality and stability at once?</li></ul>",
+    "a": "<ul><li>We costed out the commercial APIs and concluded they were out of reach.</li><li>The free library (py-googletrans) damaged the meaning badly on real data, so it was dropped.</li><li>A prototype automating Papago through Selenium translated well but was unstable at scale.</li><li>We proposed a hybrid: a high-quality paid API for Korean to English, and a HuggingFace translation model for English back to Korean.</li></ul>"
+   },
+   {
+    "t": "MLM and T5 augmentation",
+    "s": null,
+    "q": "<ul><li>Further pre-training klue/bert-base takes three and a half hours per epoch. How do you build augmentation that scales?</li></ul>",
+    "a": "<ul><li>Instead of further training, we used a large pre-trained model as it was and rewrote the candidate-selection code so the sentences stayed natural, which cut the runtime sharply.</li><li>We wrote batched T5 processing code and released it on GitHub.</li><li>84.83 million technical words were augmented in about 9.5 hours, confirming both throughput and quality.</li></ul>",
+    "num": [
+     {
+      "l": "T5 · time for 84 million words"
+     },
+     {
+      "l": "MLM · time for 67 million words"
+     }
+    ]
+   },
+   {
+    "t": "Automated quality validation",
+    "s": null,
+    "q": "<ul><li>Some MLM output had spacing and grammar errors. Naver's spell checker has no official API and py-hanspell was broken.</li><li>And how do you catch augmented sentences that are nearly identical to the original?</li></ul>",
+    "a": "<ul><li>We designed a three-stage pipeline: augment with MLM, filter faulty sentences with a spell checker, then correct them with T5.</li><li>Naver's spell checker web page was automated directly with Selenium. Of clean sentences augmented with MLM, 10–15% needed correction.</li><li>Sentence similarity (KR-SBERT) removed duplicated meanings. That step surfaced 446 items with a similarity of 1.0, which in turn exposed an error in the earlier sentence-splitting stage (kiwi).</li></ul>"
+   },
+   {
+    "t": "Outcome",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Designed and validated the back-translation, MLM and T5 augmentation pipelines.</li><li>Built an automated quality check combining sentence similarity with spell checking.</li><li>Contributed the core work on Inha University's <b>860 million words</b> of everyday language; the final 2-billion-word corpus was released on AI-Hub.</li></ul>",
+    "num": [
+     {
+      "l": "Everyday-language data · Inha University's part"
+     }
+    ]
+   }
+  ]
+ },
+ "proj-hscode": {
+  "t": "HS code recommendation system",
+  "ko": "InhaTrade, a digital forwarding matchmaking app",
+  "who": "Three-person capstone · AI/ML and localization",
+  "res": "82% recommendation accuracy · four languages",
+  "meta": "Inha University SW-oriented University capstone · Changwoo Kim (frontend) · Yeojin Jung (backend) · Ganghee Go (AI/ML, localization)",
+  "tags": [
+   "Sentence-Transformers all-MiniLM-L6-v2",
+   "Cosine similarity",
+   "Selenium",
+   "DeepL API",
+   "Django REST"
+  ],
+  "links": [
+   [
+    "GitHub · Hscode"
+   ],
+   [
+    "InhaTrade"
+   ]
+  ],
+  "intro": {
+   "html": "<p>A mobile platform matching exporters with forwarding companies. Finding the right code among <b>more than 11,000 HS codes</b> for customs is tedious work, so we cut it down with AI recommendation and supported four languages through DeepL.</p>",
+   "imgs": [
+    {
+     "c": "The InhaTrade app"
+    },
+    {
+     "c": "The HS code recommendation screen"
+    }
+   ]
+  },
+  "nodes": [
+   {
+    "t": "Reviewing existing approaches",
+    "s": null,
+    "q": "<ul><li>String search cannot suggest similar goods. What did earlier work miss?</li></ul>",
+    "a": "<ul><li>We analysed the Word2vec, TF-IDF and cosine similarity approach from a KCC 2019 paper.</li><li>It used only the customs service's definitions, so real classification cases were never reflected.</li></ul>",
+    "imgs": [
+     {
+      "c": "HS code extraction in earlier work (KCC 2019) — morphological analysis, word embedding, TF-IDF, cosine similarity"
+     }
+    ]
+   },
+   {
+    "t": "Trying BERT classification",
+    "s": null,
+    "q": "<ul><li>Can a classifier be trained with 11,000 HS codes as labels?</li></ul>",
+    "a": "<ul><li>There were far too many labels to train on.</li><li>The staged classification from HCLT 2022 (chapter, heading, subheading) was considered too, but running three BERTs in sequence cost far too much.</li></ul>",
+    "imgs": [
+     {
+      "c": "BERT-based classification"
+     }
+    ]
+   },
+   {
+    "t": "A hybrid attempt",
+    "s": null,
+    "q": "<ul><li>What if BERT classifies only the first two digits (the chapter) and similarity recommends within it?</li></ul>",
+    "a": "<ul><li>BERT reached only about 80% classification accuracy. A wrong first step makes the whole recommendation wrong, so this was not adopted.</li></ul>",
+    "imgs": [
+     {
+      "c": "The hybrid approach"
+     }
+    ]
+   },
+   {
+    "t": "Final · embedding recommendation",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>We combined the customs service's official definitions with real classification cases.</li><li>A sentence embedding model (Sentence-Transformers) gave the performance similarity search needs. The model stays simple while the data carries the real-world cases.</li></ul>",
+    "imgs": [
+     {
+      "c": "The strengthened embedding-based recommender"
+     }
+    ]
+   },
+   {
+    "t": "Data and system",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Scraping the customs law portal with Selenium produced <b>51,000</b> HS code and product-name pairs.</li><li>Product names are vectorized with all-MiniLM-L6-v2 and stored; the user's input is encoded the same way and cosine similarity returns the top ten.</li><li>The API was served with Django REST.</li></ul>",
+    "imgs": [
+     {
+      "c": "Collection and preprocessing"
+     },
+     {
+      "c": "Embedding and recommendation"
+     }
+    ]
+   },
+   {
+    "t": "Performance",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>Accuracy is <b>82%</b> (correct code within the top ten), and the first four digits match <b>91%</b> of the time.</li><li>Average inference time is 1.5–2 seconds, within the 3-second requirement.</li><li>\"Samsung galaxy tab\" returned heading 8471 exactly, and \"Drone\" returned closely related codes for toys, unmanned aircraft and aircraft.</li></ul>",
+    "num": [
+     {
+      "l": "Top-10 accuracy"
+     },
+     {
+      "l": "First four digits matched"
+     }
+    ],
+    "imgs": [
+     {
+      "c": "Performance evaluation"
+     }
+    ]
+   },
+   {
+    "t": "Localization",
+    "s": null,
+    "q": "<ul><li>A trade service needs several languages, and the Google Translate output used by existing logistics services reads badly.</li><li>What structure connects cleanly to the frontend?</li></ul>",
+    "a": "<ul><li>We used DeepL Pro, which had added Korean in August 2023, to support Korean, English, Japanese and Chinese.</li><li>Every string in the frontend turned out to live in a single ko.json file.</li><li>I wrote a tool that translates that JSON into JSON through the DeepL API, generating the en, ja and zh files, and implemented live language switching.</li></ul>",
+    "imgs": [
+     {
+      "c": "Choosing the translation API"
+     },
+     {
+      "c": "The automatic translation tool"
+     }
+    ]
+   },
+   {
+    "t": "Retrospective",
+    "s": null,
+    "q": null,
+    "a": "<ul><li>With no GPU server we never finished the cloud deployment. Automatic HS code updates and parts of the quote editing and deletion features were left unfinished.</li><li>Next steps: domain-specific fine-tuning, tracking HS code revisions, serving the API on GPUs, and improving recommendations from user feedback.</li></ul>"
+   }
+  ]
+ },
+ "events": {
+  "2022.12": "Started as an undergraduate researcher in the AIF Lab. Deep learning, Transformers and Korean NLP.",
+  "2024.02": "Graduated with honors in Computer Engineering. GPA 4.15/4.5, top 10% of the class.",
+  "2024.09": "Began the MS in Artificial Intelligence at Inha University · started the U-KTA project.",
+  "2024.12": "Excellence Award at the 1st AI Semiconductor Talent Competition. 2nd of 91 teams in the sLLM/sLM track.",
+  "2025.07": "Joined IITP's industry-convergence multimodal generative AI talent program (through Oct 2025).",
+  "2026.03": "Joined YM-Naeultech's deep learning ambiguity analysis and de-identification project (through Sep 2026) — LLM fine-tuning on court rulings and the de-identification module.",
+  "2026.08": "Completed the MS in Engineering."
+ }
+}
