@@ -32,7 +32,7 @@ function Linkify({ text }: { text: string }) {
 }
 
 export default function Chat() {
-  useLang()
+  const lang = useLang()
   const [open, setOpen] = useState(false)
   // 런처가 구석에 있어 놓치기 쉬우므로, 페이지를 열 때마다 잠깐 말풍선으로 알린다
   const [hint, setHint] = useState(false)
@@ -52,6 +52,12 @@ export default function Chat() {
 
   useEffect(() => { const f = () => setOpen(true); listeners.add(f); return () => { listeners.delete(f) } }, [])
   useEffect(() => { if (open && msgs.length === 0) { setMsgs([{ who: 'him', text: HI() }]); turns.current.push({ role: 'assistant', content: HI() }) } if (open) setTimeout(() => inRef.current?.focus(), 50) }, [open, msgs.length])
+  // 대화 시작 전에 언어를 바꾸면 인사말도 그 언어로 다시 쓴다
+  useEffect(() => {
+    if (msgs.length !== 1 || msgs[0].who !== 'him') return
+    setMsgs([{ who: 'him', text: HI() }]); turns.current = [{ role: 'assistant', content: HI() }]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang])
   useEffect(() => { const el = logRef.current; if (el) el.scrollTop = el.scrollHeight }, [msgs])
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }; addEventListener('keydown', k); return () => removeEventListener('keydown', k) }, [])
 
