@@ -106,8 +106,11 @@ export default function Detail() {
       </div>
       {!!it.links?.length && <div className="mt-4 flex flex-wrap gap-2 text-[13px]">{it.links.map(([n, u]) => <a key={u} className="inline-flex items-center gap-1.5 rounded-md border border-line bg-paper px-2.5 py-1 text-ink-2 transition hover:border-ink-3 hover:text-ink" href={u.startsWith('papers/') ? '/' + u : u} target="_blank" rel="noopener"><img src={linkIcon(n, u)} alt="" className="h-[15px] w-[15px] rounded-[3px] object-contain" loading="lazy" />{n}</a>)}</div>}
       {(() => { const st = stackOf(kind!, id!); return st ? (
-        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-ink-2">
-          {st.map(([name, logo]) => <span key={name} className="inline-flex items-center gap-1.5">{logo && <img src={`/logos/${logo}`} alt="" className="h-[16px] w-[16px] object-contain" loading="lazy" />}{name}</span>)}
+        <div className="mt-4">
+          {kind === 'proj' && id === 'geulgyeol' && <h2 className="mb-2 text-[12.5px] font-medium text-ink-3">{T('주요 기술 스택', 'Key technologies')}</h2>}
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-ink-2">
+            {st.map(([name, logo]) => <span key={name} className="inline-flex items-center gap-1.5">{logo && <img src={`/logos/${logo}`} alt="" className="h-[16px] w-[16px] object-contain" loading="lazy" />}{name}</span>)}
+          </div>
         </div>
       ) : !!it.tags?.length && <div className="mt-3 text-[12.5px] text-ink-3">{it.tags.join(' · ')}</div> })()}
 
